@@ -1,0 +1,1021 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		03F21BBF292AE85D001D4D8E /* AirSpec_iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F21BBE292AE85D001D4D8E /* AirSpec_iOSApp.swift */; };
+		03F21BC1292AE85D001D4D8E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F21BC0292AE85D001D4D8E /* ContentView.swift */; };
+		03F21BC3292AE862001D4D8E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03F21BC2292AE862001D4D8E /* Assets.xcassets */; };
+		03F21BC6292AE862001D4D8E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03F21BC5292AE862001D4D8E /* Preview Assets.xcassets */; };
+		03F21BD0292AE863001D4D8E /* AirSpec_iOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F21BCF292AE863001D4D8E /* AirSpec_iOSTests.swift */; };
+		03F21BDA292AE863001D4D8E /* AirSpec_iOSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F21BD9292AE863001D4D8E /* AirSpec_iOSUITests.swift */; };
+		03F21BDC292AE863001D4D8E /* AirSpec_iOSUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F21BDB292AE863001D4D8E /* AirSpec_iOSUITestsLaunchTests.swift */; };
+		03F21BE2292AE863001D4D8E /* AirSpec_iOS Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 03F21BE1292AE863001D4D8E /* AirSpec_iOS Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		03F21BE7292AE863001D4D8E /* AirSpec_iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F21BE6292AE863001D4D8E /* AirSpec_iOSApp.swift */; };
+		03F21BE9292AE863001D4D8E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F21BE8292AE863001D4D8E /* ContentView.swift */; };
+		03F21BEB292AE866001D4D8E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03F21BEA292AE866001D4D8E /* Assets.xcassets */; };
+		03F21BEE292AE866001D4D8E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03F21BED292AE866001D4D8E /* Preview Assets.xcassets */; };
+		03F21BF8292AE866001D4D8E /* AirSpec_iOS_Watch_AppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F21BF7292AE866001D4D8E /* AirSpec_iOS_Watch_AppTests.swift */; };
+		03F21C02292AE867001D4D8E /* AirSpec_iOS_Watch_AppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F21C01292AE867001D4D8E /* AirSpec_iOS_Watch_AppUITests.swift */; };
+		03F21C04292AE867001D4D8E /* AirSpec_iOS_Watch_AppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F21C03292AE867001D4D8E /* AirSpec_iOS_Watch_AppUITestsLaunchTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		03F21BCC292AE863001D4D8E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 03F21BB3292AE85C001D4D8E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 03F21BBA292AE85D001D4D8E;
+			remoteInfo = AirSpec_iOS;
+		};
+		03F21BD6292AE863001D4D8E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 03F21BB3292AE85C001D4D8E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 03F21BBA292AE85D001D4D8E;
+			remoteInfo = AirSpec_iOS;
+		};
+		03F21BE3292AE863001D4D8E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 03F21BB3292AE85C001D4D8E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 03F21BE0292AE863001D4D8E;
+			remoteInfo = "AirSpec_iOS Watch App";
+		};
+		03F21BF4292AE866001D4D8E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 03F21BB3292AE85C001D4D8E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 03F21BE0292AE863001D4D8E;
+			remoteInfo = "AirSpec_iOS Watch App";
+		};
+		03F21BFE292AE867001D4D8E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 03F21BB3292AE85C001D4D8E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 03F21BE0292AE863001D4D8E;
+			remoteInfo = "AirSpec_iOS Watch App";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		03F21C0A292AE867001D4D8E /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				03F21BE2292AE863001D4D8E /* AirSpec_iOS Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		03F21BBB292AE85D001D4D8E /* AirSpec_iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AirSpec_iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		03F21BBE292AE85D001D4D8E /* AirSpec_iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirSpec_iOSApp.swift; sourceTree = "<group>"; };
+		03F21BC0292AE85D001D4D8E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		03F21BC2292AE862001D4D8E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		03F21BC5292AE862001D4D8E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		03F21BCB292AE863001D4D8E /* AirSpec_iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AirSpec_iOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		03F21BCF292AE863001D4D8E /* AirSpec_iOSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirSpec_iOSTests.swift; sourceTree = "<group>"; };
+		03F21BD5292AE863001D4D8E /* AirSpec_iOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AirSpec_iOSUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		03F21BD9292AE863001D4D8E /* AirSpec_iOSUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirSpec_iOSUITests.swift; sourceTree = "<group>"; };
+		03F21BDB292AE863001D4D8E /* AirSpec_iOSUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirSpec_iOSUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		03F21BE1292AE863001D4D8E /* AirSpec_iOS Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AirSpec_iOS Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		03F21BE6292AE863001D4D8E /* AirSpec_iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirSpec_iOSApp.swift; sourceTree = "<group>"; };
+		03F21BE8292AE863001D4D8E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		03F21BEA292AE866001D4D8E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		03F21BED292AE866001D4D8E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		03F21BF3292AE866001D4D8E /* AirSpec_iOS Watch AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "AirSpec_iOS Watch AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		03F21BF7292AE866001D4D8E /* AirSpec_iOS_Watch_AppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirSpec_iOS_Watch_AppTests.swift; sourceTree = "<group>"; };
+		03F21BFD292AE867001D4D8E /* AirSpec_iOS Watch AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "AirSpec_iOS Watch AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		03F21C01292AE867001D4D8E /* AirSpec_iOS_Watch_AppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirSpec_iOS_Watch_AppUITests.swift; sourceTree = "<group>"; };
+		03F21C03292AE867001D4D8E /* AirSpec_iOS_Watch_AppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirSpec_iOS_Watch_AppUITestsLaunchTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		03F21BB8292AE85D001D4D8E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03F21BC8292AE863001D4D8E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03F21BD2292AE863001D4D8E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03F21BDE292AE863001D4D8E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03F21BF0292AE866001D4D8E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03F21BFA292AE867001D4D8E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		03F21BB2292AE85C001D4D8E = {
+			isa = PBXGroup;
+			children = (
+				03F21BBD292AE85D001D4D8E /* AirSpec_iOS */,
+				03F21BCE292AE863001D4D8E /* AirSpec_iOSTests */,
+				03F21BD8292AE863001D4D8E /* AirSpec_iOSUITests */,
+				03F21BE5292AE863001D4D8E /* AirSpec_iOS Watch App */,
+				03F21BF6292AE866001D4D8E /* AirSpec_iOS Watch AppTests */,
+				03F21C00292AE867001D4D8E /* AirSpec_iOS Watch AppUITests */,
+				03F21BBC292AE85D001D4D8E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		03F21BBC292AE85D001D4D8E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				03F21BBB292AE85D001D4D8E /* AirSpec_iOS.app */,
+				03F21BCB292AE863001D4D8E /* AirSpec_iOSTests.xctest */,
+				03F21BD5292AE863001D4D8E /* AirSpec_iOSUITests.xctest */,
+				03F21BE1292AE863001D4D8E /* AirSpec_iOS Watch App.app */,
+				03F21BF3292AE866001D4D8E /* AirSpec_iOS Watch AppTests.xctest */,
+				03F21BFD292AE867001D4D8E /* AirSpec_iOS Watch AppUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		03F21BBD292AE85D001D4D8E /* AirSpec_iOS */ = {
+			isa = PBXGroup;
+			children = (
+				03F21BBE292AE85D001D4D8E /* AirSpec_iOSApp.swift */,
+				03F21BC0292AE85D001D4D8E /* ContentView.swift */,
+				03F21BC2292AE862001D4D8E /* Assets.xcassets */,
+				03F21BC4292AE862001D4D8E /* Preview Content */,
+			);
+			path = AirSpec_iOS;
+			sourceTree = "<group>";
+		};
+		03F21BC4292AE862001D4D8E /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				03F21BC5292AE862001D4D8E /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		03F21BCE292AE863001D4D8E /* AirSpec_iOSTests */ = {
+			isa = PBXGroup;
+			children = (
+				03F21BCF292AE863001D4D8E /* AirSpec_iOSTests.swift */,
+			);
+			path = AirSpec_iOSTests;
+			sourceTree = "<group>";
+		};
+		03F21BD8292AE863001D4D8E /* AirSpec_iOSUITests */ = {
+			isa = PBXGroup;
+			children = (
+				03F21BD9292AE863001D4D8E /* AirSpec_iOSUITests.swift */,
+				03F21BDB292AE863001D4D8E /* AirSpec_iOSUITestsLaunchTests.swift */,
+			);
+			path = AirSpec_iOSUITests;
+			sourceTree = "<group>";
+		};
+		03F21BE5292AE863001D4D8E /* AirSpec_iOS Watch App */ = {
+			isa = PBXGroup;
+			children = (
+				03F21BE6292AE863001D4D8E /* AirSpec_iOSApp.swift */,
+				03F21BE8292AE863001D4D8E /* ContentView.swift */,
+				03F21BEA292AE866001D4D8E /* Assets.xcassets */,
+				03F21BEC292AE866001D4D8E /* Preview Content */,
+			);
+			path = "AirSpec_iOS Watch App";
+			sourceTree = "<group>";
+		};
+		03F21BEC292AE866001D4D8E /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				03F21BED292AE866001D4D8E /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		03F21BF6292AE866001D4D8E /* AirSpec_iOS Watch AppTests */ = {
+			isa = PBXGroup;
+			children = (
+				03F21BF7292AE866001D4D8E /* AirSpec_iOS_Watch_AppTests.swift */,
+			);
+			path = "AirSpec_iOS Watch AppTests";
+			sourceTree = "<group>";
+		};
+		03F21C00292AE867001D4D8E /* AirSpec_iOS Watch AppUITests */ = {
+			isa = PBXGroup;
+			children = (
+				03F21C01292AE867001D4D8E /* AirSpec_iOS_Watch_AppUITests.swift */,
+				03F21C03292AE867001D4D8E /* AirSpec_iOS_Watch_AppUITestsLaunchTests.swift */,
+			);
+			path = "AirSpec_iOS Watch AppUITests";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		03F21BBA292AE85D001D4D8E /* AirSpec_iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 03F21C0B292AE867001D4D8E /* Build configuration list for PBXNativeTarget "AirSpec_iOS" */;
+			buildPhases = (
+				03F21BB7292AE85D001D4D8E /* Sources */,
+				03F21BB8292AE85D001D4D8E /* Frameworks */,
+				03F21BB9292AE85D001D4D8E /* Resources */,
+				03F21C0A292AE867001D4D8E /* Embed Watch Content */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				03F21BE4292AE863001D4D8E /* PBXTargetDependency */,
+			);
+			name = AirSpec_iOS;
+			productName = AirSpec_iOS;
+			productReference = 03F21BBB292AE85D001D4D8E /* AirSpec_iOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		03F21BCA292AE863001D4D8E /* AirSpec_iOSTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 03F21C0E292AE867001D4D8E /* Build configuration list for PBXNativeTarget "AirSpec_iOSTests" */;
+			buildPhases = (
+				03F21BC7292AE863001D4D8E /* Sources */,
+				03F21BC8292AE863001D4D8E /* Frameworks */,
+				03F21BC9292AE863001D4D8E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				03F21BCD292AE863001D4D8E /* PBXTargetDependency */,
+			);
+			name = AirSpec_iOSTests;
+			productName = AirSpec_iOSTests;
+			productReference = 03F21BCB292AE863001D4D8E /* AirSpec_iOSTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		03F21BD4292AE863001D4D8E /* AirSpec_iOSUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 03F21C11292AE867001D4D8E /* Build configuration list for PBXNativeTarget "AirSpec_iOSUITests" */;
+			buildPhases = (
+				03F21BD1292AE863001D4D8E /* Sources */,
+				03F21BD2292AE863001D4D8E /* Frameworks */,
+				03F21BD3292AE863001D4D8E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				03F21BD7292AE863001D4D8E /* PBXTargetDependency */,
+			);
+			name = AirSpec_iOSUITests;
+			productName = AirSpec_iOSUITests;
+			productReference = 03F21BD5292AE863001D4D8E /* AirSpec_iOSUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		03F21BE0292AE863001D4D8E /* AirSpec_iOS Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 03F21C07292AE867001D4D8E /* Build configuration list for PBXNativeTarget "AirSpec_iOS Watch App" */;
+			buildPhases = (
+				03F21BDD292AE863001D4D8E /* Sources */,
+				03F21BDE292AE863001D4D8E /* Frameworks */,
+				03F21BDF292AE863001D4D8E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "AirSpec_iOS Watch App";
+			productName = "AirSpec_iOS Watch App";
+			productReference = 03F21BE1292AE863001D4D8E /* AirSpec_iOS Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
+		03F21BF2292AE866001D4D8E /* AirSpec_iOS Watch AppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 03F21C14292AE867001D4D8E /* Build configuration list for PBXNativeTarget "AirSpec_iOS Watch AppTests" */;
+			buildPhases = (
+				03F21BEF292AE866001D4D8E /* Sources */,
+				03F21BF0292AE866001D4D8E /* Frameworks */,
+				03F21BF1292AE866001D4D8E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				03F21BF5292AE866001D4D8E /* PBXTargetDependency */,
+			);
+			name = "AirSpec_iOS Watch AppTests";
+			productName = "AirSpec_iOS Watch AppTests";
+			productReference = 03F21BF3292AE866001D4D8E /* AirSpec_iOS Watch AppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		03F21BFC292AE867001D4D8E /* AirSpec_iOS Watch AppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 03F21C17292AE867001D4D8E /* Build configuration list for PBXNativeTarget "AirSpec_iOS Watch AppUITests" */;
+			buildPhases = (
+				03F21BF9292AE867001D4D8E /* Sources */,
+				03F21BFA292AE867001D4D8E /* Frameworks */,
+				03F21BFB292AE867001D4D8E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				03F21BFF292AE867001D4D8E /* PBXTargetDependency */,
+			);
+			name = "AirSpec_iOS Watch AppUITests";
+			productName = "AirSpec_iOS Watch AppUITests";
+			productReference = 03F21BFD292AE867001D4D8E /* AirSpec_iOS Watch AppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		03F21BB3292AE85C001D4D8E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1410;
+				LastUpgradeCheck = 1410;
+				TargetAttributes = {
+					03F21BBA292AE85D001D4D8E = {
+						CreatedOnToolsVersion = 14.1;
+					};
+					03F21BCA292AE863001D4D8E = {
+						CreatedOnToolsVersion = 14.1;
+						TestTargetID = 03F21BBA292AE85D001D4D8E;
+					};
+					03F21BD4292AE863001D4D8E = {
+						CreatedOnToolsVersion = 14.1;
+						TestTargetID = 03F21BBA292AE85D001D4D8E;
+					};
+					03F21BE0292AE863001D4D8E = {
+						CreatedOnToolsVersion = 14.1;
+					};
+					03F21BF2292AE866001D4D8E = {
+						CreatedOnToolsVersion = 14.1;
+						TestTargetID = 03F21BE0292AE863001D4D8E;
+					};
+					03F21BFC292AE867001D4D8E = {
+						CreatedOnToolsVersion = 14.1;
+						TestTargetID = 03F21BE0292AE863001D4D8E;
+					};
+				};
+			};
+			buildConfigurationList = 03F21BB6292AE85C001D4D8E /* Build configuration list for PBXProject "AirSpec_iOS" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 03F21BB2292AE85C001D4D8E;
+			productRefGroup = 03F21BBC292AE85D001D4D8E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				03F21BBA292AE85D001D4D8E /* AirSpec_iOS */,
+				03F21BCA292AE863001D4D8E /* AirSpec_iOSTests */,
+				03F21BD4292AE863001D4D8E /* AirSpec_iOSUITests */,
+				03F21BE0292AE863001D4D8E /* AirSpec_iOS Watch App */,
+				03F21BF2292AE866001D4D8E /* AirSpec_iOS Watch AppTests */,
+				03F21BFC292AE867001D4D8E /* AirSpec_iOS Watch AppUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		03F21BB9292AE85D001D4D8E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				03F21BC6292AE862001D4D8E /* Preview Assets.xcassets in Resources */,
+				03F21BC3292AE862001D4D8E /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03F21BC9292AE863001D4D8E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03F21BD3292AE863001D4D8E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03F21BDF292AE863001D4D8E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				03F21BEE292AE866001D4D8E /* Preview Assets.xcassets in Resources */,
+				03F21BEB292AE866001D4D8E /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03F21BF1292AE866001D4D8E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03F21BFB292AE867001D4D8E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		03F21BB7292AE85D001D4D8E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				03F21BC1292AE85D001D4D8E /* ContentView.swift in Sources */,
+				03F21BBF292AE85D001D4D8E /* AirSpec_iOSApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03F21BC7292AE863001D4D8E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				03F21BD0292AE863001D4D8E /* AirSpec_iOSTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03F21BD1292AE863001D4D8E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				03F21BDC292AE863001D4D8E /* AirSpec_iOSUITestsLaunchTests.swift in Sources */,
+				03F21BDA292AE863001D4D8E /* AirSpec_iOSUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03F21BDD292AE863001D4D8E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				03F21BE9292AE863001D4D8E /* ContentView.swift in Sources */,
+				03F21BE7292AE863001D4D8E /* AirSpec_iOSApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03F21BEF292AE866001D4D8E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				03F21BF8292AE866001D4D8E /* AirSpec_iOS_Watch_AppTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03F21BF9292AE867001D4D8E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				03F21C04292AE867001D4D8E /* AirSpec_iOS_Watch_AppUITestsLaunchTests.swift in Sources */,
+				03F21C02292AE867001D4D8E /* AirSpec_iOS_Watch_AppUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		03F21BCD292AE863001D4D8E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 03F21BBA292AE85D001D4D8E /* AirSpec_iOS */;
+			targetProxy = 03F21BCC292AE863001D4D8E /* PBXContainerItemProxy */;
+		};
+		03F21BD7292AE863001D4D8E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 03F21BBA292AE85D001D4D8E /* AirSpec_iOS */;
+			targetProxy = 03F21BD6292AE863001D4D8E /* PBXContainerItemProxy */;
+		};
+		03F21BE4292AE863001D4D8E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 03F21BE0292AE863001D4D8E /* AirSpec_iOS Watch App */;
+			targetProxy = 03F21BE3292AE863001D4D8E /* PBXContainerItemProxy */;
+		};
+		03F21BF5292AE866001D4D8E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 03F21BE0292AE863001D4D8E /* AirSpec_iOS Watch App */;
+			targetProxy = 03F21BF4292AE866001D4D8E /* PBXContainerItemProxy */;
+		};
+		03F21BFF292AE867001D4D8E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 03F21BE0292AE863001D4D8E /* AirSpec_iOS Watch App */;
+			targetProxy = 03F21BFE292AE867001D4D8E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		03F21C05292AE867001D4D8E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		03F21C06292AE867001D4D8E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		03F21C08292AE867001D4D8E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"AirSpec_iOS Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = C428CUJN6B;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = AirSpec_iOS;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "medialab.AirSpec-iOS";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "medialab.AirSpec-iOS.watchkitapp";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 9.1;
+			};
+			name = Debug;
+		};
+		03F21C09292AE867001D4D8E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"AirSpec_iOS Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = C428CUJN6B;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = AirSpec_iOS;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "medialab.AirSpec-iOS";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "medialab.AirSpec-iOS.watchkitapp";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 9.1;
+			};
+			name = Release;
+		};
+		03F21C0C292AE867001D4D8E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"AirSpec_iOS/Preview Content\"";
+				DEVELOPMENT_TEAM = C428CUJN6B;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = AirSpec_iOS;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "medialab.AirSpec-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		03F21C0D292AE867001D4D8E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"AirSpec_iOS/Preview Content\"";
+				DEVELOPMENT_TEAM = C428CUJN6B;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = AirSpec_iOS;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "medialab.AirSpec-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		03F21C0F292AE867001D4D8E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C428CUJN6B;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "medialab.AirSpec-iOSTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AirSpec_iOS.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AirSpec_iOS";
+			};
+			name = Debug;
+		};
+		03F21C10292AE867001D4D8E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C428CUJN6B;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "medialab.AirSpec-iOSTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AirSpec_iOS.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AirSpec_iOS";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		03F21C12292AE867001D4D8E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C428CUJN6B;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "medialab.AirSpec-iOSUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = AirSpec_iOS;
+			};
+			name = Debug;
+		};
+		03F21C13292AE867001D4D8E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C428CUJN6B;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "medialab.AirSpec-iOSUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = AirSpec_iOS;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		03F21C15292AE867001D4D8E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C428CUJN6B;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "medialab.AirSpec-iOS-Watch-AppTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AirSpec_iOS Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AirSpec_iOS Watch App";
+				WATCHOS_DEPLOYMENT_TARGET = 9.1;
+			};
+			name = Debug;
+		};
+		03F21C16292AE867001D4D8E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C428CUJN6B;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "medialab.AirSpec-iOS-Watch-AppTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AirSpec_iOS Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AirSpec_iOS Watch App";
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 9.1;
+			};
+			name = Release;
+		};
+		03F21C18292AE867001D4D8E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C428CUJN6B;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "medialab.AirSpec-iOS-Watch-AppUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_TARGET_NAME = "AirSpec_iOS Watch App";
+				WATCHOS_DEPLOYMENT_TARGET = 9.1;
+			};
+			name = Debug;
+		};
+		03F21C19292AE867001D4D8E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C428CUJN6B;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "medialab.AirSpec-iOS-Watch-AppUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_TARGET_NAME = "AirSpec_iOS Watch App";
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 9.1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		03F21BB6292AE85C001D4D8E /* Build configuration list for PBXProject "AirSpec_iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				03F21C05292AE867001D4D8E /* Debug */,
+				03F21C06292AE867001D4D8E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		03F21C07292AE867001D4D8E /* Build configuration list for PBXNativeTarget "AirSpec_iOS Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				03F21C08292AE867001D4D8E /* Debug */,
+				03F21C09292AE867001D4D8E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		03F21C0B292AE867001D4D8E /* Build configuration list for PBXNativeTarget "AirSpec_iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				03F21C0C292AE867001D4D8E /* Debug */,
+				03F21C0D292AE867001D4D8E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		03F21C0E292AE867001D4D8E /* Build configuration list for PBXNativeTarget "AirSpec_iOSTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				03F21C0F292AE867001D4D8E /* Debug */,
+				03F21C10292AE867001D4D8E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		03F21C11292AE867001D4D8E /* Build configuration list for PBXNativeTarget "AirSpec_iOSUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				03F21C12292AE867001D4D8E /* Debug */,
+				03F21C13292AE867001D4D8E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		03F21C14292AE867001D4D8E /* Build configuration list for PBXNativeTarget "AirSpec_iOS Watch AppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				03F21C15292AE867001D4D8E /* Debug */,
+				03F21C16292AE867001D4D8E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		03F21C17292AE867001D4D8E /* Build configuration list for PBXNativeTarget "AirSpec_iOS Watch AppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				03F21C18292AE867001D4D8E /* Debug */,
+				03F21C19292AE867001D4D8E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 03F21BB3292AE85C001D4D8E /* Project object */;
+}
