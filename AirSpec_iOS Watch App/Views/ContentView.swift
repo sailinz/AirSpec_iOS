@@ -5,17 +5,14 @@
 //  Created by ZHONG Sailin on 20.11.22.
 //
 
+
 import SwiftUI
+import CoreBluetooth
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
-        }
-        .padding()
+        WatchHome()
+//        SensorReadingView()
     }
 }
 

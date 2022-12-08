@@ -9,6 +9,7 @@ import SwiftUI
 
 @main
 struct AirSpec_iOSApp: App {
+    static let name: String = "AirSpec Bluetooth"
     var body: some Scene {
         WindowGroup {
             ContentView()
