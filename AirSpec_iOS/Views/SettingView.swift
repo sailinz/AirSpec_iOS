@@ -9,12 +9,13 @@ import SwiftUI
 //import UserNotifications
 
 /// This view displays an interface for discovering and connecting to Bluetooth peripherals.
-struct GlassesTestView: View {
+struct SettingView: View {
     
     @EnvironmentObject private var receiver: BluetoothReceiver
+//    var receiver: BluetoothReceiver
 //    private var notificationHandler = ExtensionDelegate.instance.notificationHandler
     /// A button to start and stop the scanning process.
-    private var scanButton: some View {
+    var scanButton: some View {
         Button("\(receiver.isScanning ? "Scanning..." : "Scan")") {
             toggleScanning()
         }
@@ -45,22 +46,28 @@ struct GlassesTestView: View {
     var showData: some View {
         Text(receiver.glassesData.sensorData)
     }
+
     
     var body: some View {
-        List {
-            scanButton.foregroundColor(Color.blue)
-//            alertScanSwitch.foregroundColor(Color.blue)
-            Section(header: Text("Connected")) {
-                connectedPeripheral
+        NavigationView{
+            ZStack{
+                List {
+                    scanButton.foregroundColor(Color.blue)
+                    Section(header: Text("Connected")) {
+                        connectedPeripheral
+                    }
+                    Section(header: Text("Discovered")) {
+                        discoveredPeripherals
+                    }
+                    Section(header: Text("Datastream")){
+                        showData
+                    }
+                }
             }
-            Section(header: Text("Discovered")) {
-                discoveredPeripherals
-            }
-            Section(header: Text("Datastream")){
-                showData
-            }
+            .navigationTitle("Settings")
         }
     }
+    
     
     private func toggleScanning() {
         guard receiver.centralManager.state == .poweredOn else {
@@ -75,4 +82,9 @@ struct GlassesTestView: View {
     }
 }
 
+struct SettingView_Previews: PreviewProvider {
+    static var previews: some View {
+        HomeView()
+    }
+}
 

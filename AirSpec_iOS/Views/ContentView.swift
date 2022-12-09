@@ -6,11 +6,29 @@
 //
 
 import SwiftUI
+import Foundation
 
 struct ContentView: View {
+    @UIApplicationDelegateAdaptor var delegate: ExtensionDelegate
     var body: some View {
-        iOSHomeView()
+        TabView{
+            HomeView()
+                .tabItem{
+                    Label("Home", systemImage: "heart.circle.fill")
+                }
+            
+            MyDataView()
+                .tabItem{
+                    Label("My data", systemImage: "person.crop.circle")
+                }
+            
+            SettingView().environmentObject(delegate.bluetoothReceiver)
+                .tabItem{
+                    Label("Settings", systemImage: "gearshape.circle")
+                }
+    
 
+        }
     }
 }
 
@@ -19,4 +37,3 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
-

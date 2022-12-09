@@ -7,7 +7,6 @@ A class for connecting to a Bluetooth peripheral and reading its characteristic 
 
 import CoreBluetooth
 import os.log
-//import Starscream
 
 protocol BluetoothReceiverDelegate: AnyObject {
     func didReceiveData(_ message: Data) -> Int
@@ -22,9 +21,8 @@ enum BluetoothReceiverError: Error {
     case failedToReceiveCharacteristicUpdate
 }
 
-/// A listener to subscribe to a Bluetooth LE peripheral and get characteristic updates from it.
+/// A listener to subscribe to a Bluetooth LE peripheral and get characteristic updates the data to a TCP server.
 ///
-//class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate, WebSocketDelegate {
 class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     
 //    private var backgroundSession: WorkoutDataStore // dummy workoutsession to keep the background mode running
@@ -33,40 +31,33 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         subsystem: AirSpec_iOSApp.name,
         category: String(describing: BluetoothReceiver.self)
     )
+    
+    //    let GLASSNAME = "CAPTIVATE"
+    //    var statusText:String = ""
+    //    var csvText:String = ""
 
+    /// -- BLE connection variables
     weak var delegate: BluetoothReceiverDelegate? = nil
-    
     var centralManager: CBCentralManager!
-    
     private var serviceUUID: CBUUID!
-
     private var characteristicUUID: CBUUID!
-    
-//    let GLASSNAME = "CAPTIVATE"
     let GLASSNAME = "AirSpec"
-    
-    var statusText:String = ""
-    var csvText:String = ""
-    
-//    @Published var sensorData:String = ""
     @Published var glassesData: GlassesData
-    
     @Published private(set) var connectedPeripheral: CBPeripheral? = nil
-    
     private(set) var knownDisconnectedPeripheral: CBPeripheral? = nil
-    
     @Published private(set) var isScanning: Bool = false
-    
     var scanToAlert = false
-    
     var mustDisconnect = false
-    
-    // connect to the server
-//    var socket: WebSocket!
-//    var isConnected = false
-//    let server = WebSocketServer()
-    
     @Published var discoveredPeripherals = Set<CBPeripheral>()
+    /// -- BLE connection variables end
+    
+    /// -- TCP client to server connection variables
+    @Published var connectedToSatServer: Bool = false
+    @Published var status: String = ""
+    private var satServerClient: NIO_TCP_Client?
+    /// -- TCP client to server connection variables end
+    
+    
     
     init(service: CBUUID, characteristic: CBUUID) {
         self.glassesData = GlassesData(sensorData: "")
@@ -76,60 +67,41 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         self.serviceUUID = service
         self.characteristicUUID = characteristic
         self.centralManager = CBCentralManager(delegate: self, queue: nil)
-//        self.connectToServer()
+        self.connectToServer()
         
     }
     
-    // for the airspec server connection
-//    func didReceive(event: WebSocketEvent, client: WebSocket) {
-//        switch event {
-//        case .connected(let headers):
-//            isConnected = true
-//            print("websocket is connected: \(headers)")
-//        case .disconnected(let reason, let code):
-//            isConnected = false
-//            print("websocket is disconnected: \(reason) with code: \(code)")
-//        case .text(let string):
-//            print("Received text: \(string)")
-//        case .binary(let data):
-//            print("Received data: \(data.count)")
-//        case .ping(_):
-//            break
-//        case .pong(_):
-//            break
-//        case .viabilityChanged(_):
-//            break
-//        case .reconnectSuggested(_):
-//            break
-//        case .cancelled:
-//            isConnected = false
-//        case .error(let error):
-//            isConnected = false
-//            handleError(error)
+    /// -- TCP server connection
+    func connectToServer() { // called from RootView.onAppwar
+        status = "Connecting to AirSpec Server..."
+        do {
+//            satServerClient = try NIO_TCP_Client.connect(host: NetworkConstants.host, port: NetworkConstants.port) {
+//                self.satServerCallback(data: $0)
+//            }
+            satServerClient = try NIO_TCP_Client.connect(host: NetworkConstants.host, port: NetworkConstants.port)
+            connectedToSatServer = true
+            status = "Connected to AirSpec server"
+        } catch {
+            status = "Unable to connect to AirSpec server"
+        }
+    }
+    
+//    func disconnectToServer() {
+//        status = "Disconnecting..."
+//        if satServerOnline() {
+//            satServerClient?.disconnect()
+//            connectedToSatServer = false
 //        }
+//        status = "Disconnected"
 //    }
+    
+    func satServerOnline() -> Bool {
+        return satServerClient?.isConnected != nil
+    }
+    
 
-    // for connecting to the airspec server
-//    func connectToServer(){
-//        var request = URLRequest(url: URL(string: "airspecs.media.mit.edu:64235")!)
-//        request.timeoutInterval = 5
-//        socket = WebSocket(request: request)
-//        socket.delegate = self
-//        socket.connect()
-//        logger.info("connecting to the airspec server")
-//    }
-//
-//    func handleError(_ error: Error?) {
-//        if let e = error as? WSError {
-//            print("websocket encountered an error: \(e.message)")
-//        } else if let e = error {
-//            print("websocket encountered an error: \(e.localizedDescription)")
-//        } else {
-//            print("websocket encountered an error")
-//        }
-//    }
     
-    
+    /// -- BLE connection
     func startScanning() {
         logger.info("scanning for new peripherals with service") // \(self.serviceUUID)
         centralManager.scanForPeripherals(withServices: nil, options: nil)
@@ -250,11 +222,9 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             logger.info("discovered characteristic \(characteristic.uuid) on \(peripheral.name ?? "unnamed peripheral")")
             peripheral.readValue(for: characteristic) /// Immediately read the characteristic's value.
 
-//            if #available(watchOS 9.0, *) {
             /// Subscribe to the characteristic.
             peripheral.setNotifyValue(true, for: characteristic)
             logger.info("setNotifyValue for \(characteristic.uuid) on \(peripheral.name ?? "unnamed peripheral")")
-//            }
         }
     }
     
@@ -275,38 +245,33 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //        let value = delegate?.didReceiveData(data) ?? -1
         
         if characteristic.uuid == characteristicUUID {
-            // Get bytes into string
+            /// Get bytes into string
             let dataReceived = characteristic.value! as NSData
             let sensorString = dataReceived.base64EncodedString()
             self.glassesData.sensorData = sensorString
-            //            self.sensorData = String(sensorString[40])
+//            self.sensorData = String(sensorString[40])
 //            print(self.glassesData.sensorData)
-            let dateFormatter : DateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-            let date = Date()
-            let dateString = dateFormatter.string(from: date)
-            let newline = "\(dateString),\(String(describing: sensorString))\n"
-            csvText.append(newline)
+//            let dateFormatter : DateFormatter = DateFormatter()
+//            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+//            let date = Date()
+//            let dateString = dateFormatter.string(from: date)
+//            let newline = "\(dateString),\(String(describing: sensorString))\n"
+//            csvText.append(newline)
 //            self.socket.write(string:"Test airspec")
 //            self.socket.write(string:self.glassesData.sensorData)
-            print(self.glassesData.sensorData)
-//            do {
-//                // Create audio player object
-//                try self.socket.write(string:self.glassesData.sensorData)
-//                print(self.glassesData.sensorData)
-//            }
-//            catch {
-//                // Couldn't create audio player object, log the error
-//                print("Socket connection problems")
-//            }
+//            print(self.glassesData.sensorData)
+            
+            do {
+                try satServerClient?.send(Data(self.glassesData.sensorData.utf8))
+                print(self.glassesData.sensorData)
+            } catch {
+                logger.error("TCP connection problems: \(error).")
+                connectedToSatServer = false
+                ///https://stackoverflow.com/questions/59718703/swift-nio-tcp-client-auto-reconnect 
+            }
             
         }
     }
 }
 
-//extension BluetoothReceiver{
-//    func placeholder() -> String{
-//        BluetoothReceiver(service: BluetoothConstants.sampleServiceUUID, characteristic: BluetoothConstants.sampleCharacteristicUUID).sensorData
-//    }
-//}
 
