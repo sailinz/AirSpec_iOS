@@ -7,6 +7,10 @@ A class for connecting to a Bluetooth peripheral and reading its characteristic 
 
 import CoreBluetooth
 import os.log
+import InfluxDBSwift
+import ArgumentParser
+import Foundation
+import InfluxDBSwiftApis
 
 protocol BluetoothReceiverDelegate: AnyObject {
     func didReceiveData(_ message: Data) -> Int
@@ -57,6 +61,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     @Published var connectedToSatServer: Bool = false
     @Published var status: String = ""
     private var satServerClient: NIO_TCP_Client?
+    private var influxClient: InfluxDBClient
+    @Published var temperatureValue: String = ""
     /// -- TCP client to server connection variables end
     
     
@@ -65,6 +71,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         self.glassesData = GlassesData(sensorData: "")
 //        self.backgroundSession = WorkoutDataStore()
 //        self.backgroundSession.startWorkoutSession()
+        self.influxClient = InfluxDBClient(url: NetworkConstants.url, token: NetworkConstants.token)
         super.init()
         self.serviceUUID = service
         self.TXcharacteristicUUID = characteristic
@@ -85,6 +92,41 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             status = "Connected to AirSpec server"
         } catch {
             status = "Unable to connect to AirSpec server"
+        }
+    }
+    
+    /// --- influx query
+    func influxQuery(){
+        let query = """
+                    from(bucket: "airspec")
+                    |> range(start: -1h)
+                    |> filter(fn: (r) => r["_measurement"] == "sht45")
+                    |> filter(fn: (r) => r["_field"] == "signal")
+                    |> filter(fn: (r) => r["id"] == "9067133")
+                    |> filter(fn: (r) => r["type"] == "temperature")
+                    |> aggregateWindow(every: 1h, fn: mean, createEmpty: false)
+                    |> yield(name: "mean")
+        """
+
+        self.influxClient.queryAPI.query(query: query, org: NetworkConstants.org) { [self] response, error in
+          // Error response
+          if let error = error {
+            print("Error:\n\n\(error)")
+          }
+
+          // Success response
+          if let response = response {
+
+            print("\nSuccess response...\n")
+            do {
+              try response.forEach { record in
+                print("\t\(record.values["_field"]!): \(record.values["_value"]!)")
+                  self.temperatureValue = "\(record.values["_value"]!)"
+              }
+            } catch {
+               print("Error:\n\n\(error)")
+            }
+          }
         }
     }
     
@@ -286,6 +328,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 try satServerClient?.send(Data(Data(referencing: dataReceived).hexEncodedString().utf8))
 //                try satServerClient?.send(Data(referencing: dataReceived))
 //                print(self.glassesData.sensorData)
+                influxQuery()
             } catch {
                 logger.error("TCP connection problems: \(error).")
                 connectedToSatServer = false
@@ -309,7 +352,6 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         } catch {
             print("cannot write to the glasses")
         }
-        
     }
 }
 

@@ -8,6 +8,8 @@ import SwiftUI
 
 struct HomeView: View {
     
+    @EnvironmentObject private var receiver: BluetoothReceiver
+    
     var body: some View {
 //        NavigationView{
 //            ZStack{
@@ -30,7 +32,8 @@ struct HomeView: View {
     }
     
     var showDataFromInflux: some View {
-        Text("placeholder")
+        Text(receiver.temperatureValue)
+//
 //        influxClient.run()
     }
 }
