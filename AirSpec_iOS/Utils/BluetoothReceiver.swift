@@ -40,7 +40,9 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     weak var delegate: BluetoothReceiverDelegate? = nil
     var centralManager: CBCentralManager!
     private var serviceUUID: CBUUID!
-    private var characteristicUUID: CBUUID!
+    private var TXcharacteristicUUID: CBUUID!
+//    private var RXcharacteristicUUID: CBUUID!
+    var sendCharacteristic: CBCharacteristic!
     let GLASSNAME = "AirSpec"
     @Published var glassesData: GlassesData
     @Published private(set) var connectedPeripheral: CBPeripheral? = nil
@@ -65,7 +67,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //        self.backgroundSession.startWorkoutSession()
         super.init()
         self.serviceUUID = service
-        self.characteristicUUID = characteristic
+        self.TXcharacteristicUUID = characteristic
         self.centralManager = CBCentralManager(delegate: self, queue: nil)
         self.connectToServer()
         
@@ -99,7 +101,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         return satServerClient?.isConnected != nil
     }
     
-
+    
     
     /// -- BLE connection
     func startScanning() {
@@ -162,7 +164,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         discoveredPeripherals.remove(peripheral)
         connectedPeripheral = peripheral
         knownDisconnectedPeripheral = nil
-        peripheral.discoverServices([BluetoothConstants.sampleServiceUUID])
+        peripheral.discoverServices([BluetoothConstants.airspecServiceUUID])
     }
     
     /// If the app wakes up to handle a background refresh task, the system calls this method if
@@ -194,7 +196,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         }
         
         logger.info("discovered service \(service.uuid) on \(peripheral.name ?? "unnamed peripheral")")
-        peripheral.discoverCharacteristics([characteristicUUID], for: service)
+        peripheral.discoverCharacteristics([TXcharacteristicUUID], for: service)
     }
     
     func peripheral(_ peripheral: CBPeripheral, didModifyServices invalidatedServices: [CBService]) {
@@ -216,16 +218,33 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             delegate?.didFailWithError(.failedToDiscoverCharacteristics)
             return
         }
-
         
-        if let characteristic = characteristics.first(where: { $0.uuid == characteristicUUID }) {
-            logger.info("discovered characteristic \(characteristic.uuid) on \(peripheral.name ?? "unnamed peripheral")")
-            peripheral.readValue(for: characteristic) /// Immediately read the characteristic's value.
+//        if let characteristic = characteristics.first(where: { $0.uuid == TXcharacteristicUUID }) {
+//            logger.info("discovered characteristic \(characteristic.uuid) on \(peripheral.name ?? "unnamed peripheral")")
+//            peripheral.readValue(for: characteristic) /// Immediately read the characteristic's value.
+//
+//            /// Subscribe to the characteristic.
+//            peripheral.setNotifyValue(true, for: characteristic)
+//            logger.info("setNotifyValue for \(characteristic.uuid) on \(peripheral.name ?? "unnamed peripheral")")
+//        }
+        
+        for characteristic in service.characteristics! {
+//            print(characteristic)
+            if characteristic.uuid == BluetoothConstants.airspecTXCharacteristicUUID{
+                    logger.info("discovered characteristic \(characteristic.uuid) on \(peripheral.name ?? "unnamed peripheral")")
+                    peripheral.readValue(for: characteristic) /// Immediately read the characteristic's value.
+                    /// Subscribe to the characteristic.
+                    peripheral.setNotifyValue(true, for: characteristic)
+                    logger.info("setNotifyValue for \(characteristic.uuid) on \(peripheral.name ?? "unnamed peripheral")")
+                 }
 
-            /// Subscribe to the characteristic.
-            peripheral.setNotifyValue(true, for: characteristic)
-            logger.info("setNotifyValue for \(characteristic.uuid) on \(peripheral.name ?? "unnamed peripheral")")
+                if characteristic.uuid == BluetoothConstants.airspecRXCharacteristicUUID{
+                    let thisCharacteristic = characteristic as CBCharacteristic
+                    sendCharacteristic = thisCharacteristic
+                }
+           
         }
+        
     }
     
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
@@ -244,10 +263,11 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         logger.info("\(peripheral.name ?? "unnamed peripheral") did update characteristic: \(data)")
 //        let value = delegate?.didReceiveData(data) ?? -1
         
-        if characteristic.uuid == characteristicUUID {
+        if characteristic.uuid == TXcharacteristicUUID {
             /// Get bytes into string
             let dataReceived = characteristic.value! as NSData
             let sensorString = dataReceived.base64EncodedString()
+            let sensorString2 = dataReceived.base64EncodedData()
             self.glassesData.sensorData = sensorString
 //            self.sensorData = String(sensorString[40])
 //            print(self.glassesData.sensorData)
@@ -262,8 +282,10 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //            print(self.glassesData.sensorData)
             
             do {
-                try satServerClient?.send(Data(self.glassesData.sensorData.utf8))
-                print(self.glassesData.sensorData)
+//                try satServerClient?.send(Data(self.glassesData.sensorData.utf8))
+                try satServerClient?.send(Data(Data(referencing: dataReceived).hexEncodedString().utf8))
+//                try satServerClient?.send(Data(referencing: dataReceived))
+//                print(self.glassesData.sensorData)
             } catch {
                 logger.error("TCP connection problems: \(error).")
                 connectedToSatServer = false
@@ -272,6 +294,30 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             
         }
     }
+    
+    func testLight(){
+        print("Try to set LED light")
+        do {
+            if connectedPeripheral?.state == CBPeripheralState.connected {
+                if let characteristic:CBCharacteristic = sendCharacteristic{
+                    let data: Data = Data("ABCD".utf8) as Data
+                        try connectedPeripheral?.writeValue(data,
+                                            for: characteristic,
+                                            type: CBCharacteristicWriteType.withResponse)
+                }
+            }
+        } catch {
+            print("cannot write to the glasses")
+        }
+        
+    }
 }
 
+
+
+extension Data {
+    func hexEncodedString() -> String {
+        return map { String(format: "%02hhx", $0) }.joined()
+    }
+}
 

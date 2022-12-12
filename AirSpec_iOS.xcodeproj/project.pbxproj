@@ -22,6 +22,9 @@
 		03931B9C2943B9930093515D /* NIOPosix in Frameworks */ = {isa = PBXBuildFile; productRef = 03931B9B2943B9930093515D /* NIOPosix */; };
 		03931B9E2943BAB90093515D /* NetworkConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03931B9D2943BAB90093515D /* NetworkConstants.swift */; };
 		03931BA02943BDB90093515D /* NIO_TCP_Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03931B9F2943BDB90093515D /* NIO_TCP_Client.swift */; };
+		03931BA8294410FD0093515D /* InfluxDBSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 03931BA7294410FD0093515D /* InfluxDBSwift */; };
+		03931BAA294410FD0093515D /* InfluxDBSwiftApis in Frameworks */ = {isa = PBXBuildFile; productRef = 03931BA9294410FD0093515D /* InfluxDBSwiftApis */; };
+		03931BB229463EC10093515D /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = 03931BB129463EC10093515D /* ArgumentParser */; };
 		03F21BBF292AE85D001D4D8E /* AirSpec_iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F21BBE292AE85D001D4D8E /* AirSpec_iOSApp.swift */; };
 		03F21BC1292AE85D001D4D8E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F21BC0292AE85D001D4D8E /* ContentView.swift */; };
 		03F21BC3292AE862001D4D8E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03F21BC2292AE862001D4D8E /* Assets.xcassets */; };
@@ -132,8 +135,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03931BB229463EC10093515D /* ArgumentParser in Frameworks */,
 				03931B9A2943B9930093515D /* NIOFoundationCompat in Frameworks */,
 				03931B9C2943B9930093515D /* NIOPosix in Frameworks */,
+				03931BAA294410FD0093515D /* InfluxDBSwiftApis in Frameworks */,
+				03931BA8294410FD0093515D /* InfluxDBSwift in Frameworks */,
 				03931B982943B9930093515D /* NIOCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -349,6 +355,9 @@
 				03931B972943B9930093515D /* NIOCore */,
 				03931B992943B9930093515D /* NIOFoundationCompat */,
 				03931B9B2943B9930093515D /* NIOPosix */,
+				03931BA7294410FD0093515D /* InfluxDBSwift */,
+				03931BA9294410FD0093515D /* InfluxDBSwiftApis */,
+				03931BB129463EC10093515D /* ArgumentParser */,
 			);
 			productName = AirSpec_iOS;
 			productReference = 03F21BBB292AE85D001D4D8E /* AirSpec_iOS.app */;
@@ -488,6 +497,8 @@
 			mainGroup = 03F21BB2292AE85C001D4D8E;
 			packageReferences = (
 				03931B962943B9930093515D /* XCRemoteSwiftPackageReference "swift-nio" */,
+				03931BA6294410FD0093515D /* XCRemoteSwiftPackageReference "influxdb-client-swift" */,
+				03931BB029463EC10093515D /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
 			);
 			productRefGroup = 03F21BBC292AE85D001D4D8E /* Products */;
 			projectDirPath = "";
@@ -1136,6 +1147,22 @@
 				minimumVersion = 2.0.0;
 			};
 		};
+		03931BA6294410FD0093515D /* XCRemoteSwiftPackageReference "influxdb-client-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/influxdata/influxdb-client-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+		03931BB029463EC10093515D /* XCRemoteSwiftPackageReference "swift-argument-parser" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-argument-parser.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1153,6 +1180,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 03931B962943B9930093515D /* XCRemoteSwiftPackageReference "swift-nio" */;
 			productName = NIOPosix;
+		};
+		03931BA7294410FD0093515D /* InfluxDBSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03931BA6294410FD0093515D /* XCRemoteSwiftPackageReference "influxdb-client-swift" */;
+			productName = InfluxDBSwift;
+		};
+		03931BA9294410FD0093515D /* InfluxDBSwiftApis */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03931BA6294410FD0093515D /* XCRemoteSwiftPackageReference "influxdb-client-swift" */;
+			productName = InfluxDBSwiftApis;
+		};
+		03931BB129463EC10093515D /* ArgumentParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03931BB029463EC10093515D /* XCRemoteSwiftPackageReference "swift-argument-parser" */;
+			productName = ArgumentParser;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

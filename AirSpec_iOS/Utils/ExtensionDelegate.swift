@@ -33,8 +33,8 @@ class ExtensionDelegate: NSObject, UIApplicationDelegate, BluetoothReceiverDeleg
 //        notificationHandler = NotificationHandler()
 
         bluetoothReceiver = BluetoothReceiver(
-            service: BluetoothConstants.sampleServiceUUID,
-            characteristic: BluetoothConstants.sampleCharacteristicUUID
+            service: BluetoothConstants.airspecServiceUUID,
+            characteristic: BluetoothConstants.airspecTXCharacteristicUUID
         )
         bluetoothReceiver.delegate = self
     }

@@ -49,9 +49,14 @@ struct SettingView: View {
 
     
     var body: some View {
+        
         NavigationView{
             ZStack{
                 List {
+                    Button(action: receiver.testLight) {
+                            Label("Test light", systemImage: "lightbulb.led.wide.fill")
+                    }
+                    
                     scanButton.foregroundColor(Color.blue)
                     Section(header: Text("Connected")) {
                         connectedPeripheral
@@ -63,11 +68,13 @@ struct SettingView: View {
                         showData
                     }
                 }
+                
             }
             .navigationTitle("Settings")
         }
     }
     
+
     
     private func toggleScanning() {
         guard receiver.centralManager.state == .poweredOn else {
@@ -82,9 +89,9 @@ struct SettingView: View {
     }
 }
 
-struct SettingView_Previews: PreviewProvider {
-    static var previews: some View {
-        HomeView()
-    }
-}
+//struct SettingView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        SettingView()
+//    }
+//}
 

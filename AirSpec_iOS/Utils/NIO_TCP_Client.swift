@@ -69,6 +69,7 @@ final class NIO_TCP_Client {
     }
     
     func send(_ data: Data) {
+//        self.channel.writeAndFlush(ByteBuffer(data: data), promise: nil)
         self.channel.writeAndFlush(ByteBuffer(data: data), promise: nil)
     }
     

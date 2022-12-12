@@ -7,20 +7,38 @@
 import SwiftUI
 
 struct HomeView: View {
+    
     var body: some View {
+//        NavigationView{
+//            ZStack{
+//                Text("home placeholder")
+//            }
+//            .navigationTitle("Home")
+//        }
+        
         NavigationView{
             ZStack{
-                Text("home placeholder")
+                List {
+                    Section(header: Text("Temperature")){
+                        showDataFromInflux
+                    }
+                }
+                
             }
-            .navigationTitle("Home")
+            .navigationTitle("Settings")
         }
+    }
+    
+    var showDataFromInflux: some View {
+        Text("placeholder")
+//        influxClient.run()
     }
 }
 
-struct HomeView_Previews: PreviewProvider {
-    static var previews: some View {
-        HomeView()
-    }
-}
+//struct HomeView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        HomeView()
+//    }
+//}
 
 
