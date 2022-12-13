@@ -54,7 +54,7 @@ struct SettingView: View {
             ZStack{
                 List {
                     Button(action: receiver.testLight) {
-                            Label("Test light", systemImage: "lightbulb.led.wide.fill")
+                            Label("Test LED", systemImage: "lightbulb.led.wide.fill")
                     }
                     
                     scanButton.foregroundColor(Color.blue)

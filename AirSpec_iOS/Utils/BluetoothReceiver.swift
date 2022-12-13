@@ -47,7 +47,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     private var TXcharacteristicUUID: CBUUID!
 //    private var RXcharacteristicUUID: CBUUID!
     var sendCharacteristic: CBCharacteristic!
-    let GLASSNAME = "AirSpec"
+    let GLASSNAME =  "AirSpec"///"CAPTIVATE"
     @Published var glassesData: GlassesData
     @Published private(set) var connectedPeripheral: CBPeripheral? = nil
     private(set) var knownDisconnectedPeripheral: CBPeripheral? = nil
@@ -98,7 +98,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     /// --- influx query
     func influxQuery(){
         let query = """
-                    from(bucket: "airspec")
+                    from(bucket: "\(NetworkConstants.bucket)")
                     |> range(start: -1h)
                     |> filter(fn: (r) => r["_measurement"] == "sht45")
                     |> filter(fn: (r) => r["_field"] == "signal")
@@ -120,7 +120,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             print("\nSuccess response...\n")
             do {
               try response.forEach { record in
-                print("\t\(record.values["_field"]!): \(record.values["_value"]!)")
+//                  logger.info("\t\(record.values["_field"]!): \(record.values["_value"]!)")
                   self.temperatureValue = "\(record.values["_value"]!)"
               }
             } catch {
@@ -238,7 +238,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         }
         
         logger.info("discovered service \(service.uuid) on \(peripheral.name ?? "unnamed peripheral")")
-        peripheral.discoverCharacteristics([TXcharacteristicUUID], for: service)
+//        peripheral.discoverCharacteristics([TXcharacteristicUUID, ], for: service)
+        peripheral.discoverCharacteristics(nil, for: service)
     }
     
     func peripheral(_ peripheral: CBPeripheral, didModifyServices invalidatedServices: [CBService]) {
@@ -249,17 +250,17 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     }
     
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error? ) {
-        if let error = error {
-            logger.error("error discovering characteristic: \(error.localizedDescription)")
-            delegate?.didFailWithError(.failedToDiscoverCharacteristics)
-            return
-        }
-        
-        guard let characteristics = service.characteristics, !characteristics.isEmpty else {
-            logger.info("no characteristics discovered on \(peripheral.name ?? "unnamed peripheral") for service \(service.description)")
-            delegate?.didFailWithError(.failedToDiscoverCharacteristics)
-            return
-        }
+//        if let error = error {
+//            logger.error("error discovering characteristic: \(error.localizedDescription)")
+//            delegate?.didFailWithError(.failedToDiscoverCharacteristics)
+//            return
+//        }
+//
+//        guard let characteristics = service.characteristics, !characteristics.isEmpty else {
+//            logger.info("no characteristics discovered on \(peripheral.name ?? "unnamed peripheral") for service \(service.description)")
+//            delegate?.didFailWithError(.failedToDiscoverCharacteristics)
+//            return
+//        }
         
 //        if let characteristic = characteristics.first(where: { $0.uuid == TXcharacteristicUUID }) {
 //            logger.info("discovered characteristic \(characteristic.uuid) on \(peripheral.name ?? "unnamed peripheral")")
@@ -269,21 +270,23 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //            peripheral.setNotifyValue(true, for: characteristic)
 //            logger.info("setNotifyValue for \(characteristic.uuid) on \(peripheral.name ?? "unnamed peripheral")")
 //        }
+        logger.info("service UUID: \(service.uuid)")
+        logger.info("total no. of characteristics: \(service.characteristics!.count)")
+        
         
         for characteristic in service.characteristics! {
-//            print(characteristic)
+            logger.info("characteristic:  \(characteristic.uuid)")
             if characteristic.uuid == BluetoothConstants.airspecTXCharacteristicUUID{
-                    logger.info("discovered characteristic \(characteristic.uuid) on \(peripheral.name ?? "unnamed peripheral")")
-                    peripheral.readValue(for: characteristic) /// Immediately read the characteristic's value.
-                    /// Subscribe to the characteristic.
-                    peripheral.setNotifyValue(true, for: characteristic)
-                    logger.info("setNotifyValue for \(characteristic.uuid) on \(peripheral.name ?? "unnamed peripheral")")
-                 }
-
-                if characteristic.uuid == BluetoothConstants.airspecRXCharacteristicUUID{
-                    let thisCharacteristic = characteristic as CBCharacteristic
-                    sendCharacteristic = thisCharacteristic
-                }
+                logger.info("discovered characteristic \(characteristic.uuid) on \(peripheral.name ?? "unnamed peripheral")")
+                peripheral.readValue(for: characteristic) /// Immediately read the characteristic's value.
+                /// Subscribe to the characteristic.
+                peripheral.setNotifyValue(true, for: characteristic)
+                logger.info("setNotifyValue for \(characteristic.uuid) on \(peripheral.name ?? "unnamed peripheral")")
+            } else if (characteristic.uuid == BluetoothConstants.airspecRXCharacteristicUUID) {
+                let thisCharacteristic = characteristic as CBCharacteristic
+                sendCharacteristic = thisCharacteristic
+                logger.info("found write characteristics")
+            }
            
         }
         
@@ -302,7 +305,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             return
         }
         
-        logger.info("\(peripheral.name ?? "unnamed peripheral") did update characteristic: \(data)")
+//        logger.info("\(peripheral.name ?? "unnamed peripheral") did update characteristic: \(data)")
 //        let value = delegate?.didReceiveData(data) ?? -1
         
         if characteristic.uuid == TXcharacteristicUUID {
@@ -328,7 +331,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 try satServerClient?.send(Data(Data(referencing: dataReceived).hexEncodedString().utf8))
 //                try satServerClient?.send(Data(referencing: dataReceived))
 //                print(self.glassesData.sensorData)
-                influxQuery()
+//                influxQuery()
             } catch {
                 logger.error("TCP connection problems: \(error).")
                 connectedToSatServer = false
@@ -338,21 +341,48 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         }
     }
     
-    func testLight(){
-        print("Try to set LED light")
-        do {
-            if connectedPeripheral?.state == CBPeripheralState.connected {
-                if let characteristic:CBCharacteristic = sendCharacteristic{
-                    let data: Data = Data("ABCD".utf8) as Data
-                        try connectedPeripheral?.writeValue(data,
-                                            for: characteristic,
-                                            type: CBCharacteristicWriteType.withResponse)
-                }
-            }
-        } catch {
-            print("cannot write to the glasses")
-        }
+    func testLight() {
+//        let cmdBytes: [UInt8] = [0x55, 0xe1, 0x00, 0x0a]
+        /// https://stackoverflow.com/questions/57985152/how-to-write-a-value-to-characteristc-for-ble-device-in-ios-swift
+        var headerBytes: [UInt8] = [0x01, 0x00, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00]
+//        let headerBytes: [UInt8] = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]
+        
+        /// [packet type byte 0, packet type byte 1, , payload size byte 0, payload size byte 1, unix timestamp, unix timestamp, unix timestamp, unix timestamp] Hex e.g, 18 to be dec and hex is 0x00, 0x12 (we'll see the 0012 as transfered hex value)
+//        let payloadBytes: [UInt8] = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xC8, 0x00, 0x00, 0x00, 0x00, 0xC8, 0x00, 0x00, 0x00, 0x00, 0x00]
+        let payloadBytes: [UInt8] = [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50]
+        let timestamp = Int(Date().timeIntervalSince1970)
+        let timestampArray = withUnsafeBytes(of: timestamp.bigEndian, Array.init)
+        print(timestamp)
+//        print(timestampArray)
+        headerBytes[4] = timestampArray[7]
+        headerBytes[5] = timestampArray[6]
+        headerBytes[6] = timestampArray[5]
+        headerBytes[7] = timestampArray[4]
+        print(headerBytes)
+        /// 18 bytes payload. everyone is up to 255 in decimal -> no need to convert to hex and change the corresponding byte; all 0 is a LED off; 0xFF is fully on
+        let cmd = Data(headerBytes + payloadBytes)
+        connectedPeripheral!.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
     }
+    
+//    func testLight(){
+//
+//        do {
+//            if connectedPeripheral?.state == CBPeripheralState.connected {
+//
+//                if let characteristic:CBCharacteristic = sendCharacteristic{
+//                    let data: Data = Data("0123456789".utf8) as Data
+//                    logger.info("read characteristics \(data)")
+//                    connectedPeripheral!.writeValue(data,
+//                                            for: characteristic,
+//                                            type: CBCharacteristicWriteType.withoutResponse)
+//                    logger.info("read characteristics \(characteristic)")
+//                    print("Try to set LED light")
+//                }
+//            }
+//        } catch {
+//            print("cannot write to the glasses")
+//        }
+//    }
 }
 
 
