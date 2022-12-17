@@ -26,6 +26,10 @@ struct MyDataView: View {
         NavigationView{
             ZStack{
                 Text("my data placeholder")
+//                Rectangle()
+//                    .fill(Gradient(colors: [.black, .indigo]))
+//                    .ignoresSafeArea()
+                
             }
             .navigationTitle("My data")
         }

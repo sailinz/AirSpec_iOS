@@ -67,6 +67,8 @@ struct SettingView: View {
                     Section(header: Text("Datastream")){
                         showData
                     }
+                    
+                    
                 }
                 
             }
