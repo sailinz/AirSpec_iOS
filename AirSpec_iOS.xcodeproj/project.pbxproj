@@ -236,7 +236,7 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
-		038C4DB4292AF8CF00699753 /* Utils */ = {
+		038C4DB4292AF8CF00699753 /* Models */ = {
 			isa = PBXGroup;
 			children = (
 				038C4DBA292AFD4F00699753 /* BluetoothReceiver.swift */,
@@ -246,7 +246,7 @@
 				03931B9F2943BDB90093515D /* NIO_TCP_Client.swift */,
 				034D16E8294D22A0005BE966 /* SensorIconConstants.swift */,
 			);
-			path = Utils;
+			path = Models;
 			sourceTree = "<group>";
 		};
 		038C4DB5292AF8E700699753 /* Data */ = {
@@ -289,7 +289,7 @@
 				034D16D0294A7900005BE966 /* Components */,
 				038C4DC2292B09BC00699753 /* AirSpec-iOS-Info.plist */,
 				038C4DB5292AF8E700699753 /* Data */,
-				038C4DB4292AF8CF00699753 /* Utils */,
+				038C4DB4292AF8CF00699753 /* Models */,
 				038C4DB3292AF8C700699753 /* Views */,
 				03F21BBE292AE85D001D4D8E /* AirSpec_iOSApp.swift */,
 				03F21BC2292AE862001D4D8E /* Assets.xcassets */,
