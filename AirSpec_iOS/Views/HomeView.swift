@@ -22,17 +22,18 @@ struct HomeView: View {
     ]
     
     let influxClient = try InfluxDBClient(url: NetworkConstants.url, token: NetworkConstants.token)
-
+    
     @State private var timer: DispatchSourceTimer?
     
-//    @State var current: Double = 60.0
-//    @State var minValue: Double = 50.0
-//    @State var maxValue: Double = 100.0
-//    @State var color1:Color = Color.blue
-//    @State var color2:Color = Color.white
-//    @State var color3:Color = Color.red
-//    @State var color1Position: Double = 0.1
-//    @State var color3Position: Double = 0.9
+    
+    //    @State var current: Double = 60.0
+    //    @State var minValue: Double = 50.0
+    //    @State var maxValue: Double = 100.0
+    //    @State var color1:Color = Color.blue
+    //    @State var color2:Color = Color.white
+    //    @State var color3:Color = Color.red
+    //    @State var color1Position: Double = 0.1
+    //    @State var color3Position: Double = 0.9
     
     @State private var thermalData = Array(repeating: -1.0, count: SensorIconConstants.sensorThermal.count)
     @State private var airQualityData = Array(repeating: -1.0, count: SensorIconConstants.sensorAirQuality.count)
@@ -48,15 +49,18 @@ struct HomeView: View {
     ///
     
     var body: some View {
-
+        
         NavigationView{
+            
+            
             VStack{
                 //                List {
                 //                    Section(header: Text("Temperature")){
                 ////                        showDataFromInflux
                 //                    }
                 //                }
-                
+                HeartAnimation()
+                    .padding()
                 ScrollView {
                     
                     /// Thermal
@@ -93,9 +97,12 @@ struct HomeView: View {
                                     }
                                 }
                                 .padding()
-//                                    .padding(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 30))
+                                //                                    .padding(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 30))
                                 .background(Color.black.opacity(0.9))
                                 .cornerRadius(15)
+                                .shadow(
+                                    color:Color.black.opacity(0.6),
+                                    radius:5)
                             }
                         }
                         .padding(.horizontal)
@@ -135,9 +142,12 @@ struct HomeView: View {
                                     }
                                 }
                                 .padding()
-//                                    .padding(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 30))
+                                //                                    .padding(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 30))
                                 .background(Color.black.opacity(0.9))
                                 .cornerRadius(15)
+                                .shadow(
+                                    color:Color.black.opacity(0.6),
+                                    radius:5)
                             }
                         }
                         .padding(.horizontal)
@@ -177,9 +187,12 @@ struct HomeView: View {
                                     }
                                 }
                                 .padding()
-//                                    .padding(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 30))
+                                //                                    .padding(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 30))
                                 .background(Color.black.opacity(0.9))
                                 .cornerRadius(15)
+                                .shadow(
+                                    color:Color.black.opacity(0.6),
+                                    radius:5)
                             }
                         }
                         .padding(.horizontal)
@@ -219,9 +232,12 @@ struct HomeView: View {
                                     }
                                 }
                                 .padding()
-//                                    .padding(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 30))
+                                //                                    .padding(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 30))
                                 .background(Color.black.opacity(0.9))
                                 .cornerRadius(15)
+                                .shadow(
+                                    color:Color.black.opacity(0.6),
+                                    radius:5)
                             }
                         }
                         .padding(.horizontal)
@@ -229,7 +245,7 @@ struct HomeView: View {
                 }
             }.navigationTitle("Home")
         }
-
+        
         .onChange(of: scenePhase) { newPhase in
             if newPhase == .active {
                 timer = DispatchSource.makeTimerSource()
@@ -259,8 +275,6 @@ struct HomeView: View {
             timer = nil
         }
     }
-    
-    
 
     /// - get data from influxdb
     func startQueries() {
