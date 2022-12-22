@@ -374,7 +374,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //                    logger.info("read characteristics \(data)")
 //                    connectedPeripheral!.writeValue(data,
 //                                            for: characteristic,
-//                                            type: CBCharacteristicWriteType.withoutResponse)
+//                                         BluetoothReceiver   type: CBCharacteristicWriteType.withoutResponse)
 //                    logger.info("read characteristics \(characteristic)")
 //                    print("Try to set LED light")
 //                }

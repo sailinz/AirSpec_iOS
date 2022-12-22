@@ -12,6 +12,7 @@ import InfluxDBSwiftApis
 import Foundation
 import UIKit
 
+let screenWidth = UIScreen.main.bounds.width
 
 struct HomeView: View {
     @Environment(\.scenePhase) var scenePhase
@@ -41,7 +42,7 @@ struct HomeView: View {
     @State private var acoutsticsData = Array(repeating: -1.0, count: SensorIconConstants.sensorAcoustics.count)
     let skinTempDataName = ["thermopile_nose_bridge","thermopile_nose_tip","thermopile_temple_back","thermopile_temple_front","thermopile_temple_middle"]
     @State private var skinTempData = Array(repeating: -1.0, count: 5)
-    @State var user_id:String = "9067133"
+    var user_id:String = "9067133"
     
     @State private var thermalDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorThermal.count)
     @State private var airQualityDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorAirQuality.count)
@@ -56,12 +57,21 @@ struct HomeView: View {
         NavigationView{
             
             VStack{
-                //                List {
-                //                    Section(header: Text("Temperature")){
-                ////                        showDataFromInflux
-                //                    }
-                //                }
-                
+//                Text("Home")
+//                    .font(
+//                            .custom(
+//                            "SF Pro Display",
+//                            fixedSize: 30)
+//                            .weight(.heavy)
+//                        )
+//                    .frame(maxWidth: .infinity, alignment: .leading)
+//                    .padding()
+//                //                List {
+//                //                    Section(header: Text("Temperature")){
+//                ////                        showDataFromInflux
+//                //                    }
+//                //                }
+//                
                 ZStack{
                     GeometryReader { geometry in
                         ForEach(0..<cogIntensity, id: \.self) { index in
@@ -113,8 +123,8 @@ struct HomeView: View {
                                                 .foregroundColor(Color.white)
                                         }
                                     }
+                                    .frame(minWidth: screenWidth/2 - 50, alignment: .leading)
                                     .padding()
-                                    //                                    .padding(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 30))
                                     .background(Color.black.opacity(0.6))
                                     .cornerRadius(15)
                                     .shadow(
@@ -148,6 +158,7 @@ struct HomeView: View {
                                         
                                         VStack (alignment: .leading) {
                                             Text(SensorIconConstants.sensorAirQuality[i].name)
+                                                .frame(minWidth: 60)
                                                 .foregroundColor(Color.white)
                                                 .scaledToFit()
                                                 .minimumScaleFactor(0.01)
@@ -158,8 +169,8 @@ struct HomeView: View {
                                                 .foregroundColor(Color.white)
                                         }
                                     }
+                                    .frame(minWidth: screenWidth/2 - 50, alignment: .leading)
                                     .padding()
-                                    //                                    .padding(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 30))
                                     .background(Color.black.opacity(0.6))
                                     .cornerRadius(15)
                                     .shadow(
@@ -203,14 +214,15 @@ struct HomeView: View {
                                                 .foregroundColor(Color.white)
                                         }
                                     }
+                                    .frame(minWidth: screenWidth/2 - 50, alignment: .leading)
                                     .padding()
-                                    //                                    .padding(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 30))
                                     .background(Color.black.opacity(0.6))
                                     .cornerRadius(15)
                                     .shadow(
                                         color:Color.black.opacity(0.1),
-                                        radius:1)
+                                        radius: 1)
                                 }
+                                
                             }
                             .padding(.horizontal)
                         }
@@ -247,14 +259,16 @@ struct HomeView: View {
                                                 .font(.system(.title, design: .rounded) .weight(.heavy))
                                                 .foregroundColor(Color.white)
                                         }
+                                        .frame(maxWidth: .infinity, alignment: .leading)
                                     }
+                                    .frame(minWidth: screenWidth/2 - 50, alignment: .leading)
                                     .padding()
-                                    //                                    .padding(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 30))
                                     .background(Color.black.opacity(0.6))
                                     .cornerRadius(15)
                                     .shadow(
                                         color:Color.black.opacity(0.1),
                                         radius:1)
+                                    
                                 }
                             }
                             .padding(.horizontal)
@@ -263,7 +277,8 @@ struct HomeView: View {
                 }
 
                 
-            }.navigationTitle("Home")
+            }
+            .navigationTitle("Home")
         }
         
         .onChange(of: scenePhase) { newPhase in
@@ -449,6 +464,27 @@ struct HomeView_Previews: PreviewProvider {
         HomeView()
     }
 }
+
+//struct HomeView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        let thingToPreview = "9067133"  // ERROR
+//        StatefulPreviewWrapper(thingToPreview) { HomeView(user_id: $0) }
+//    }
+//}
+
+//struct StatefulPreviewWrapper<Value, Content: View>: View {
+//    @State var value: Value
+//    var content: (Binding<Value>) -> Content
+//
+//    var body: some View {
+//        content($value)
+//    }
+//
+//    init(_ value: Value, content: @escaping (Binding<Value>) -> Content) {
+//        self._value = State(wrappedValue: value)
+//        self.content = content
+//    }
+//}
 
 
 
