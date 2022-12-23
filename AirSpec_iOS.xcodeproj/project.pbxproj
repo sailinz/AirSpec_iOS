@@ -46,7 +46,11 @@
 		03BC95F129525FD200AD89BE /* SizeKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC95F029525FD200AD89BE /* SizeKey.swift */; };
 		03BC95F229525FD200AD89BE /* SizeKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC95F029525FD200AD89BE /* SizeKey.swift */; };
 		03BC96012954ADCA00AD89BE /* RRRangeSliderSwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC96002954ADCA00AD89BE /* RRRangeSliderSwiftUI.swift */; };
-		03BC960429550EA300AD89BE /* PieChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC960329550EA300AD89BE /* PieChart.swift */; };
+		03BC960429550EA300AD89BE /* PieChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC960329550EA300AD89BE /* PieChartView.swift */; };
+		03BC961229560E4600AD89BE /* MyDataPlaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC961129560E4600AD89BE /* MyDataPlaceView.swift */; };
+		03BC96142956106700AD89BE /* MyDataTimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC96132956106700AD89BE /* MyDataTimeView.swift */; };
+		03BC96162956507000AD89BE /* testChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC96152956507000AD89BE /* testChart.swift */; };
+		03BC96172956507000AD89BE /* testChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC96152956507000AD89BE /* testChart.swift */; };
 		03F21BBF292AE85D001D4D8E /* AirSpec_iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F21BBE292AE85D001D4D8E /* AirSpec_iOSApp.swift */; };
 		03F21BC1292AE85D001D4D8E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F21BC0292AE85D001D4D8E /* ContentView.swift */; };
 		03F21BC3292AE862001D4D8E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03F21BC2292AE862001D4D8E /* Assets.xcassets */; };
@@ -145,7 +149,10 @@
 		03BC95ED29525FB600AD89BE /* CrookedText+Modifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CrookedText+Modifiers.swift"; sourceTree = "<group>"; };
 		03BC95F029525FD200AD89BE /* SizeKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SizeKey.swift; sourceTree = "<group>"; };
 		03BC96002954ADCA00AD89BE /* RRRangeSliderSwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RRRangeSliderSwiftUI.swift; sourceTree = "<group>"; };
-		03BC960329550EA300AD89BE /* PieChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieChart.swift; sourceTree = "<group>"; };
+		03BC960329550EA300AD89BE /* PieChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieChartView.swift; sourceTree = "<group>"; };
+		03BC961129560E4600AD89BE /* MyDataPlaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyDataPlaceView.swift; sourceTree = "<group>"; };
+		03BC96132956106700AD89BE /* MyDataTimeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyDataTimeView.swift; sourceTree = "<group>"; };
+		03BC96152956507000AD89BE /* testChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = testChart.swift; sourceTree = "<group>"; };
 		03F21BBB292AE85D001D4D8E /* AirSpec_iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AirSpec_iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		03F21BBE292AE85D001D4D8E /* AirSpec_iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirSpec_iOSApp.swift; sourceTree = "<group>"; };
 		03F21BC0292AE85D001D4D8E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -230,7 +237,8 @@
 				034D16E2294CF9A2005BE966 /* LinearGauge.swift */,
 				03BC95C22950D3B300AD89BE /* HeartAnimation.swift */,
 				03BC96002954ADCA00AD89BE /* RRRangeSliderSwiftUI.swift */,
-				03BC960329550EA300AD89BE /* PieChart.swift */,
+				03BC960329550EA300AD89BE /* PieChartView.swift */,
+				03BC96152956507000AD89BE /* testChart.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -260,6 +268,8 @@
 				038C4DB6292AFCBE00699753 /* HomeView.swift */,
 				038C4DB8292AFCF700699753 /* SettingView.swift */,
 				034B0D692942A50500F21CFB /* MyDataView.swift */,
+				03BC961129560E4600AD89BE /* MyDataPlaceView.swift */,
+				03BC96132956106700AD89BE /* MyDataTimeView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -653,14 +663,17 @@
 				038C4DBB292AFD4F00699753 /* BluetoothReceiver.swift in Sources */,
 				038C4DB7292AFCBE00699753 /* HomeView.swift in Sources */,
 				03931B9E2943BAB90093515D /* NetworkConstants.swift in Sources */,
-				03BC960429550EA300AD89BE /* PieChart.swift in Sources */,
+				03BC960429550EA300AD89BE /* PieChartView.swift in Sources */,
 				034D16E9294D22A0005BE966 /* SensorIconConstants.swift in Sources */,
 				038C4DC1292B090E00699753 /* ExtensionDelegate.swift in Sources */,
 				038C4DB9292AFCF700699753 /* SettingView.swift in Sources */,
+				03BC96142956106700AD89BE /* MyDataTimeView.swift in Sources */,
+				03BC961229560E4600AD89BE /* MyDataPlaceView.swift in Sources */,
 				03BC96012954ADCA00AD89BE /* RRRangeSliderSwiftUI.swift in Sources */,
 				03F21BC1292AE85D001D4D8E /* ContentView.swift in Sources */,
 				034D16DE294A7FD7005BE966 /* OpenCircularGauge.swift in Sources */,
 				03BC95E829525F7600AD89BE /* Array+SafeSubscript.swift in Sources */,
+				03BC96162956507000AD89BE /* testChart.swift in Sources */,
 				03BC95E429525EFD00AD89BE /* CrookedText.swift in Sources */,
 				03BC95C32950D3B300AD89BE /* HeartAnimation.swift in Sources */,
 				034D16E3294CF9A2005BE966 /* LinearGauge.swift in Sources */,
@@ -694,6 +707,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03BC96172956507000AD89BE /* testChart.swift in Sources */,
 				038C4DA7292AF28D00699753 /* SensorReadingView.swift in Sources */,
 				034D16E4294CF9A2005BE966 /* LinearGauge.swift in Sources */,
 				038C4DB2292AF61B00699753 /* WatchHomeView.swift in Sources */,
