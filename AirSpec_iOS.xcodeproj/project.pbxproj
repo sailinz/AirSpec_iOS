@@ -51,6 +51,26 @@
 		03BC96142956106700AD89BE /* MyDataTimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC96132956106700AD89BE /* MyDataTimeView.swift */; };
 		03BC96162956507000AD89BE /* testChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC96152956507000AD89BE /* testChart.swift */; };
 		03BC96172956507000AD89BE /* testChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC96152956507000AD89BE /* testChart.swift */; };
+		03BC961A295662E400AD89BE /* HealthData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC9619295662E400AD89BE /* HealthData.swift */; };
+		03BC961B295662E400AD89BE /* HealthData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC9619295662E400AD89BE /* HealthData.swift */; };
+		03BC96242956637800AD89BE /* WineData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC961C2956637700AD89BE /* WineData.swift */; };
+		03BC96252956637800AD89BE /* WineData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC961C2956637700AD89BE /* WineData.swift */; };
+		03BC96262956637800AD89BE /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC961D2956637700AD89BE /* Data.swift */; };
+		03BC96272956637800AD89BE /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC961D2956637700AD89BE /* Data.swift */; };
+		03BC96282956637800AD89BE /* GitHubData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC961E2956637700AD89BE /* GitHubData.swift */; };
+		03BC96292956637800AD89BE /* GitHubData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC961E2956637700AD89BE /* GitHubData.swift */; };
+		03BC962A2956637800AD89BE /* ScreenTimeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC961F2956637800AD89BE /* ScreenTimeData.swift */; };
+		03BC962B2956637800AD89BE /* ScreenTimeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC961F2956637800AD89BE /* ScreenTimeData.swift */; };
+		03BC962C2956637800AD89BE /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC96202956637800AD89BE /* Point.swift */; };
+		03BC962D2956637800AD89BE /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC96202956637800AD89BE /* Point.swift */; };
+		03BC96302956637800AD89BE /* Grid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC96222956637800AD89BE /* Grid.swift */; };
+		03BC96312956637800AD89BE /* Grid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC96222956637800AD89BE /* Grid.swift */; };
+		03BC96322956637800AD89BE /* StockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC96232956637800AD89BE /* StockData.swift */; };
+		03BC96332956637800AD89BE /* StockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC96232956637800AD89BE /* StockData.swift */; };
+		03BC963D2956668B00AD89BE /* InterpolationMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC963C2956668B00AD89BE /* InterpolationMethod.swift */; };
+		03BC963E2956668B00AD89BE /* InterpolationMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC963C2956668B00AD89BE /* InterpolationMethod.swift */; };
+		03BC96402956669800AD89BE /* ChartStrideBy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC963F2956669800AD89BE /* ChartStrideBy.swift */; };
+		03BC96412956669800AD89BE /* ChartStrideBy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC963F2956669800AD89BE /* ChartStrideBy.swift */; };
 		03F21BBF292AE85D001D4D8E /* AirSpec_iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F21BBE292AE85D001D4D8E /* AirSpec_iOSApp.swift */; };
 		03F21BC1292AE85D001D4D8E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F21BC0292AE85D001D4D8E /* ContentView.swift */; };
 		03F21BC3292AE862001D4D8E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03F21BC2292AE862001D4D8E /* Assets.xcassets */; };
@@ -153,6 +173,16 @@
 		03BC961129560E4600AD89BE /* MyDataPlaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyDataPlaceView.swift; sourceTree = "<group>"; };
 		03BC96132956106700AD89BE /* MyDataTimeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyDataTimeView.swift; sourceTree = "<group>"; };
 		03BC96152956507000AD89BE /* testChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = testChart.swift; sourceTree = "<group>"; };
+		03BC9619295662E400AD89BE /* HealthData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthData.swift; sourceTree = "<group>"; };
+		03BC961C2956637700AD89BE /* WineData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WineData.swift; path = "../../../../../../../Downloads/Swift-Charts-Examples-main/Swift Charts Examples/Data/WineData.swift"; sourceTree = "<group>"; };
+		03BC961D2956637700AD89BE /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Data.swift; path = "../../../../../../../Downloads/Swift-Charts-Examples-main/Swift Charts Examples/Data/Data.swift"; sourceTree = "<group>"; };
+		03BC961E2956637700AD89BE /* GitHubData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GitHubData.swift; path = "../../../../../../../Downloads/Swift-Charts-Examples-main/Swift Charts Examples/Data/GitHubData.swift"; sourceTree = "<group>"; };
+		03BC961F2956637800AD89BE /* ScreenTimeData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ScreenTimeData.swift; path = "../../../../../../../Downloads/Swift-Charts-Examples-main/Swift Charts Examples/Data/ScreenTimeData.swift"; sourceTree = "<group>"; };
+		03BC96202956637800AD89BE /* Point.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Point.swift; path = "../../../../../../../Downloads/Swift-Charts-Examples-main/Swift Charts Examples/Data/Point.swift"; sourceTree = "<group>"; };
+		03BC96222956637800AD89BE /* Grid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Grid.swift; path = "../../../../../../../Downloads/Swift-Charts-Examples-main/Swift Charts Examples/Data/Grid.swift"; sourceTree = "<group>"; };
+		03BC96232956637800AD89BE /* StockData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StockData.swift; path = "../../../../../../../Downloads/Swift-Charts-Examples-main/Swift Charts Examples/Data/StockData.swift"; sourceTree = "<group>"; };
+		03BC963C2956668B00AD89BE /* InterpolationMethod.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InterpolationMethod.swift; sourceTree = "<group>"; };
+		03BC963F2956669800AD89BE /* ChartStrideBy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartStrideBy.swift; sourceTree = "<group>"; };
 		03F21BBB292AE85D001D4D8E /* AirSpec_iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AirSpec_iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		03F21BBE292AE85D001D4D8E /* AirSpec_iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirSpec_iOSApp.swift; sourceTree = "<group>"; };
 		03F21BC0292AE85D001D4D8E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -277,6 +307,8 @@
 		038C4DB4292AF8CF00699753 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				03BC963F2956669800AD89BE /* ChartStrideBy.swift */,
+				03BC963C2956668B00AD89BE /* InterpolationMethod.swift */,
 				038C4DBA292AFD4F00699753 /* BluetoothReceiver.swift */,
 				038C4DC0292B090E00699753 /* ExtensionDelegate.swift */,
 				038C4DBC292AFD7900699753 /* BluetoothConstants.swift */,
@@ -290,6 +322,7 @@
 		038C4DB5292AF8E700699753 /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				03BC9618295662CC00AD89BE /* SampleDataForCharts */,
 				038C4DBE292AFD9D00699753 /* GlassesData.swift */,
 			);
 			path = Data;
@@ -314,6 +347,21 @@
 				03BC95F029525FD200AD89BE /* SizeKey.swift */,
 			);
 			path = CrookedText;
+			sourceTree = "<group>";
+		};
+		03BC9618295662CC00AD89BE /* SampleDataForCharts */ = {
+			isa = PBXGroup;
+			children = (
+				03BC961D2956637700AD89BE /* Data.swift */,
+				03BC961E2956637700AD89BE /* GitHubData.swift */,
+				03BC96222956637800AD89BE /* Grid.swift */,
+				03BC96202956637800AD89BE /* Point.swift */,
+				03BC961F2956637800AD89BE /* ScreenTimeData.swift */,
+				03BC96232956637800AD89BE /* StockData.swift */,
+				03BC961C2956637700AD89BE /* WineData.swift */,
+				03BC9619295662E400AD89BE /* HealthData.swift */,
+			);
+			path = SampleDataForCharts;
 			sourceTree = "<group>";
 		};
 		03F21BB2292AE85C001D4D8E = {
@@ -658,6 +706,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03BC962C2956637800AD89BE /* Point.swift in Sources */,
 				03BC95F129525FD200AD89BE /* SizeKey.swift in Sources */,
 				03BC95EE29525FB600AD89BE /* CrookedText+Modifiers.swift in Sources */,
 				038C4DBB292AFD4F00699753 /* BluetoothReceiver.swift in Sources */,
@@ -665,11 +714,18 @@
 				03931B9E2943BAB90093515D /* NetworkConstants.swift in Sources */,
 				03BC960429550EA300AD89BE /* PieChartView.swift in Sources */,
 				034D16E9294D22A0005BE966 /* SensorIconConstants.swift in Sources */,
+				03BC96262956637800AD89BE /* Data.swift in Sources */,
+				03BC96282956637800AD89BE /* GitHubData.swift in Sources */,
+				03BC96402956669800AD89BE /* ChartStrideBy.swift in Sources */,
+				03BC96322956637800AD89BE /* StockData.swift in Sources */,
 				038C4DC1292B090E00699753 /* ExtensionDelegate.swift in Sources */,
 				038C4DB9292AFCF700699753 /* SettingView.swift in Sources */,
+				03BC961A295662E400AD89BE /* HealthData.swift in Sources */,
 				03BC96142956106700AD89BE /* MyDataTimeView.swift in Sources */,
 				03BC961229560E4600AD89BE /* MyDataPlaceView.swift in Sources */,
+				03BC962A2956637800AD89BE /* ScreenTimeData.swift in Sources */,
 				03BC96012954ADCA00AD89BE /* RRRangeSliderSwiftUI.swift in Sources */,
+				03BC96242956637800AD89BE /* WineData.swift in Sources */,
 				03F21BC1292AE85D001D4D8E /* ContentView.swift in Sources */,
 				034D16DE294A7FD7005BE966 /* OpenCircularGauge.swift in Sources */,
 				03BC95E829525F7600AD89BE /* Array+SafeSubscript.swift in Sources */,
@@ -678,6 +734,8 @@
 				03BC95C32950D3B300AD89BE /* HeartAnimation.swift in Sources */,
 				034D16E3294CF9A2005BE966 /* LinearGauge.swift in Sources */,
 				038C4DBF292AFD9D00699753 /* GlassesData.swift in Sources */,
+				03BC963D2956668B00AD89BE /* InterpolationMethod.swift in Sources */,
+				03BC96302956637800AD89BE /* Grid.swift in Sources */,
 				03BC95EB29525F9000AD89BE /* IdentifiableCharacter.swift in Sources */,
 				034B0D6A2942A50500F21CFB /* MyDataView.swift in Sources */,
 				03931BA02943BDB90093515D /* NIO_TCP_Client.swift in Sources */,
@@ -707,20 +765,30 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03BC96412956669800AD89BE /* ChartStrideBy.swift in Sources */,
 				03BC96172956507000AD89BE /* testChart.swift in Sources */,
 				038C4DA7292AF28D00699753 /* SensorReadingView.swift in Sources */,
 				034D16E4294CF9A2005BE966 /* LinearGauge.swift in Sources */,
 				038C4DB2292AF61B00699753 /* WatchHomeView.swift in Sources */,
+				03BC962B2956637800AD89BE /* ScreenTimeData.swift in Sources */,
 				03BC95E929525F7600AD89BE /* Array+SafeSubscript.swift in Sources */,
 				03F21BE9292AE863001D4D8E /* ContentView.swift in Sources */,
 				03BC95EF29525FB600AD89BE /* CrookedText+Modifiers.swift in Sources */,
+				03BC96332956637800AD89BE /* StockData.swift in Sources */,
+				03BC96272956637800AD89BE /* Data.swift in Sources */,
+				03BC96292956637800AD89BE /* GitHubData.swift in Sources */,
+				03BC96252956637800AD89BE /* WineData.swift in Sources */,
+				03BC962D2956637800AD89BE /* Point.swift in Sources */,
 				03BC95F229525FD200AD89BE /* SizeKey.swift in Sources */,
 				038C4DAF292AF41700699753 /* SensorIcons.swift in Sources */,
+				03BC96312956637800AD89BE /* Grid.swift in Sources */,
 				03BC95C42950D3B300AD89BE /* HeartAnimation.swift in Sources */,
 				03BC95EC29525F9000AD89BE /* IdentifiableCharacter.swift in Sources */,
+				03BC961B295662E400AD89BE /* HealthData.swift in Sources */,
 				03F21BE7292AE863001D4D8E /* AirSpec_iOSApp.swift in Sources */,
 				034D16EA294D22A0005BE966 /* SensorIconConstants.swift in Sources */,
 				03BC95E529525EFD00AD89BE /* CrookedText.swift in Sources */,
+				03BC963E2956668B00AD89BE /* InterpolationMethod.swift in Sources */,
 				034D16DF294A7FD7005BE966 /* OpenCircularGauge.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

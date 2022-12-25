@@ -26,7 +26,7 @@ struct MyDataView: View {
     @State private var showMyDataTimeView = false
     var body: some View {
         NavigationView{
-            ZStack{
+            VStack{
                 VStack{
                     HStack{
                         Text("Place")
@@ -62,7 +62,9 @@ struct MyDataView: View {
                         case true:
                             ScrollView{
                                 MyDataTimeView()
+                                    .padding()
                             }
+
                         case false:
                             ScrollView{
                                 MyDataPlaceView()

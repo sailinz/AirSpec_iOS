@@ -17,7 +17,7 @@ let screenWidth = UIScreen.main.bounds.width
 struct HomeView: View {
     @Environment(\.scenePhase) var scenePhase
     @State private var isActive = false
-    let columns = [
+    private let columns = [
         GridItem(.flexible()),
         GridItem(.flexible()),
     ]
