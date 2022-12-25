@@ -11,8 +11,9 @@ import ArgumentParser
 import InfluxDBSwiftApis
 import Foundation
 import UIKit
+import WatchKit
 
-let screenWidth = UIScreen.main.bounds.width
+let screenWidth = WKInterfaceDevice.current().screenBounds.size.width
 
 struct WatchHomeView: View {
     @Environment(\.scenePhase) var scenePhase
@@ -451,7 +452,7 @@ extension Color {
 
 struct WatchHomeView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView()
+        WatchHomeView()
     }
 }
 

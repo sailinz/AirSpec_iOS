@@ -15,6 +15,12 @@
 		034D16E9294D22A0005BE966 /* SensorIconConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D16E8294D22A0005BE966 /* SensorIconConstants.swift */; };
 		034D16EA294D22A0005BE966 /* SensorIconConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D16E8294D22A0005BE966 /* SensorIconConstants.swift */; };
 		038AA9152957ED870086EC1B /* NetworkConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03931B9D2943BAB90093515D /* NetworkConstants.swift */; };
+		038AA923295802B50086EC1B /* InfluxDBSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 038AA922295802B50086EC1B /* InfluxDBSwift */; };
+		038AA925295802B50086EC1B /* InfluxDBSwiftApis in Frameworks */ = {isa = PBXBuildFile; productRef = 038AA924295802B50086EC1B /* InfluxDBSwiftApis */; };
+		038AA92E2958058C0086EC1B /* InfluxDBSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 038AA92D2958058C0086EC1B /* InfluxDBSwift */; };
+		038AA9302958058C0086EC1B /* InfluxDBSwiftApis in Frameworks */ = {isa = PBXBuildFile; productRef = 038AA92F2958058C0086EC1B /* InfluxDBSwiftApis */; };
+		038AA93329580AAC0086EC1B /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = 038AA93229580AAC0086EC1B /* ArgumentParser */; };
+		038AA93729580AC60086EC1B /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = 038AA93629580AC60086EC1B /* ArgumentParser */; };
 		038C4DA7292AF28D00699753 /* SensorReadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C4DA6292AF28D00699753 /* SensorReadingView.swift */; };
 		038C4DAF292AF41700699753 /* SensorIcons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C4DAE292AF41700699753 /* SensorIcons.swift */; };
 		038C4DB2292AF61B00699753 /* WatchHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C4DB1292AF61B00699753 /* WatchHomeView.swift */; };
@@ -29,9 +35,6 @@
 		03931B9C2943B9930093515D /* NIOPosix in Frameworks */ = {isa = PBXBuildFile; productRef = 03931B9B2943B9930093515D /* NIOPosix */; };
 		03931B9E2943BAB90093515D /* NetworkConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03931B9D2943BAB90093515D /* NetworkConstants.swift */; };
 		03931BA02943BDB90093515D /* NIO_TCP_Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03931B9F2943BDB90093515D /* NIO_TCP_Client.swift */; };
-		03931BA8294410FD0093515D /* InfluxDBSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 03931BA7294410FD0093515D /* InfluxDBSwift */; };
-		03931BAA294410FD0093515D /* InfluxDBSwiftApis in Frameworks */ = {isa = PBXBuildFile; productRef = 03931BA9294410FD0093515D /* InfluxDBSwiftApis */; };
-		03931BB229463EC10093515D /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = 03931BB129463EC10093515D /* ArgumentParser */; };
 		03BC95C32950D3B300AD89BE /* HeartAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC95C22950D3B300AD89BE /* HeartAnimation.swift */; };
 		03BC95C42950D3B300AD89BE /* HeartAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC95C22950D3B300AD89BE /* HeartAnimation.swift */; };
 		03BC95CA2951075F00AD89BE /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03BC95C92951075F00AD89BE /* HealthKit.framework */; };
@@ -211,13 +214,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				03931BB229463EC10093515D /* ArgumentParser in Frameworks */,
 				03931B9A2943B9930093515D /* NIOFoundationCompat in Frameworks */,
 				03931B9C2943B9930093515D /* NIOPosix in Frameworks */,
-				03931BAA294410FD0093515D /* InfluxDBSwiftApis in Frameworks */,
+				038AA93329580AAC0086EC1B /* ArgumentParser in Frameworks */,
 				03BC95CA2951075F00AD89BE /* HealthKit.framework in Frameworks */,
-				03931BA8294410FD0093515D /* InfluxDBSwift in Frameworks */,
+				038AA92E2958058C0086EC1B /* InfluxDBSwift in Frameworks */,
 				03931B982943B9930093515D /* NIOCore in Frameworks */,
+				038AA9302958058C0086EC1B /* InfluxDBSwiftApis in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -239,6 +242,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				038AA923295802B50086EC1B /* InfluxDBSwift in Frameworks */,
+				038AA925295802B50086EC1B /* InfluxDBSwiftApis in Frameworks */,
+				038AA93729580AC60086EC1B /* ArgumentParser in Frameworks */,
 				03BC95CC2951078900AD89BE /* HealthKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -494,9 +500,9 @@
 				03931B972943B9930093515D /* NIOCore */,
 				03931B992943B9930093515D /* NIOFoundationCompat */,
 				03931B9B2943B9930093515D /* NIOPosix */,
-				03931BA7294410FD0093515D /* InfluxDBSwift */,
-				03931BA9294410FD0093515D /* InfluxDBSwiftApis */,
-				03931BB129463EC10093515D /* ArgumentParser */,
+				038AA92D2958058C0086EC1B /* InfluxDBSwift */,
+				038AA92F2958058C0086EC1B /* InfluxDBSwiftApis */,
+				038AA93229580AAC0086EC1B /* ArgumentParser */,
 			);
 			productName = AirSpec_iOS;
 			productReference = 03F21BBB292AE85D001D4D8E /* AirSpec_iOS.app */;
@@ -551,6 +557,11 @@
 			dependencies = (
 			);
 			name = "AirSpec_iOS Watch App";
+			packageProductDependencies = (
+				038AA922295802B50086EC1B /* InfluxDBSwift */,
+				038AA924295802B50086EC1B /* InfluxDBSwiftApis */,
+				038AA93629580AC60086EC1B /* ArgumentParser */,
+			);
 			productName = "AirSpec_iOS Watch App";
 			productReference = 03F21BE1292AE863001D4D8E /* AirSpec_iOS Watch App.app */;
 			productType = "com.apple.product-type.application";
@@ -636,8 +647,8 @@
 			mainGroup = 03F21BB2292AE85C001D4D8E;
 			packageReferences = (
 				03931B962943B9930093515D /* XCRemoteSwiftPackageReference "swift-nio" */,
-				03931BA6294410FD0093515D /* XCRemoteSwiftPackageReference "influxdb-client-swift" */,
-				03931BB029463EC10093515D /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
+				038AA921295802B50086EC1B /* XCRemoteSwiftPackageReference "influxdb-client-swift" */,
+				038AA93129580AAC0086EC1B /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
 			);
 			productRefGroup = 03F21BBC292AE85D001D4D8E /* Products */;
 			projectDirPath = "";
@@ -1335,6 +1346,22 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		038AA921295802B50086EC1B /* XCRemoteSwiftPackageReference "influxdb-client-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/influxdata/influxdb-client-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+		038AA93129580AAC0086EC1B /* XCRemoteSwiftPackageReference "swift-argument-parser" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-argument-parser.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		03931B962943B9930093515D /* XCRemoteSwiftPackageReference "swift-nio" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-nio.git";
@@ -1343,25 +1370,39 @@
 				minimumVersion = 2.0.0;
 			};
 		};
-		03931BA6294410FD0093515D /* XCRemoteSwiftPackageReference "influxdb-client-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/influxdata/influxdb-client-swift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
-		03931BB029463EC10093515D /* XCRemoteSwiftPackageReference "swift-argument-parser" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-argument-parser.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		038AA922295802B50086EC1B /* InfluxDBSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 038AA921295802B50086EC1B /* XCRemoteSwiftPackageReference "influxdb-client-swift" */;
+			productName = InfluxDBSwift;
+		};
+		038AA924295802B50086EC1B /* InfluxDBSwiftApis */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 038AA921295802B50086EC1B /* XCRemoteSwiftPackageReference "influxdb-client-swift" */;
+			productName = InfluxDBSwiftApis;
+		};
+		038AA92D2958058C0086EC1B /* InfluxDBSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 038AA921295802B50086EC1B /* XCRemoteSwiftPackageReference "influxdb-client-swift" */;
+			productName = InfluxDBSwift;
+		};
+		038AA92F2958058C0086EC1B /* InfluxDBSwiftApis */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 038AA921295802B50086EC1B /* XCRemoteSwiftPackageReference "influxdb-client-swift" */;
+			productName = InfluxDBSwiftApis;
+		};
+		038AA93229580AAC0086EC1B /* ArgumentParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 038AA93129580AAC0086EC1B /* XCRemoteSwiftPackageReference "swift-argument-parser" */;
+			productName = ArgumentParser;
+		};
+		038AA93629580AC60086EC1B /* ArgumentParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 038AA93129580AAC0086EC1B /* XCRemoteSwiftPackageReference "swift-argument-parser" */;
+			productName = ArgumentParser;
+		};
 		03931B972943B9930093515D /* NIOCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 03931B962943B9930093515D /* XCRemoteSwiftPackageReference "swift-nio" */;
@@ -1376,21 +1417,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 03931B962943B9930093515D /* XCRemoteSwiftPackageReference "swift-nio" */;
 			productName = NIOPosix;
-		};
-		03931BA7294410FD0093515D /* InfluxDBSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 03931BA6294410FD0093515D /* XCRemoteSwiftPackageReference "influxdb-client-swift" */;
-			productName = InfluxDBSwift;
-		};
-		03931BA9294410FD0093515D /* InfluxDBSwiftApis */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 03931BA6294410FD0093515D /* XCRemoteSwiftPackageReference "influxdb-client-swift" */;
-			productName = InfluxDBSwiftApis;
-		};
-		03931BB129463EC10093515D /* ArgumentParser */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 03931BB029463EC10093515D /* XCRemoteSwiftPackageReference "swift-argument-parser" */;
-			productName = ArgumentParser;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
