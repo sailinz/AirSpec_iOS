@@ -14,6 +14,7 @@
 		034D16E4294CF9A2005BE966 /* LinearGauge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D16E2294CF9A2005BE966 /* LinearGauge.swift */; };
 		034D16E9294D22A0005BE966 /* SensorIconConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D16E8294D22A0005BE966 /* SensorIconConstants.swift */; };
 		034D16EA294D22A0005BE966 /* SensorIconConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D16E8294D22A0005BE966 /* SensorIconConstants.swift */; };
+		038AA9152957ED870086EC1B /* NetworkConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03931B9D2943BAB90093515D /* NetworkConstants.swift */; };
 		038C4DA7292AF28D00699753 /* SensorReadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C4DA6292AF28D00699753 /* SensorReadingView.swift */; };
 		038C4DAF292AF41700699753 /* SensorIcons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C4DAE292AF41700699753 /* SensorIcons.swift */; };
 		038C4DB2292AF61B00699753 /* WatchHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038C4DB1292AF61B00699753 /* WatchHomeView.swift */; };
@@ -765,6 +766,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				038AA9152957ED870086EC1B /* NetworkConstants.swift in Sources */,
 				03BC96412956669800AD89BE /* ChartStrideBy.swift in Sources */,
 				03BC96172956507000AD89BE /* testChart.swift in Sources */,
 				038C4DA7292AF28D00699753 /* SensorReadingView.swift in Sources */,

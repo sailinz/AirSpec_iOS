@@ -12,7 +12,8 @@ struct ContentView: View {
     @UIApplicationDelegateAdaptor var delegate: ExtensionDelegate
     var body: some View {
         TabView{
-            HomeView().environmentObject(delegate.bluetoothReceiver)
+//            HomeView().environmentObject(delegate.bluetoothReceiver)
+            HomeView()
                 .tabItem{
                     Label("Home", systemImage: "heart.circle.fill")
                 }

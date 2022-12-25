@@ -11,7 +11,7 @@ import CoreBluetooth
 
 struct ContentView: View {
     var body: some View {
-        WatchHome()
+        WatchHomeView()
 //        SensorReadingView()
     }
 }
