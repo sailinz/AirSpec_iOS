@@ -30,7 +30,7 @@ struct AirQualityView: View {
     
     var body: some View {
         VStack (alignment: .leading) {
-            Text("AirQuality")
+            Text("Air quality")
                 .font(.system(.caption2) .weight(.heavy))
                 .padding()
                 ScrollView {
