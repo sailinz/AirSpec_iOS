@@ -3,7 +3,8 @@ AirSpec iOS and associated watchOS app
 
 ## WatchOS app
 Tap the 4 IEQ dimensions to detailed data. 
-<img src="https://user-images.githubusercontent.com/16971026/209494202-c62fe84b-0d80-4a15-9c0b-0f169e721942.gif" width="100">
+
+<img src="https://user-images.githubusercontent.com/16971026/209494202-c62fe84b-0d80-4a15-9c0b-0f169e721942.gif" width="150">
 
 
 ## iOS app
