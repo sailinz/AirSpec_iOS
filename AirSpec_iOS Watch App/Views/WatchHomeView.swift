@@ -24,26 +24,37 @@ struct WatchHomeView: View {
     @State private var skinTempData = Array(repeating: -1.0, count: 5)
     var user_id:String = "9067133"
     
-    @State private var cogIntensity = 1 /// must scale to a int
+    @State private var cogIntensity = 10 /// must scale to a int
     let updateFrequence = 10 /// seconds
     ///
     
     var body: some View {
-        VStack{
-            ZStack{
-                GeometryReader { geometry in
-                    ForEach(0..<cogIntensity, id: \.self) { index in
-                        Image("Asset " + String(Int.random(in: 1...18)))
-                            .scaleEffect(0.5)
-                            .offset(x: self.randomX(geometry: geometry), y: self.randomY(geometry: geometry))
-                            .shadow(
-                                color:Color.pink.opacity(0.5),
-                                radius:4)
-                    }
+        ZStack{
+            HeartAnimation()
+            
+//            GeometryReader { geometry in
+//                Image("Asset 3" )
+//                    .scaleEffect(0.5)
+//                    .offset(x:geometry.size.width-40, y:geometry.size.height)
+//            }
+            
+                
+            GeometryReader { geometry in
+                ForEach(0..<cogIntensity, id: \.self) { index in
+                    let seed = Bool.random()
+                    Image("Asset " + String(Int.random(in: 1...18)))
+                        .scaleEffect(0.2)
+                        .offset(x: self.randomPosition(geometry: geometry, seed: seed).x, y: self.randomPosition(geometry: geometry, seed: seed).y)
+                        .shadow(
+                            color:Color.pink.opacity(0.5),
+                            radius:4)
                 }
-                HeartAnimation()
             }
+            
         }
+        
+
+//        .blendMode(.darken)
         
         .onChange(of: scenePhase) { newPhase in
             if newPhase == .active {
@@ -75,21 +86,58 @@ struct WatchHomeView: View {
         }
     }
     
+    func randomPosition(geometry: GeometryProxy, seed: Bool) -> (x: CGFloat, y:CGFloat){
+        let randomRangeX: CGFloat
+        if Bool.random() {
+            randomRangeX = -20
+        } else {
+            randomRangeX = geometry.size.width - 30.0
+        }
+        
+        let randomRangeY: CGFloat
+        if Bool.random() {
+            randomRangeY = -20
+        } else {
+            randomRangeY = geometry.size.height
+        }
+        
+        
+        if seed {
+            return (CGFloat.random(in: (0+randomRangeX)...(10+randomRangeX)),CGFloat.random(in: 0...geometry.size.height) )
+        }else{
+            return (CGFloat.random(in: 0...geometry.size.width), CGFloat.random(in: (0+randomRangeY)...(5+randomRangeY)))
+        }
+    }
     /// to render the cog load
     func randomX(geometry: GeometryProxy) -> CGFloat {
         // Generate a random x coordinate within the bounds of the view
-        return CGFloat.random(in: 0...geometry.size.width)
+        let randomRange: CGFloat
+        if Bool.random() {
+            randomRange = -20
+        } else {
+            randomRange = geometry.size.width - 30.0
+        }
+        return CGFloat.random(in: (0+randomRange)...(10+randomRange))
     }
-    
+
     func randomY(geometry: GeometryProxy) -> CGFloat {
         // Generate a random y coordinate within the bounds of the view
+//        let randomRange: CGFloat
+//        if Bool.random() {
+//            randomRange = 0.0
+//        } else {
+//            randomRange = geometry.size.height
+//        }
+//        return CGFloat.random(in: (0+randomRange)...(15+randomRange))
         return CGFloat.random(in: 0...geometry.size.height)
+
     }
+    
 
     /// - get data from influxdb
     func startQueries() {
         DispatchQueue.global().async {
-            var query_cog = """
+            let query_cog = """
                             from(bucket: "\(NetworkConstants.bucket)")
                             |> range(start: -2m)
                             |> filter(fn: (r) => r["_measurement"] == "thermopile_nose_tip"

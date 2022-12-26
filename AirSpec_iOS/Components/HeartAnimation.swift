@@ -151,7 +151,7 @@ struct HeartAnimation: View {
                             fetchLatestHeartRate()
                         }
                 }
-                .scaleEffect(animate ? 0.7:0.6)
+                .scaleEffect(animate ? 0.6:0.5)
                 .offset(y:-15)
                 .shadow(
                     color:animate ? Color.red.opacity(0.7) : Color.pink.opacity(0.7),
@@ -163,7 +163,7 @@ struct HeartAnimation: View {
                 .onAppear{
                     autorizeHealthKit()
                     addAnimation()
-            }
+                }
             
             }
         #endif
