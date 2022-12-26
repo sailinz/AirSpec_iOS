@@ -13,263 +13,36 @@ import Foundation
 import UIKit
 import WatchKit
 
-let screenWidth = WKInterfaceDevice.current().screenBounds.size.width
-
 struct WatchHomeView: View {
     @Environment(\.scenePhase) var scenePhase
-    @State private var isActive = false
-    private let columns = [
-        GridItem(.flexible()),
-        GridItem(.flexible()),
-    ]
+//    @State private var isActive = false
     
     let influxClient = try InfluxDBClient(url: NetworkConstants.url, token: NetworkConstants.token)
     
     @State private var timer: DispatchSourceTimer?
-    
-    @State private var thermalData = Array(repeating: -1.0, count: SensorIconConstants.sensorThermal.count)
-    @State private var airQualityData = Array(repeating: -1.0, count: SensorIconConstants.sensorAirQuality.count)
-    @State private var visualData = Array(repeating: -1.0, count: SensorIconConstants.sensorVisual.count)
-    @State private var acoutsticsData = Array(repeating: -1.0, count: SensorIconConstants.sensorAcoustics.count)
     let skinTempDataName = ["thermopile_nose_bridge","thermopile_nose_tip","thermopile_temple_back","thermopile_temple_front","thermopile_temple_middle"]
     @State private var skinTempData = Array(repeating: -1.0, count: 5)
     var user_id:String = "9067133"
     
-    @State private var thermalDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorThermal.count)
-    @State private var airQualityDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorAirQuality.count)
-    @State private var visualDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorVisual.count)
-    @State private var acoutsticsDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorAcoustics.count)
     @State private var cogIntensity = 1 /// must scale to a int
     let updateFrequence = 10 /// seconds
     ///
     
     var body: some View {
-        
-        NavigationView{
-            
-            VStack{
-//                Text("Home")
-//                    .font(
-//                            .custom(
-//                            "SF Pro Display",
-//                            fixedSize: 30)
-//                            .weight(.heavy)
-//                        )
-//                    .frame(maxWidth: .infinity, alignment: .leading)
-//                    .padding()
-//                //                List {
-//                //                    Section(header: Text("Temperature")){
-//                ////                        showDataFromInflux
-//                //                    }
-//                //                }
-//
-                ZStack{
-                    GeometryReader { geometry in
-                        ForEach(0..<cogIntensity, id: \.self) { index in
-                            Image("Asset " + String(Int.random(in: 1...18)))
-                                .offset(x: self.randomX(geometry: geometry), y: self.randomY(geometry: geometry))
-                                .shadow(
-                                    color:Color.pink.opacity(0.5),
-                                    radius:4)
-                        }
-                    }
-                    
-                    ScrollView {
-
-            //            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        
-                        HeartAnimation()
-                            .padding(.all, 80)
-                        
-                        /// Thermal
-                        VStack (alignment: .leading) {
-                            Text("Thermal")
-                                .font(.system(.title2) .weight(.heavy))
-                                .padding()
-                            LazyVGrid(columns: columns, spacing: 5) {
-                                ForEach(0..<SensorIconConstants.sensorThermal.count){i in
-                                    HStack{
-                                        OpenCircularGauge(
-                                            current: thermalData[i],
-                                            minValue: SensorIconConstants.sensorThermal[i].minValue,
-                                            maxValue: SensorIconConstants.sensorThermal[i].maxValue,
-                                            color1: SensorIconConstants.sensorThermal[i].color1,
-                                            color2: SensorIconConstants.sensorThermal[i].color2,
-                                            color3: SensorIconConstants.sensorThermal[i].color3,
-                                            color1Position: SensorIconConstants.sensorThermal[i].color1Position,
-                                            color3Position: SensorIconConstants.sensorThermal[i].color3Position,
-                                            valueTrend: thermalDataTrend[i],
-                                            icon: SensorIconConstants.sensorThermal[i].icon){
-                                            }
-                                        
-                                        VStack (alignment: .leading) {
-                                            Text(SensorIconConstants.sensorThermal[i].name)
-                                                .foregroundColor(Color.white)
-                                                .scaledToFit()
-                                                .minimumScaleFactor(0.01)
-                                                .lineLimit(1)
-                                            Spacer()
-                                            Text("\(Int(thermalData[i]))")
-                                                .font(.system(.title, design: .rounded) .weight(.heavy))
-                                                .foregroundColor(Color.white)
-                                        }
-                                    }
-                                    .frame(minWidth: screenWidth/2 - 50, alignment: .leading)
-                                    .padding()
-                                    .background(Color.black.opacity(0.6))
-                                    .cornerRadius(15)
-                                    .shadow(
-                                        color:Color.black.opacity(0.1),
-                                        radius: 1)
-                                }
-                            }
-                            .padding(.horizontal)
-                        }
-                        
-                        VStack (alignment: .leading) {
-                            Text("Air quality")
-                                .font(.system(.title2) .weight(.heavy))
-                                .padding()
-                            LazyVGrid(columns: columns, spacing: 5) {
-                                ForEach(0..<SensorIconConstants.sensorAirQuality.count){i in
-                                    let dummyValue = Double.random(in: 50.0 ..< 80.0)
-                                    HStack{
-                                        OpenCircularGauge(
-                                            current: airQualityData[i],
-                                            minValue: SensorIconConstants.sensorAirQuality[i].minValue,
-                                            maxValue: SensorIconConstants.sensorAirQuality[i].maxValue,
-                                            color1: SensorIconConstants.sensorAirQuality[i].color1,
-                                            color2: SensorIconConstants.sensorAirQuality[i].color2,
-                                            color3: SensorIconConstants.sensorAirQuality[i].color3,
-                                            color1Position: SensorIconConstants.sensorAirQuality[i].color1Position,
-                                            color3Position: SensorIconConstants.sensorAirQuality[i].color3Position,
-                                            valueTrend: airQualityDataTrend[i],
-                                            icon: SensorIconConstants.sensorAirQuality[i].icon){
-                                            }
-                                        
-                                        VStack (alignment: .leading) {
-                                            Text(SensorIconConstants.sensorAirQuality[i].name)
-                                                .frame(minWidth: 60)
-                                                .foregroundColor(Color.white)
-                                                .scaledToFit()
-                                                .minimumScaleFactor(0.01)
-                                                .lineLimit(1)
-                                            Spacer()
-                                            Text("\(Int(airQualityData[i]))")
-                                                .font(.system(.title, design: .rounded) .weight(.heavy))
-                                                .foregroundColor(Color.white)
-                                        }
-                                    }
-                                    .frame(minWidth: screenWidth/2 - 50, alignment: .leading)
-                                    .padding()
-                                    .background(Color.black.opacity(0.6))
-                                    .cornerRadius(15)
-                                    .shadow(
-                                        color:Color.black.opacity(0.1),
-                                        radius:1)
-                                }
-                            }
-                            .padding(.horizontal)
-                        }
-                        
-                        VStack (alignment: .leading) {
-                            Text("Lighting")
-                                .font(.system(.title2) .weight(.heavy))
-                                .padding()
-                            LazyVGrid(columns: columns, spacing: 5) {
-                                ForEach(0..<SensorIconConstants.sensorVisual.count){i in
-                                    let dummyValue = Double.random(in: 50.0 ..< 80.0)
-                                    HStack{
-                                        OpenCircularGauge(
-                                            current: visualData[i],
-                                            minValue: SensorIconConstants.sensorVisual[i].minValue,
-                                            maxValue: SensorIconConstants.sensorVisual[i].maxValue,
-                                            color1: SensorIconConstants.sensorVisual[i].color1,
-                                            color2: SensorIconConstants.sensorVisual[i].color2,
-                                            color3: SensorIconConstants.sensorVisual[i].color3,
-                                            color1Position: SensorIconConstants.sensorVisual[i].color1Position,
-                                            color3Position: SensorIconConstants.sensorVisual[i].color3Position,
-                                            valueTrend: visualDataTrend[i],
-                                            icon: SensorIconConstants.sensorVisual[i].icon){
-                                            }
-                                        
-                                        VStack (alignment: .leading) {
-                                            Text(SensorIconConstants.sensorVisual[i].name)
-                                                .foregroundColor(Color.white)
-                                                .scaledToFit()
-                                                .minimumScaleFactor(0.01)
-                                                .lineLimit(1)
-                                            Spacer()
-                                            Text("\(Int(visualData[i]))")
-                                                .font(.system(.title, design: .rounded) .weight(.heavy))
-                                                .foregroundColor(Color.white)
-                                        }
-                                    }
-                                    .frame(minWidth: screenWidth/2 - 50, alignment: .leading)
-                                    .padding()
-                                    .background(Color.black.opacity(0.6))
-                                    .cornerRadius(15)
-                                    .shadow(
-                                        color:Color.black.opacity(0.1),
-                                        radius: 1)
-                                }
-                                
-                            }
-                            .padding(.horizontal)
-                        }
-                        
-                        VStack (alignment: .leading) {
-                            Text("Noise")
-                                .font(.system(.title2) .weight(.heavy))
-                                .padding()
-                            LazyVGrid(columns: columns, spacing: 5) {
-                                ForEach(0..<SensorIconConstants.sensorAcoustics.count){i in
-                                    let dummyValue = Double.random(in: 50.0 ..< 80.0)
-                                    HStack{
-                                        OpenCircularGauge(
-                                            current: dummyValue,
-                                            minValue: SensorIconConstants.sensorAcoustics[i].minValue,
-                                            maxValue: SensorIconConstants.sensorAcoustics[i].maxValue,
-                                            color1: SensorIconConstants.sensorAcoustics[i].color1,
-                                            color2: SensorIconConstants.sensorAcoustics[i].color2,
-                                            color3: SensorIconConstants.sensorAcoustics[i].color3,
-                                            color1Position: SensorIconConstants.sensorAcoustics[i].color1Position,
-                                            color3Position: SensorIconConstants.sensorAcoustics[i].color3Position,
-                                            valueTrend: 0,
-                                            icon: SensorIconConstants.sensorAcoustics[i].icon){
-                                            }
-                                        
-                                        VStack (alignment: .leading) {
-                                            Text(SensorIconConstants.sensorAcoustics[i].name)
-                                                .foregroundColor(Color.white)
-                                                .scaledToFit()
-                                                .minimumScaleFactor(0.01)
-                                                .lineLimit(1)
-                                            Spacer()
-                                            Text("\(Int(dummyValue))")
-                                                .font(.system(.title, design: .rounded) .weight(.heavy))
-                                                .foregroundColor(Color.white)
-                                        }
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                    }
-                                    .frame(minWidth: screenWidth/2 - 50, alignment: .leading)
-                                    .padding()
-                                    .background(Color.black.opacity(0.6))
-                                    .cornerRadius(15)
-                                    .shadow(
-                                        color:Color.black.opacity(0.1),
-                                        radius:1)
-                                    
-                                }
-                            }
-                            .padding(.horizontal)
-                        }
+        VStack{
+            ZStack{
+                GeometryReader { geometry in
+                    ForEach(0..<cogIntensity, id: \.self) { index in
+                        Image("Asset " + String(Int.random(in: 1...18)))
+                            .scaleEffect(0.5)
+                            .offset(x: self.randomX(geometry: geometry), y: self.randomY(geometry: geometry))
+                            .shadow(
+                                color:Color.pink.opacity(0.5),
+                                radius:4)
                     }
                 }
-
-                
+                HeartAnimation()
             }
-            .navigationTitle("Home")
         }
         
         .onChange(of: scenePhase) { newPhase in
@@ -315,82 +88,6 @@ struct WatchHomeView: View {
 
     /// - get data from influxdb
     func startQueries() {
-        let sensorList = [SensorIconConstants.sensorThermal,SensorIconConstants.sensorAirQuality, SensorIconConstants.sensorVisual]
-//        var dataList = [thermalData, airQualityData, visualData]
-        
-        /// environmental sensing
-        DispatchQueue.global().async {
-            for i in 0..<sensorList.count{
-                for j in 0..<sensorList[i].count{
-                    var query = """
-                                """
-
-                    
-                    if(i == 2){ ///lux has no type
-                        query = """
-                                        from(bucket: "\(NetworkConstants.bucket)")
-                                        |> range(start: -2m)
-                                        |> filter(fn: (r) => r["_measurement"] == "\(sensorList[i][j].measurement)")
-                                        |> filter(fn: (r) => r["_field"] == "signal")
-                                        |> filter(fn: (r) => r["id"] == "\(user_id)")
-                                        |> mean()
-                                """
-                    }else{
-                        query = """
-                                        from(bucket: "\(NetworkConstants.bucket)")
-                                        |> range(start: -2m)
-                                        |> filter(fn: (r) => r["_measurement"] == "\(sensorList[i][j].measurement)")
-                                        |> filter(fn: (r) => r["_field"] == "signal")
-                                        |> filter(fn: (r) => r["id"] == "\(user_id)")
-                                        |> filter(fn: (r) => r["\(sensorList[i][j].identifier)"] == "\(sensorList[i][j].type)")
-                                        |> mean()
-                                """
-                    }
-                    
-                    influxClient.queryAPI.query(query: query, org: NetworkConstants.org) {response, error in
-                        // Error response
-                        if let error = error {
-                            print("Error:\n\n\(error)")
-                        }
-                        
-                        // Success response
-                        if let response = response {
-                            
-                            print("\nSuccess response...\n")
-                            do {
-                                try response.forEach { record in
-                                    DispatchQueue.main.async {
-                                        if i == 0 {
-                                            thermalData[j] = Double("\(record.values["_value"]!)") ?? 0.0
-                                            thermalDataTrend[j] = Int.random(in: -2 ..< 2)
-//                                            print(record.values["_value"]!)
-                                        }else if i == 1{
-                                            airQualityData[j] = Double("\(record.values["_value"]!)") ?? 0.0
-                                            airQualityDataTrend[j] = Int.random(in: -2 ..< 2)
-//                                            print(record.values["_value"]!)
-                                        }else if i == 2{
-                                            visualData[j] = Double("\(record.values["_value"]!)") ?? 0.0
-                                            visualDataTrend[j] = Int.random(in: -2 ..< 2)
-//                                            print(record.values["_value"]!)
-                                        }else if i == 3{
-                                            /// placeholder for noise value
-                                        }else{
-                                            
-                                        }
-                                        //                                        dataList[i][j] = Double("\(record.values["_value"]!)") ?? 0.0
-                                    }
-                                }
-                            } catch {
-                                print("Error:\n\n\(error)")
-                            }
-                        }
-                    }
-                    
-                    
-                }
-            }
-        }
-        
         DispatchQueue.global().async {
             var query_cog = """
                             from(bucket: "\(NetworkConstants.bucket)")
@@ -425,7 +122,7 @@ struct WatchHomeView: View {
                             }
                         }
                         cogIntensity = Int(abs(skinTempData[4] - skinTempData[0])*10+5)
-                        print(cogIntensity)
+//                        print(cogIntensity)
 //                        print(skinTempData[4] - skinTempData[0]) /// middle - bridge
                     } catch {
                         print("Error:\n\n\(error)")
@@ -433,10 +130,6 @@ struct WatchHomeView: View {
                 }
             }
         }
-        
-        
-        
-
     }
     
 }
