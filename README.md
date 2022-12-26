@@ -1,6 +1,12 @@
 # AirSpec_iOS
 AirSpec iOS and associated watchOS app
 
+## WatchOS app
+Tap the 4 IEQ dimensions to detailed data. 
+<img src="https://user-images.githubusercontent.com/16971026/209494202-c62fe84b-0d80-4a15-9c0b-0f169e721942.gif" width="100">
+
+
+## iOS app
 **Home tab** updated with sensor data got from influxdb
 
 <img src="https://user-images.githubusercontent.com/16971026/208963684-47fbb68e-fbc9-46a6-9b10-b087e3f5c58b.PNG" width="250">
