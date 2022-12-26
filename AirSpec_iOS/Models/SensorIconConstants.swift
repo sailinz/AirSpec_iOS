@@ -18,7 +18,7 @@ struct Icon  {
     let maxValue:Double
     var color1Position:Double
     var color3Position:Double
-    var unit:String
+    let unit:String
     
     /// influxdb
     let measurement:String
@@ -32,7 +32,7 @@ struct Icon  {
 
 enum SensorIconConstants {
     static let sensorThermal = [
-        Icon(name: "Temperature", icon: "thermometer.medium", color1: Color.cyan, color2: Color.white, color3: Color.red, minValue: 15.0, maxValue: 35.0, color1Position:0.2, color3Position:0.8, unit:"°C", measurement:"sht45", type:"temperature"),
+        Icon(name: "Temperature", icon: "thermometer.medium", color1: Color.cyan, color2: Color.white, color3: Color.red, minValue: 10.0, maxValue: 35.0, color1Position:0.2, color3Position:0.8, unit:"°C", measurement:"sht45", type:"temperature"),
         Icon(name: "Humidity", icon: "humidity", color1: Color.yellow, color2: Color.white, color3: Color.cyan, minValue: 0.0, maxValue: 100.0, color1Position:0.3, color3Position:0.7, unit:"%", measurement:"sht45", type:"humidity"),
 //        Icon(name: "Air pressure  ", icon: "cloud.fog", color1: Color.white, color2: Color.red, color3: Color.red, minValue: 100000, maxValue: 102000, color1Position:0.2, color3Position:0.8, measurement:"bme", type:"7", identifier:"sensor_id"), /// both pressure and gas is sensor_id 7????
     ]
@@ -51,7 +51,7 @@ enum SensorIconConstants {
     
     static let sensorAcoustics = [
         Icon(name: "Human Noise", icon: "ear", color1: Color.yellow, color2: Color.white, color3: Color.yellow, minValue: 0.0, maxValue: 150.0, color1Position:0.2, color3Position:0.8, unit:"dBA", measurement:"",type:""),
-        Icon(name: "Ambient Noise", icon: "ear.and.waveform", color1: Color.yellow, color2: Color.yellow, color3: Color.yellow, minValue: 0.0, maxValue: 150.0, color1Position:0.2, color3Position:0.8, unit: "dBA", measurement:"",type:""),
+        Icon(name: "Ambient Noise", icon: "ear.and.waveform", color1: Color.yellow, color2: Color.white, color3: Color.yellow, minValue: 0.0, maxValue: 150.0, color1Position:0.2, color3Position:0.8, unit: "dBA", measurement:"",type:""),
     ]
     
     static let goodStateOpacity = 1.0

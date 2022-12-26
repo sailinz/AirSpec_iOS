@@ -114,9 +114,10 @@ struct HomeView: View {
                                         VStack (alignment: .leading) {
                                             Text(SensorIconConstants.sensorThermal[i].name)
                                                 .foregroundColor(Color.white)
-                                                .scaledToFit()
-                                                .minimumScaleFactor(0.01)
-                                                .lineLimit(1)
+                                                .font(.system(size: 13))
+//                                                .scaledToFit()
+//                                                .minimumScaleFactor(0.01)
+//                                                .lineLimit(1)
                                             Spacer()
                                             Text("\(Int(thermalData[i]))")
                                                 .font(.system(.title, design: .rounded) .weight(.heavy))
@@ -124,12 +125,12 @@ struct HomeView: View {
                                         }
                                     }
                                     .frame(minWidth: screenWidth/2 - 50, alignment: .leading)
-                                    .padding()
+                                    .padding(.all, 11)
                                     .background(Color.black.opacity(0.6))
                                     .cornerRadius(15)
                                     .shadow(
-                                        color:Color.black.opacity(0.1),
-                                        radius: 1)
+                                        color:Color.pink.opacity(0.4),
+                                        radius: 4)
                                 }
                             }
                             .padding(.horizontal)
@@ -158,11 +159,13 @@ struct HomeView: View {
                                         
                                         VStack (alignment: .leading) {
                                             Text(SensorIconConstants.sensorAirQuality[i].name)
-                                                .frame(minWidth: 60)
                                                 .foregroundColor(Color.white)
-                                                .scaledToFit()
-                                                .minimumScaleFactor(0.01)
-                                                .lineLimit(1)
+                                                .font(.system(size: 12))
+//                                                .frame(minWidth: 60)
+//
+//                                                .scaledToFit()
+//                                                .minimumScaleFactor(0.01)
+//                                                .lineLimit(1)
                                             Spacer()
                                             Text("\(Int(airQualityData[i]))")
                                                 .font(.system(.title, design: .rounded) .weight(.heavy))
@@ -170,12 +173,12 @@ struct HomeView: View {
                                         }
                                     }
                                     .frame(minWidth: screenWidth/2 - 50, alignment: .leading)
-                                    .padding()
+                                    .padding(.all, 11)
                                     .background(Color.black.opacity(0.6))
                                     .cornerRadius(15)
                                     .shadow(
-                                        color:Color.black.opacity(0.1),
-                                        radius:1)
+                                        color:Color.pink.opacity(0.4),
+                                        radius: 4)
                                 }
                             }
                             .padding(.horizontal)
@@ -205,9 +208,11 @@ struct HomeView: View {
                                         VStack (alignment: .leading) {
                                             Text(SensorIconConstants.sensorVisual[i].name)
                                                 .foregroundColor(Color.white)
-                                                .scaledToFit()
-                                                .minimumScaleFactor(0.01)
-                                                .lineLimit(1)
+                                                .font(.system(size: 12))
+//                                                .frame(minWidth: 60)
+//                                                .scaledToFit()
+//                                                .minimumScaleFactor(0.01)
+//                                                .lineLimit(1)
                                             Spacer()
                                             Text("\(Int(visualData[i]))")
                                                 .font(.system(.title, design: .rounded) .weight(.heavy))
@@ -215,12 +220,12 @@ struct HomeView: View {
                                         }
                                     }
                                     .frame(minWidth: screenWidth/2 - 50, alignment: .leading)
-                                    .padding()
+                                    .padding(.all, 11)
                                     .background(Color.black.opacity(0.6))
                                     .cornerRadius(15)
                                     .shadow(
-                                        color:Color.black.opacity(0.1),
-                                        radius: 1)
+                                        color:Color.pink.opacity(0.4),
+                                        radius: 4)
                                 }
                                 
                             }
@@ -251,9 +256,10 @@ struct HomeView: View {
                                         VStack (alignment: .leading) {
                                             Text(SensorIconConstants.sensorAcoustics[i].name)
                                                 .foregroundColor(Color.white)
-                                                .scaledToFit()
-                                                .minimumScaleFactor(0.01)
-                                                .lineLimit(1)
+                                                .font(.system(size: 12))
+//                                                .scaledToFit()
+//                                                .minimumScaleFactor(0.01)
+//                                                .lineLimit(1)
                                             Spacer()
                                             Text("\(Int(dummyValue))")
                                                 .font(.system(.title, design: .rounded) .weight(.heavy))
@@ -262,12 +268,12 @@ struct HomeView: View {
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                     }
                                     .frame(minWidth: screenWidth/2 - 50, alignment: .leading)
-                                    .padding()
+                                    .padding(.all, 11)
                                     .background(Color.black.opacity(0.6))
                                     .cornerRadius(15)
                                     .shadow(
-                                        color:Color.black.opacity(0.1),
-                                        radius:1)
+                                        color:Color.pink.opacity(0.4),
+                                        radius: 4)
                                     
                                 }
                             }

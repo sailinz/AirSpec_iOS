@@ -38,10 +38,10 @@ struct OpenCircularGauge<Content>: View where Content: View {
     var body: some View {
 
         let gradientColors = Gradient(stops: [
-            .init(color: color1, location: color1Position),
+            .init(color: color1, location: color1Position-0.1),
             .init(color: color2, location: color1Position+0.1),
             .init(color: color2, location: color3Position-0.1),
-            .init(color: color3, location: color3Position)
+            .init(color: color3, location: color3Position+0.1)
         ]
         )
     
