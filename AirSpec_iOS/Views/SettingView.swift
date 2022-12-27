@@ -19,14 +19,14 @@ struct SettingView: View {
     @State private var toggleRangeState = false
     
     
-    @State var minValueTemp: Float = 30
-    @State var maxValueTemp: Float = sliderWidth - 30
-    @State var minValueHum: Float = 30
-    @State var maxValueHum: Float = sliderWidth - 30
-    @State var minValueLightIntensity: Float = 30
-    @State var maxValueLightIntensity: Float = sliderWidth - 30
-    @State var minValueNoise: Float = 30
-    @State var maxValueNoise: Float = sliderWidth - 30
+    @State private var minValueTemp: Float = Float(SensorIconConstants.sensorThermal[0].color1Position) * sliderWidth
+    @State private var maxValueTemp: Float = Float(SensorIconConstants.sensorThermal[0].color3Position) * sliderWidth
+    @State private var minValueHum: Float = Float(SensorIconConstants.sensorThermal[1].color1Position) * sliderWidth
+    @State private var maxValueHum: Float = Float(SensorIconConstants.sensorThermal[1].color3Position) * sliderWidth
+    @State private var minValueLightIntensity: Float = Float(SensorIconConstants.sensorVisual[0].color1Position) * sliderWidth
+    @State private var maxValueLightIntensity: Float = Float(SensorIconConstants.sensorVisual[0].color3Position) * sliderWidth
+    @State private var minValueNoise: Float = Float(SensorIconConstants.sensorAcoustics[0].color1Position) * sliderWidth
+    @State private var maxValueNoise: Float = Float(SensorIconConstants.sensorAcoustics[0].color3Position) * sliderWidth
 
     
     var body: some View {
@@ -152,9 +152,34 @@ struct SettingView: View {
 
                 
                     VStack {
-                        Text("Comfort range")
-                            .font(.system(.title2) .weight(.heavy))
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                        HStack{
+                            Text("Comfort range")
+                                .font(.system(.title2) .weight(.heavy))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            
+                            Button(action: {
+                                // Save the slider values to UserDefaults
+                                UserDefaults.standard.set(self.minValueTemp/sliderWidth, forKey: "minValueTemp")
+                                UserDefaults.standard.set(self.maxValueTemp/sliderWidth, forKey: "maxValueTemp")
+                                UserDefaults.standard.set(self.minValueHum/sliderWidth, forKey: "minValueHum")
+                                UserDefaults.standard.set(self.maxValueHum/sliderWidth, forKey: "maxValueHum")
+                                UserDefaults.standard.set(self.minValueLightIntensity/sliderWidth, forKey: "minValueLightIntensity")
+                                UserDefaults.standard.set(self.maxValueLightIntensity/sliderWidth, forKey: "maxValueLightIntensity")
+                                UserDefaults.standard.set(self.minValueNoise/sliderWidth, forKey: "minValueNoise")
+                                UserDefaults.standard.set(self.maxValueNoise/sliderWidth, forKey: "maxValueNoise")
+                                print("\(self.minValueTemp/sliderWidth)")
+                            }) {
+                                Text("Update")
+                                    .foregroundColor(.black)
+                                    .font(.system(.subheadline) .weight(.semibold))
+                            }
+                            .padding(.all,8)
+                            .background(.pink.opacity(0.05))
+                            .clipShape(Capsule())
+
+                        }
+                        
+                        
                         
                         VStack(alignment: .leading) {
                             ScrollView {
@@ -312,7 +337,80 @@ struct SettingView: View {
                 
             }.navigationTitle("Settings")
         }
+        
+        .onAppear{
+//            let value1: Float? = UserDefaults.standard.float(forKey: "minValueTemp")
+//            if value1 != nil {
+//                print(UserDefaults.standard.float(forKey: "minValueTemp"))
+//                self.minValueTemp = UserDefaults.standard.float(forKey: "minValueTemp") * sliderWidth
+//            }
+//
+//            let value2: Float? = UserDefaults.standard.float(forKey: "maxValueTemp")
+//            if value2 != nil{
+//                print(UserDefaults.standard.float(forKey: "minValueTemp"))
+//                self.maxValueTemp = UserDefaults.standard.float(forKey: "maxValueTemp") * sliderWidth
+//            }
+            
+            
+            
+            
+            if UserDefaults.standard.float(forKey: "minValueTemp") == 0 {
+                UserDefaults.standard.set(SensorIconConstants.sensorThermal[0].color1Position, forKey: "minValueTemp")
+                self.minValueTemp = UserDefaults.standard.float(forKey: "minValueTemp") * sliderWidth
+            }else{
+                self.minValueTemp = UserDefaults.standard.float(forKey: "minValueTemp") * sliderWidth
+            }
+
+            if UserDefaults.standard.float(forKey: "maxValueTemp") == 0 {
+                UserDefaults.standard.set(SensorIconConstants.sensorThermal[0].color3Position, forKey: "maxValueTemp")
+                self.maxValueTemp = UserDefaults.standard.float(forKey: "maxValueTemp") * sliderWidth
+            }else{
+                self.maxValueTemp = UserDefaults.standard.float(forKey: "maxValueTemp") * sliderWidth
+            }
+
+            if UserDefaults.standard.float(forKey: "minValueHum") == 0 {
+                UserDefaults.standard.set(SensorIconConstants.sensorThermal[1].color1Position, forKey: "minValueHum")
+                self.minValueHum = UserDefaults.standard.float(forKey: "minValueHum") * sliderWidth
+            }else{
+                self.minValueHum = UserDefaults.standard.float(forKey: "minValueHum") * sliderWidth
+            }
+
+            if UserDefaults.standard.float(forKey: "maxValueHum") == 0 {
+                UserDefaults.standard.set(SensorIconConstants.sensorThermal[1].color3Position, forKey: "maxValueHum")
+                self.maxValueHum = UserDefaults.standard.float(forKey: "maxValueHum") * sliderWidth
+            }else{
+                self.maxValueHum = UserDefaults.standard.float(forKey: "maxValueHum") * sliderWidth
+            }
+
+            if UserDefaults.standard.float(forKey: "minValueLightIntensity") == 0 {
+                self.minValueLightIntensity = Float(SensorIconConstants.sensorVisual[0].color1Position) * sliderWidth
+            }else{
+                self.minValueLightIntensity = UserDefaults.standard.float(forKey: "minValueLightIntensity") * sliderWidth
+            }
+
+            if UserDefaults.standard.float(forKey: "maxValueLightIntensity") == 0 {
+                self.maxValueLightIntensity = Float(SensorIconConstants.sensorVisual[0].color3Position) * sliderWidth
+            }else{
+                self.maxValueLightIntensity = UserDefaults.standard.float(forKey: "maxValueLightIntensity") * sliderWidth
+            }
+
+            if UserDefaults.standard.float(forKey: "minValueNoise") == 0 {
+                UserDefaults.standard.set(SensorIconConstants.sensorAcoustics[0].color1Position, forKey: "minValueNoise")
+                minValueNoise = UserDefaults.standard.float(forKey: "minValueNoise") * sliderWidth
+            }else{
+                minValueNoise = UserDefaults.standard.float(forKey: "minValueNoise") * sliderWidth
+            }
+
+            if UserDefaults.standard.float(forKey: "maxValueNoise") == 0 {
+                UserDefaults.standard.set(SensorIconConstants.sensorAcoustics[0].color3Position, forKey: "maxValueNoise")
+                maxValueNoise = UserDefaults.standard.float(forKey: "maxValueNoise") * sliderWidth
+            }else{
+                maxValueNoise = UserDefaults.standard.float(forKey: "maxValueNoise") * sliderWidth
+            }
+        }
     }
+    
+
     
     func connectToAirSpec(){
         if !Array(receiver.discoveredPeripherals).isEmpty{
@@ -349,6 +447,8 @@ struct SettingView: View {
             receiver.startScanning()
         }
     }
+    
+
 }
 
 

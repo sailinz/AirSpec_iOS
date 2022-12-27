@@ -50,6 +50,24 @@ struct HomeView: View {
     @State private var acoutsticsDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorAcoustics.count)
     @State private var cogIntensity = 1 /// must scale to a int
     let updateFrequence = 10 /// seconds
+    
+    
+    ///get user set comfort range from userdefault
+//    @State private var color1PositionThermal = [UserDefaults.standard.double(forKey: "minValueTemp"), UserDefaults.standard.double(forKey: "minValueHum")]
+//    @State private var color3PositionThermal = [UserDefaults.standard.double(forKey: "maxValueTemp"), UserDefaults.standard.double(forKey: "maxValueHum")]
+//    @State private var color1PositionVisual = [UserDefaults.standard.double(forKey: "minValueLightIntensity")]
+//    @State private var color3PositionVisual = [UserDefaults.standard.double(forKey: "maxValueLightIntensity")]
+//    @State private var color1PositionAcoutstics = [UserDefaults.standard.double(forKey: "minValueNoise"), UserDefaults.standard.double(forKey: "minValueNoise")]
+//    @State private var color3PositionAcoutstics = [UserDefaults.standard.double(forKey: "maxValueNoise"), UserDefaults.standard.double(forKey: "maxValueNoise")]
+    
+    @State private var color1PositionThermal: [Double]?
+    @State private var color3PositionThermal: [Double]?
+    @State private var color1PositionVisual: [Double]?
+    @State private var color3PositionVisual: [Double]?
+    @State private var color1PositionAcoutstics: [Double]?
+    @State private var color3PositionAcoutstics: [Double]?
+    
+
     ///
     
     var body: some View {
@@ -105,8 +123,8 @@ struct HomeView: View {
                                             color1: SensorIconConstants.sensorThermal[i].color1,
                                             color2: SensorIconConstants.sensorThermal[i].color2,
                                             color3: SensorIconConstants.sensorThermal[i].color3,
-                                            color1Position: SensorIconConstants.sensorThermal[i].color1Position,
-                                            color3Position: SensorIconConstants.sensorThermal[i].color3Position,
+                                            color1Position: color1PositionThermal?[i] ?? SensorIconConstants.sensorThermal[i].color1Position,
+                                            color3Position: color3PositionThermal?[i] ?? SensorIconConstants.sensorThermal[i].color3Position,
                                             valueTrend: thermalDataTrend[i],
                                             icon: SensorIconConstants.sensorThermal[i].icon){
                                             }
@@ -199,8 +217,8 @@ struct HomeView: View {
                                             color1: SensorIconConstants.sensorVisual[i].color1,
                                             color2: SensorIconConstants.sensorVisual[i].color2,
                                             color3: SensorIconConstants.sensorVisual[i].color3,
-                                            color1Position: SensorIconConstants.sensorVisual[i].color1Position,
-                                            color3Position: SensorIconConstants.sensorVisual[i].color3Position,
+                                            color1Position: color1PositionVisual?[i] ?? SensorIconConstants.sensorVisual[i].color1Position,
+                                            color3Position: color3PositionVisual?[i] ?? SensorIconConstants.sensorVisual[i].color1Position,
                                             valueTrend: visualDataTrend[i],
                                             icon: SensorIconConstants.sensorVisual[i].icon){
                                             }
@@ -247,8 +265,8 @@ struct HomeView: View {
                                             color1: SensorIconConstants.sensorAcoustics[i].color1,
                                             color2: SensorIconConstants.sensorAcoustics[i].color2,
                                             color3: SensorIconConstants.sensorAcoustics[i].color3,
-                                            color1Position: SensorIconConstants.sensorAcoustics[i].color1Position,
-                                            color3Position: SensorIconConstants.sensorAcoustics[i].color3Position,
+                                            color1Position: color1PositionAcoutstics?[i] ?? SensorIconConstants.sensorAcoustics[i].color1Position,
+                                            color3Position: color3PositionAcoutstics?[i] ?? SensorIconConstants.sensorAcoustics[i].color3Position,
                                             valueTrend: 0,
                                             icon: SensorIconConstants.sensorAcoustics[i].icon){
                                             }
@@ -289,12 +307,22 @@ struct HomeView: View {
         
         .onChange(of: scenePhase) { newPhase in
             if newPhase == .active {
+                /// get user's comfort range
+                color1PositionThermal = [UserDefaults.standard.double(forKey: "minValueTemp"), UserDefaults.standard.double(forKey: "minValueHum")]
+                color3PositionThermal = [UserDefaults.standard.double(forKey: "maxValueTemp"), UserDefaults.standard.double(forKey: "maxValueHum")]
+                color1PositionVisual = [UserDefaults.standard.double(forKey: "minValueLightIntensity")]
+                color3PositionVisual = [UserDefaults.standard.double(forKey: "maxValueLightIntensity")]
+                color1PositionAcoutstics = [UserDefaults.standard.double(forKey: "minValueNoise"), UserDefaults.standard.double(forKey: "minValueNoise")]
+                color3PositionAcoutstics = [UserDefaults.standard.double(forKey: "maxValueNoise"), UserDefaults.standard.double(forKey: "maxValueNoise")]
+                
                 timer = DispatchSource.makeTimerSource()
                 timer?.schedule(deadline: .now(), repeating: .seconds(updateFrequence))
                 timer?.setEventHandler {
                     startQueries()
                 }
                 timer?.resume()
+                
+                
             }else{
                 timer?.cancel()
                 timer = nil
@@ -303,12 +331,22 @@ struct HomeView: View {
         
         .onAppear{
             print("Active")
+            /// get user's comfort range
+            color1PositionThermal = [UserDefaults.standard.double(forKey: "minValueTemp"), UserDefaults.standard.double(forKey: "minValueHum")]
+            color3PositionThermal = [UserDefaults.standard.double(forKey: "maxValueTemp"), UserDefaults.standard.double(forKey: "maxValueHum")]
+            color1PositionVisual = [UserDefaults.standard.double(forKey: "minValueLightIntensity")]
+            color3PositionVisual = [UserDefaults.standard.double(forKey: "maxValueLightIntensity")]
+            color1PositionAcoutstics = [UserDefaults.standard.double(forKey: "minValueNoise"), UserDefaults.standard.double(forKey: "minValueNoise")]
+            color3PositionAcoutstics = [UserDefaults.standard.double(forKey: "maxValueNoise"), UserDefaults.standard.double(forKey: "maxValueNoise")]
+            
             timer = DispatchSource.makeTimerSource()
             timer?.schedule(deadline: .now(), repeating: .seconds(updateFrequence))
             timer?.setEventHandler {
                 startQueries()
             }
             timer?.resume()
+            
+            
         }
         
         .onDisappear{

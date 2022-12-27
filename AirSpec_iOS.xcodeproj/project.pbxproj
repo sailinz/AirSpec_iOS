@@ -984,7 +984,10 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "AirSpec-iOS-Watch-App-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = AirSpec_iOS;
+				INFOPLIST_KEY_CFBundleDisplayName = AirSpec;
+				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "Use your health data for AirSpec app";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Use your health data for AirSpec app";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Use your health data for AirSpec app";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "medialab.AirSpec-iOS";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1016,7 +1019,10 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "AirSpec-iOS-Watch-App-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = AirSpec_iOS;
+				INFOPLIST_KEY_CFBundleDisplayName = AirSpec;
+				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "Use your health data for AirSpec app";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Use your health data for AirSpec app";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Use your health data for AirSpec app";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "medialab.AirSpec-iOS";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1050,7 +1056,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "AirSpec-iOS-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = AirSpec_iOS;
+				INFOPLIST_KEY_CFBundleDisplayName = AirSpec;
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Can this app use Bluetooth?";
 				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "Can this app communicate with Bluetooth Peripherals";
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "Can this app use your health data?";
@@ -1090,7 +1096,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "AirSpec-iOS-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = AirSpec_iOS;
+				INFOPLIST_KEY_CFBundleDisplayName = AirSpec;
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Can this app use Bluetooth?";
 				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "Can this app communicate with Bluetooth Peripherals";
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "Can this app use your health data?";

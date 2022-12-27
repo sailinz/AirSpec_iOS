@@ -13,11 +13,5 @@
 	</array>
 	<key>WKBackgroundModes</key>
 	<array/>
-	<key>NSHealthUpdateUsageDescription</key>
-	<string>Use your health data for AirSpec app</string>
-	<key>NSHealthShareUsageDescription</key>
-	<string>Use your health data for AirSpec app</string>
-	<key>NSHealthClinicalHealthRecordsShareUsageDescription</key>
-	<string>Use your health data for AirSpec app</string>
 </dict>
 </plist>
