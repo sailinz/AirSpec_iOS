@@ -17,6 +17,7 @@ struct SettingView: View {
     @State var user_id:String = "" ///"9067133"
     @State private var togglePublicState = false
     @State private var toggleRangeState = false
+    @State private var toggleTestLight = false
     
     
     @State private var minValueTemp: Float = Float(SensorIconConstants.sensorThermal[0].color1Position) * sliderWidth
@@ -106,6 +107,7 @@ struct SettingView: View {
                             Text("Public mode")
                                 .font(.system(.subheadline))
                             Toggle(isOn: $togglePublicState) {
+                                
                                 }
                                 .buttonStyle(PlainButtonStyle())
                                 .tint(.pink)
@@ -126,6 +128,41 @@ struct SettingView: View {
                                 .tint(.pink)
                                 .alignmentGuide(.trailing) { _ in return -10 }
                         
+                        }
+                        
+//                        HStack() {
+//                            Image(systemName: "lightbulb.led.wide.fill")
+//                                .frame(width: 30, height: 20)
+//                            Text("Test light")
+//                                .font(.system(.subheadline))
+//                            Toggle(isOn: $toggleTestLight) {
+//                                    if(toggleTestLight){
+//                                        Text("\(receiver.testLight())")
+//                                    }
+//                                }
+//                                .buttonStyle(PlainButtonStyle())
+//                                .tint(.pink)
+//                                .alignmentGuide(.trailing) { _ in return -10 }
+//
+//                        }
+                        
+                        HStack() {
+                            Image(systemName: "lightbulb.led.wide.fill")
+                                .frame(width: 30, height: 20)
+                            Text("Test light")
+                                .font(.system(.subheadline))
+                            Spacer()
+                            Button(action: receiver.testLight) {
+                                    Text("Test")
+                                    .font(.system(.subheadline) .weight(.semibold))
+                                    .foregroundColor(.white)
+                                }
+                                .padding(.all,5)
+                                .background(.pink.opacity(0.5))
+                                .clipShape(Capsule())
+                                
+                                
+                                
                         }
                         
                     }
@@ -170,11 +207,11 @@ struct SettingView: View {
                                 print("\(self.minValueTemp/sliderWidth)")
                             }) {
                                 Text("Update")
-                                    .foregroundColor(.black)
+                                    .foregroundColor(.white)
                                     .font(.system(.subheadline) .weight(.semibold))
                             }
                             .padding(.all,8)
-                            .background(.pink.opacity(0.05))
+                            .background(.pink.opacity(0.5))
                             .clipShape(Capsule())
 
                         }
@@ -339,21 +376,6 @@ struct SettingView: View {
         }
         
         .onAppear{
-//            let value1: Float? = UserDefaults.standard.float(forKey: "minValueTemp")
-//            if value1 != nil {
-//                print(UserDefaults.standard.float(forKey: "minValueTemp"))
-//                self.minValueTemp = UserDefaults.standard.float(forKey: "minValueTemp") * sliderWidth
-//            }
-//
-//            let value2: Float? = UserDefaults.standard.float(forKey: "maxValueTemp")
-//            if value2 != nil{
-//                print(UserDefaults.standard.float(forKey: "minValueTemp"))
-//                self.maxValueTemp = UserDefaults.standard.float(forKey: "maxValueTemp") * sliderWidth
-//            }
-            
-            
-            
-            
             if UserDefaults.standard.float(forKey: "minValueTemp") == 0 {
                 UserDefaults.standard.set(SensorIconConstants.sensorThermal[0].color1Position, forKey: "minValueTemp")
                 self.minValueTemp = UserDefaults.standard.float(forKey: "minValueTemp") * sliderWidth
