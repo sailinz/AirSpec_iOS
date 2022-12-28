@@ -345,17 +345,16 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     func testLight(){
         /// https://stackoverflow.com/questions/57985152/how-to-write-a-value-to-characteristc-for-ble-device-in-ios-swift
         /// Bytes are read from right to left, like german language
-//        var headerBytes: [UInt8] = [0x01, 0x00, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00] ///  first two byptes: 01 - control LED; byte 3-4: 18 - LED payload size; last 4 bytes: timestamp - to be updated below
+        var headerBytes: [UInt8] = [0x01, 0x00, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00] ///  first two byptes: 01 - control LED; byte 3-4: 18 - LED payload size; last 4 bytes: timestamp - to be updated below
         /// [packet type byte 0, packet type byte 1, , payload size byte 0, payload size byte 1, unix timestamp, unix timestamp, unix timestamp, unix timestamp] Hex e.g, 18 to be dec and hex is 0x00, 0x12 (we'll see the 0012 as transfered hex value)
+        ///
+        //      let payloadBytes: [UInt8] = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xC8, 0x00, 0x00, 0x00, 0x00, 0xC8, 0x00, 0x00, 0x00, 0x00, 0x00]
+        let payloadBytes: [UInt8] = [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50] /// all white on
+           
         
         /// Blue-Green Transition mode
-         var headerBytes: [UInt8] = [0x05, 0x00, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00]
-        
-//        let payloadBytes: [UInt8] = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xC8, 0x00, 0x00, 0x00, 0x00, 0xC8, 0x00, 0x00, 0x00, 0x00, 0x00]
-//        let payloadBytes: [UInt8] = [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50] /// all white on
-        
-        /// Blue-green Transition payload
-        let payloadBytes: [UInt8] = [0x02, 0x01, 0x32, 0xFF, 0xFF, 0x0A, 0x0A]
+//        var headerBytes: [UInt8] = [0x05, 0x00, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00]
+//        let payloadBytes: [UInt8] = [0x02, 0x01, 0x32, 0xFF, 0xFF, 0x0A, 0x0A]
         let timestamp = Int(Date().timeIntervalSince1970)
         let timestampArray = withUnsafeBytes(of: timestamp.bigEndian, Array.init)
 //        print(timestamp)
@@ -370,6 +369,29 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         connectedPeripheral?.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
 //        return "" /// toggle version
     }
+    
+        func testLightReset(){
+            /// https://stackoverflow.com/questions/57985152/how-to-write-a-value-to-characteristc-for-ble-device-in-ios-swift
+            /// Bytes are read from right to left, like german language
+            var headerBytes: [UInt8] = [0x01, 0x00, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00]
+            let payloadBytes: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] /// all off
+               
+            /// Blue-Green Transition mode
+    //        var headerBytes: [UInt8] = [0x05, 0x00, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00]
+    //        let payloadBytes: [UInt8] = [0x02, 0x01, 0x32, 0xFF, 0xFF, 0x0A, 0x0A]
+            
+            let timestamp = Int(Date().timeIntervalSince1970)
+            let timestampArray = withUnsafeBytes(of: timestamp.bigEndian, Array.init)
+
+            headerBytes[4] = timestampArray[7]
+            headerBytes[5] = timestampArray[6]
+            headerBytes[6] = timestampArray[5]
+            headerBytes[7] = timestampArray[4]
+            print(headerBytes)
+            
+            let cmd = Data(headerBytes + payloadBytes)
+            connectedPeripheral?.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
+        }
     
 //    func testLight(){
 //

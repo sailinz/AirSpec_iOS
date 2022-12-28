@@ -152,6 +152,14 @@ struct SettingView: View {
                             Text("Test light")
                                 .font(.system(.subheadline))
                             Spacer()
+                            Button(action: receiver.testLightReset) {
+                                    Text("Reset")
+                                    .font(.system(.subheadline) .weight(.semibold))
+                                    .foregroundColor(.white)
+                                }
+                                .padding(.all,5)
+                                .background(.gray.opacity(0.5))
+                                .clipShape(Capsule())
                             Button(action: receiver.testLight) {
                                     Text("Test")
                                     .font(.system(.subheadline) .weight(.semibold))
