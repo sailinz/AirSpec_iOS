@@ -61,6 +61,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     @Published var connectedToSatServer: Bool = false
     @Published var status: String = ""
     private var satServerClient: NIO_TCP_Client?
+    private var notificationServerClient: NIO_TCP_Client?
 //    private var influxClient: InfluxDBClient
     @Published var temperatureValue: String = ""
     /// -- TCP client to server connection variables end
@@ -88,6 +89,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //                self.satServerCallback(data: $0)
 //            }
             satServerClient = try NIO_TCP_Client.connect(host: NetworkConstants.host, port: NetworkConstants.port)
+//            notificationServerClient = try NIO_TCP_Client.connect(host: "127.0.0.1", port: 64237)
             connectedToSatServer = true
             status = "Connected to AirSpec server"
         } catch {
@@ -332,6 +334,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //                try satServerClient?.send(Data(referencing: dataReceived))
 //                print(self.glassesData.sensorData)
 //                influxQuery()
+//                try print(notificationServerClient?.read())
             } catch {
                 logger.error("TCP connection problems: \(error).")
                 connectedToSatServer = false

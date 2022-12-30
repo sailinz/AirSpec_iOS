@@ -35,7 +35,7 @@ final class NIO_TCP_Client {
         typealias InboundIn = ByteBuffer
         
 //        fileprivate var dataCallback: DataCallback
-        
+//
 //        init(dataCallback: @escaping DataCallback) {
 //            self.dataCallback = dataCallback
 //        }
@@ -43,6 +43,7 @@ final class NIO_TCP_Client {
         func channelRead(context: ChannelHandlerContext, data: NIOAny) {
             let buffer = self.unwrapInboundIn(data)
 //            self.dataCallback(Data(buffer: buffer))
+//            print(buffer)
         }
     }
     
@@ -69,8 +70,11 @@ final class NIO_TCP_Client {
     }
     
     func send(_ data: Data) {
-//        self.channel.writeAndFlush(ByteBuffer(data: data), promise: nil)
         self.channel.writeAndFlush(ByteBuffer(data: data), promise: nil)
+    }
+    
+    func read(){
+        self.channel.read()
     }
     
     func disconnect() {

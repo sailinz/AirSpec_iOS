@@ -44,7 +44,7 @@ class ExtensionDelegate: NSObject, UIApplicationDelegate, BluetoothReceiverDeleg
 //        return true
 //    }
     
-    func handle(_ backgroundTasks: Set<BGAppRefreshTask>) {
+//    func handle(_ backgroundTasks: Set<BGAppRefreshTask>) {
         
 //        for task in backgroundTasks {
 //            switch task {
@@ -81,7 +81,7 @@ class ExtensionDelegate: NSObject, UIApplicationDelegate, BluetoothReceiverDeleg
 //                task.setTaskCompletedWithSnapshot(false)
 //            }
 //        }
-    }
+//    }
     
     private func shouldReconnect(to peripheral: CBPeripheral) -> Bool {
         /// Implement your own logic to determine whether the peripheral needs to reconnect.

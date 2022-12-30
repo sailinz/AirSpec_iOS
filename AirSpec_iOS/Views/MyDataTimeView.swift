@@ -7,26 +7,35 @@
 
 import SwiftUI
 import Charts
+import InfluxDBSwift
+import Foundation
+
+
+private let sensorSettingList = [SensorIconConstants.sensorThermal[0],SensorIconConstants.sensorThermal[1], SensorIconConstants.sensorAirQuality[0],SensorIconConstants.sensorAirQuality[1],SensorIconConstants.sensorAirQuality[2],SensorIconConstants.sensorAirQuality[3],SensorIconConstants.sensorVisual[0], SensorIconConstants.sensorAcoustics[0]]
 
 struct MyDataTimeView: View {
+    
 
     /// comfort
     @State var comfortDataIn = comfortData.today
-    @State private var pointSize = 10.0
-    @State private var showLegend = false
+    private let pointSize = 10.0
+    private let showLegend = false
     
     /// environment
-    @State private var lineWidth = 1.0
-    @State private var interpolationMethod: ChartInterpolationMethod = .cardinal
-    @State private var chartColor: Color = .gray
-    @State private var showSymbols = true
-    @State private var selectedElement: temp? = TempData.last30minutes[10]
-    @State private var showLollipop = true
-    var data = TempData.last30minutes
+    private let lineWidth = 1.0
+    private let interpolationMethod: ChartInterpolationMethod = .cardinal
+    private let chartColor: Color = .pink
+    private let showSymbols = true
     
-    @State private var toggleImage: Image = Image(systemName: "circle")
-    @State private var isOn = false
+    private let showLollipop = true
+//    var data = TempData.last30minutes
+    @State var data: [(minutes: Date, values: Double)] = []
+    @State private var selectedElement: temp?
+    
+//    @State private var toggleImage: Image = Image(systemName: "circle")
+//    @State private var isOn = false
     @State var flags = Array(repeating: false, count: 8)
+    @State var user_id:String = "9067133"
     
     private let columns = [
         GridItem(.flexible()),
@@ -36,32 +45,34 @@ struct MyDataTimeView: View {
     ]
     
     var body: some View {
-        VStack(alignment: .leading){
-            Text("Comfort vote")
-                .font(.system(.caption) .weight(.semibold))
+        VStack(alignment: .center){
+            Text("Comfort votes")
+                .font(.system(.caption).weight(.semibold))
+            
             chartComfort
+            Text("Sensor readings")
+                .font(.system(.caption).weight(.semibold))
+            Spacer()
+                .frame(height: 60)
             chartEnv
-            Text("Sensing data")
-                .font(.system(.caption) .weight(.semibold))
+            
+            
+                
 //            Toggle("", isOn: $isOn)
 //                .toggleStyle(CheckToggleStyle(checkTogglekImage: SensorIconConstants.sensorThermal[0].icon))
-            LazyVGrid(columns: columns, spacing: 0){
-                let sensorSettingList = [SensorIconConstants.sensorThermal[0],SensorIconConstants.sensorThermal[1], SensorIconConstants.sensorAirQuality[0],SensorIconConstants.sensorAirQuality[1],SensorIconConstants.sensorAirQuality[2],SensorIconConstants.sensorAirQuality[3],SensorIconConstants.sensorVisual[0], SensorIconConstants.sensorAcoustics[0]]
+            LazyVGrid(columns: columns, spacing: 20){
                 ForEach(flags.indices) { j in
                     VStack{
-                        ToggleItem(storage: self.$flags, checkTogglekImage: sensorSettingList[j].icon, tag: j, label: "")
-                            .padding(.horizontal)
-                        Text(sensorSettingList[j].name)
-                            .font(.system(.caption2))
+                        ToggleItem(storage: self.$flags, user_id: self.$user_id, data: self.$data, checkTogglekImage: sensorSettingList[j].icon, checkToggleText:sensorSettingList[j].name, tag: j, label: "")
+                        
                     }
                     
                 }
             }.padding()
-            
-            
-            
         }
     }
+    
+    
     
     private var chartComfort: some View {
         Chart {
@@ -110,7 +121,7 @@ struct MyDataTimeView: View {
             .foregroundStyle(chartColor.gradient)
             .interpolationMethod(interpolationMethod.mode)
             .symbol(Circle().strokeBorder(lineWidth: lineWidth))
-            .symbolSize(showSymbols ? 60 : 0)
+            .symbolSize(showSymbols ? 10 : 0)
         }
         .chartOverlay { proxy in
             GeometryReader { geo in
@@ -172,7 +183,7 @@ struct MyDataTimeView: View {
                             .padding(.horizontal, -8)
                             .padding(.vertical, -4)
                         }
-                        .offset(x: boxOffset)
+                        .offset(x: boxOffset, y:-50)
                     }
                 }
             }
@@ -184,11 +195,12 @@ struct MyDataTimeView: View {
 
     private func findElement(location: CGPoint, proxy: ChartProxy, geometry: GeometryProxy) -> temp? {
         let relativeXPosition = location.x - geometry[proxy.plotAreaFrame].origin.x
+        let mappedData = data.map {temp(minutes: $0.minutes, values: Int($0.values)) }
         if let date = proxy.value(atX: relativeXPosition) as Date? {
             // Find the closest date element.
             var minDistance: TimeInterval = .infinity
             var index: Int? = nil
-            for valuesDataIndex in data.indices {
+            for valuesDataIndex in mappedData.indices {
                 let nthvaluesDataDistance = data[valuesDataIndex].minutes.distance(to: date)
                 if abs(nthvaluesDataDistance) < minDistance {
                     minDistance = abs(nthvaluesDataDistance)
@@ -196,7 +208,7 @@ struct MyDataTimeView: View {
                 }
             }
             if let index {
-                return data[index]
+                return mappedData[index]
             }
         }
         return nil
@@ -205,10 +217,21 @@ struct MyDataTimeView: View {
 
 struct ToggleItem: View {
     @Binding var storage: [Bool]
+    @Binding var user_id: String
+    @Binding var data: [(minutes: Date, values: Double)]
+    
     var checkTogglekImage:String
+    var checkToggleText:String
     var tag: Int
+//    var lastTag: Int
     var label: String = ""
-
+    
+    let influxClient = try InfluxDBClient(url: NetworkConstants.url, token: NetworkConstants.token)
+    
+//    mutating func updateLastTag() {
+//        self.lastTag = self.tag
+//    }
+    
     var body: some View {
         let isOn = Binding (get: { self.storage[self.tag] },
             set: { value in
@@ -216,13 +239,98 @@ struct ToggleItem: View {
                     self.storage = self.storage.enumerated().map { $0.0 == self.tag }
                 }
             })
-        return Toggle(label, isOn: isOn).toggleStyle(CheckToggleStyle(checkTogglekImage: checkTogglekImage))
+        
+        
+        if(self.storage[self.tag]){
+            print(self.tag)
+//            print(storage)
+            
+            startQueries(i:self.tag)
+            
+        }
+        return Toggle(label, isOn: isOn)
+                .toggleStyle(CheckToggleStyle(checkTogglekImage: checkTogglekImage, checkToggleText: checkToggleText))
+    }
+    
+    func startQueries(i:Int) {
+        
+        /// environmental sensing
+//        DispatchQueue.global().async {
+        var tempData: [(minutes: Date, values: Double)] = []
+        var query = """
+                    """
+        if(i == 6){ ///lux has no type
+            query = """
+                            from(bucket: "\(NetworkConstants.bucket)")
+                            |> range(start: -1h)
+                            |> filter(fn: (r) => r["_measurement"] == "\(sensorSettingList[i].measurement)")
+                            |> filter(fn: (r) => r["_field"] == "signal")
+                            |> filter(fn: (r) => r["id"] == "\(user_id)")
+                            |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)
+                    """
+        }else{
+            query = """
+                            from(bucket: "\(NetworkConstants.bucket)")
+                            |> range(start: -30m)
+                            |> filter(fn: (r) => r["_measurement"] == "\(sensorSettingList[i].measurement)")
+                            |> filter(fn: (r) => r["_field"] == "signal")
+                            |> filter(fn: (r) => r["id"] == "\(user_id)")
+                            |> filter(fn: (r) => r["\(sensorSettingList[i].identifier)"] == "\(sensorSettingList[i].type)")
+                            |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)
+                    """
+        }
+        
+        influxClient.queryAPI.query(query: query, org: NetworkConstants.org) {response, error in
+            // Error response
+            if let error = error {
+                print("Error:\n\n\(error)")
+            }
+            
+            // Success response
+            if let response = response {
+                
+                print("\nSuccess response...\n")
+                do {
+                    try response.forEach { record in
+//                            DispatchQueue.main.async {
+//                                print(record.values["_time"]!)
+//                                print(record.values["_value"]!)
+                        if let result = convertToData(dateString: "\(record.values["_time"]!)", valuesString: "\(record.values["_value"]!)") {
+                            tempData.append(result)
+                        }
+//                            }
+                        
+                    }
+                    self.data = tempData
+//                        print(tempData)
+//                        print(self.data)
+                } catch {
+                    print("Error:\n\n\(error)")
+                }
+            }
+            
+        }
+            
+            
+
+//        }
     }
 }
 
+func convertToData(dateString: String, valuesString: String) -> (minutes: Date, values: Double)? {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
+
+    if let date = dateFormatter.date(from: dateString), let values = Double(valuesString) {
+        return (minutes: date, values: values)
+    } else {
+        return nil
+    }
+}
 
 struct CheckToggleStyle: ToggleStyle {
     var checkTogglekImage:String
+    var checkToggleText:String
     func makeBody(configuration: Configuration) -> some View {
         Button {
             configuration.isOn.toggle()
@@ -231,9 +339,16 @@ struct CheckToggleStyle: ToggleStyle {
                 configuration.label
             }
             icon: {
-                Image(systemName: checkTogglekImage)
-                    .foregroundColor(configuration.isOn ? .black : .gray)
-                    .imageScale(.large)
+                VStack{
+                    Image(systemName: checkTogglekImage)
+                        .foregroundColor(configuration.isOn ? .pink : .gray)
+                        .imageScale(.large)
+                        .frame(width: 30, height: 30)
+                    
+                    Text(checkToggleText)
+                        .foregroundColor(configuration.isOn ? .pink : .gray)
+                        .font(configuration.isOn ? (.system(size: 10) .weight(.semibold)) : (.system(size: 8).weight(.regular)))
+                }
             }
         }
         .buttonStyle(PlainButtonStyle())
