@@ -26,62 +26,80 @@ struct HeartAnimation: View {
     var body: some View {
         #if os(iOS)
             ZStack{
-                Image("heart_visual")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 100)
-                    .offset(x:-30,y:55)
-                    .opacity(opacityL)
-                CrookedText(text: "Lighting", radius:90)
-                    .rotationEffect(.radians(.pi*5/4))
-                    .offset(x:-30,y:30)
+                ZStack{
+                    CrookedText(text: "Lighting", radius:90)
+                        .rotationEffect(.radians(.pi*5/4))
+                        .offset(x:-30,y:30)
+                    
+                    CrookedText(text: "Noise", radius:90)
+                        .rotationEffect(.radians(.pi*3/4))
+                        .offset(x:20,y: 35)
+                    
+                    CrookedText(text: "Air quality", radius:90)
+                        .rotationEffect(.radians(.pi/4))
+                        .offset(x:40,y: 10)
+                    
+                    CrookedText(text: "Thermal", radius:90)
+                        .rotationEffect(.radians(.pi*7/4))
+                        .offset(x:-30,y: 5)
+                }
+                .scaleEffect(animate ? 1.1:1.0)
+                .offset(y: animate ? -5 : 0)
                 
-                Image("heart_noise")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 120)
-                    .offset(x:40,y:60)
-                    .opacity(opacityN)
-                CrookedText(text: "Noise", radius:90)
-                    .rotationEffect(.radians(.pi*3/4))
-                    .offset(x:20,y: 35)
                 
-                Image("heart_aq")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 120)
-                    .offset(x:50,y: -15)
-                    .opacity(opacityAQ)
-                CrookedText(text: "Air quality", radius:90)
-                    .rotationEffect(.radians(.pi/4))
-                    .offset(x:40,y: 10)
-                
-                Image("heart_thermal")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 120)
-                    .offset(x:-40,y: 0)
-                    .opacity(opacityT)
-                CrookedText(text: "Thermal", radius:90)
-                    .rotationEffect(.radians(.pi*7/4))
-                    .offset(x:-30,y: 5)
-                
-                Text(heartRate.map {String(format: "%.0f", $0)+" BPM" } ?? "-- BPM")
-                    .font(.system(.largeTitle, design: .rounded) .weight(.heavy))
-                    .foregroundColor(.white)
-                    .offset(x:0, y:30)
-                    .onReceive(timer) { _ in
-                        fetchLatestHeartRate()
-                    }
+                ZStack{
+                    
+                    Image("heart_visual")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 100)
+                        .offset(x:-30,y:55)
+                        .opacity(opacityL)
+                    
+                    
+                    
+                    Image("heart_noise")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 120)
+                        .offset(x:40,y:60)
+                        .opacity(opacityN)
+
+                    
+                    Image("heart_aq")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 120)
+                        .offset(x:50,y: -15)
+                        .opacity(opacityAQ)
+                    
+                    
+                    Image("heart_thermal")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 120)
+                        .offset(x:-40,y: 0)
+                        .opacity(opacityT)
+                    
+                    
+                    Text(heartRate.map {String(format: "%.0f", $0)+" BPM" } ?? "-- BPM")
+                        .font(.system(.largeTitle, design: .rounded) .weight(.heavy))
+                        .foregroundColor(.white)
+                        .offset(x:0, y:30)
+                        .onReceive(timer) { _ in
+                            fetchLatestHeartRate()
+                        }
+                }
+                .scaleEffect(animate ? 1.1:1.0)
+                .shadow(
+                    color:animate ? Color.red.opacity(0.7) : Color.pink.opacity(0.7),
+                    radius:animate ? 30 : 10,
+                    x: 0,
+                    y: animate ? 50:40)
+                .offset(y: animate ? -5 : 0)
+
             }
-            .scaleEffect(animate ? 1.1:1.0)
-            .shadow(
-                color:animate ? Color.red.opacity(0.7) : Color.pink.opacity(0.7),
-                radius:animate ? 30 : 10,
-                x: 0,
-                y: animate ? 50:40)
-            .offset(y: animate ? -5 : 0)
-            
+                    
             .onAppear{
                 autorizeHealthKit()
                 addAnimation()

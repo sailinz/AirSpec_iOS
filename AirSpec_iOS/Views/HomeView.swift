@@ -91,13 +91,18 @@ struct HomeView: View {
 //                //                }
 //                
                 ZStack{
+                    
                     GeometryReader { geometry in
                         ForEach(0..<cogIntensity, id: \.self) { index in
                             Image("Asset " + String(Int.random(in: 1...18)))
+                                .rotationEffect(.degrees(Double.random(in: 0...360)))
+                                .frame(width: CGFloat.random(in: 5...15), height: CGFloat.random(in: 5...15))
                                 .offset(x: self.randomX(geometry: geometry), y: self.randomY(geometry: geometry))
                                 .shadow(
                                     color:Color.pink.opacity(0.5),
                                     radius:4)
+                                .animation(Animation.easeIn(duration: 1).delay(1))
+                                
                         }
                     }
                     
