@@ -38,18 +38,33 @@ struct WatchHomeView: View {
 //                    .offset(x:geometry.size.width-40, y:geometry.size.height)
 //            }
             
-                
             GeometryReader { geometry in
                 ForEach(0..<cogIntensity, id: \.self) { index in
                     let seed = Bool.random()
                     Image("Asset " + String(Int.random(in: 1...18)))
+                        .rotationEffect(.degrees(Double.random(in: 0...360)))
                         .scaleEffect(0.2)
+                        .frame(width: CGFloat.random(in: 5...15), height: CGFloat.random(in: 5...15))
                         .offset(x: self.randomPosition(geometry: geometry, seed: seed).x, y: self.randomPosition(geometry: geometry, seed: seed).y)
                         .shadow(
                             color:Color.pink.opacity(0.5),
                             radius:4)
+                        .animation(Animation.easeIn(duration: 1).delay(1))
+                        
                 }
             }
+                
+//            GeometryReader { geometry in
+//                ForEach(0..<cogIntensity, id: \.self) { index in
+//                    let seed = Bool.random()
+//                    Image("Asset " + String(Int.random(in: 1...18)))
+//                        .scaleEffect(0.2)
+//                        .offset(x: self.randomPosition(geometry: geometry, seed: seed).x, y: self.randomPosition(geometry: geometry, seed: seed).y)
+//                        .shadow(
+//                            color:Color.pink.opacity(0.5),
+//                            radius:4)
+//                }
+//            }
             
         }
         
