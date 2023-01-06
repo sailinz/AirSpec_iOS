@@ -26,46 +26,91 @@ struct WatchHomeView: View {
     
     @State private var cogIntensity = 10 /// must scale to a int
     let updateFrequence = 10 /// seconds
-    ///
+    
+    @State private var isSurvey = true
+//    let application = UIApplication.shared
+    let secondAppPath = "coziewatch://"
     
     var body: some View {
         ZStack{
-            HeartAnimation()
+            ZStack{
+                HeartAnimation()
+                
+    //            GeometryReader { geometry in
+    //                Image("Asset 3" )
+    //                    .scaleEffect(0.5)
+    //                    .offset(x:geometry.size.width-40, y:geometry.size.height)
+    //            }
+                
+                GeometryReader { geometry in
+                    ForEach(0..<cogIntensity, id: \.self) { index in
+                        let seed = Bool.random()
+                        Image("Asset " + String(Int.random(in: 1...18)))
+                            .rotationEffect(.degrees(Double.random(in: 0...360)))
+                            .scaleEffect(0.2)
+                            .frame(width: CGFloat.random(in: 5...15), height: CGFloat.random(in: 5...15))
+                            .offset(x: self.randomPosition(geometry: geometry, seed: seed).x, y: self.randomPosition(geometry: geometry, seed: seed).y)
+                            .shadow(
+                                color:Color.pink.opacity(0.5),
+                                radius:4)
+                            .animation(Animation.easeIn(duration: 1).delay(1))
+                            
+                    }
+                }
+                    
+    //            GeometryReader { geometry in
+    //                ForEach(0..<cogIntensity, id: \.self) { index in
+    //                    let seed = Bool.random()
+    //                    Image("Asset " + String(Int.random(in: 1...18)))
+    //                        .scaleEffect(0.2)
+    //                        .offset(x: self.randomPosition(geometry: geometry, seed: seed).x, y: self.randomPosition(geometry: geometry, seed: seed).y)
+    //                        .shadow(
+    //                            color:Color.pink.opacity(0.5),
+    //                            radius:4)
+    //                }
+    //            }
+                
+            }
+            .blur(radius: isSurvey ? 20 : 0)
             
-//            GeometryReader { geometry in
-//                Image("Asset 3" )
-//                    .scaleEffect(0.5)
-//                    .offset(x:geometry.size.width-40, y:geometry.size.height)
-//            }
-            
-            GeometryReader { geometry in
-                ForEach(0..<cogIntensity, id: \.self) { index in
-                    let seed = Bool.random()
-                    Image("Asset " + String(Int.random(in: 1...18)))
-                        .rotationEffect(.degrees(Double.random(in: 0...360)))
-                        .scaleEffect(0.2)
-                        .frame(width: CGFloat.random(in: 5...15), height: CGFloat.random(in: 5...15))
-                        .offset(x: self.randomPosition(geometry: geometry, seed: seed).x, y: self.randomPosition(geometry: geometry, seed: seed).y)
-                        .shadow(
-                            color:Color.pink.opacity(0.5),
-                            radius:4)
-                        .animation(Animation.easeIn(duration: 1).delay(1))
-                        
+            if(isSurvey){
+                VStack(spacing: 20){
+                    Text("Fill in a survey to unlock the AirSpec App")
+                    
+                    
+//                    let appUrl = URL(string:secondAppPath)!
+//                    Link("Go to Cozie", destination: appUrl)
+//                        .buttonStyle(.borderedProminent)
+                    
+                    Button(action:{
+                        withAnimation{
+                            let appUrl = URL(string:secondAppPath)!
+
+
+                            WKExtension.shared().openSystemURL(appUrl)
+//                            NSExtensionContext().open(appUrl)
+//                            if NSExtensionContext().canOpenURL(appUrl){
+//                                NSExtensionContext().open(appUrl)
+//                            }else{
+//                                print("cannot find cozie app")
+//                            }
+
+                            isSurvey.toggle()
+                        }
+                    }) {
+                        Text("Go to Cozie")
+                        .font(.system(.subheadline) .weight(.semibold))
+                        .foregroundColor(.white)
+                    }
+                    .frame(width: 120, height: 40)
+//                    .padding(.all,20)
+                    .background(.pink)
+                    .clipShape(Capsule())
+                    
                 }
             }
-                
-//            GeometryReader { geometry in
-//                ForEach(0..<cogIntensity, id: \.self) { index in
-//                    let seed = Bool.random()
-//                    Image("Asset " + String(Int.random(in: 1...18)))
-//                        .scaleEffect(0.2)
-//                        .offset(x: self.randomPosition(geometry: geometry, seed: seed).x, y: self.randomPosition(geometry: geometry, seed: seed).y)
-//                        .shadow(
-//                            color:Color.pink.opacity(0.5),
-//                            radius:4)
-//                }
-//            }
-            
+
+
         }
         
 

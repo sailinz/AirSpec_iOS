@@ -67,13 +67,11 @@ struct HomeView: View {
     @State private var color1PositionAcoutstics: [Double]?
     @State private var color3PositionAcoutstics: [Double]?
     
-
-    ///
+    
     
     var body: some View {
         
         NavigationView{
-            
             VStack{
 //                Text("Home")
 //                    .font(
@@ -89,7 +87,7 @@ struct HomeView: View {
 //                ////                        showDataFromInflux
 //                //                    }
 //                //                }
-//                
+//
                 ZStack{
                     
                     GeometryReader { geometry in
@@ -304,8 +302,6 @@ struct HomeView: View {
                         }
                     }
                 }
-
-                
             }
             .navigationTitle("Home")
         }

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		030FE313296719F000AC5E24 /* PopUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030FE311296719EA00AC5E24 /* PopUpView.swift */; };
 		034B0D6A2942A50500F21CFB /* MyDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034B0D692942A50500F21CFB /* MyDataView.swift */; };
 		034D16DE294A7FD7005BE966 /* OpenCircularGauge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D16DD294A7FD7005BE966 /* OpenCircularGauge.swift */; };
 		034D16DF294A7FD7005BE966 /* OpenCircularGauge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D16DD294A7FD7005BE966 /* OpenCircularGauge.swift */; };
@@ -151,6 +152,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		030FE311296719EA00AC5E24 /* PopUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopUpView.swift; sourceTree = "<group>"; };
 		034B0D692942A50500F21CFB /* MyDataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyDataView.swift; sourceTree = "<group>"; };
 		034D16DD294A7FD7005BE966 /* OpenCircularGauge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenCircularGauge.swift; sourceTree = "<group>"; };
 		034D16E2294CF9A2005BE966 /* LinearGauge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinearGauge.swift; sourceTree = "<group>"; };
@@ -310,6 +312,7 @@
 				034B0D692942A50500F21CFB /* MyDataView.swift */,
 				03BC961129560E4600AD89BE /* MyDataPlaceView.swift */,
 				03BC96132956106700AD89BE /* MyDataTimeView.swift */,
+				030FE311296719EA00AC5E24 /* PopUpView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -804,6 +807,7 @@
 				03BC95C42950D3B300AD89BE /* HeartAnimation.swift in Sources */,
 				03BC95EC29525F9000AD89BE /* IdentifiableCharacter.swift in Sources */,
 				03BC961B295662E400AD89BE /* HealthData.swift in Sources */,
+				030FE313296719F000AC5E24 /* PopUpView.swift in Sources */,
 				03F21BE7292AE863001D4D8E /* AirSpec_iOSApp.swift in Sources */,
 				034D16EA294D22A0005BE966 /* SensorIconConstants.swift in Sources */,
 				03BC95E529525EFD00AD89BE /* CrookedText.swift in Sources */,
