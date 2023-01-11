@@ -29,7 +29,8 @@ struct WatchHomeView: View {
     
     @State private var isSurvey = true
 //    let application = UIApplication.shared
-    let secondAppPath = "coziewatch://"
+    @Environment(\.openURL) private var openURL
+    let secondAppPath = "cozie://" ///coziewatch
     
     var body: some View {
         ZStack{
@@ -84,16 +85,22 @@ struct WatchHomeView: View {
                     
                     Button(action:{
                         withAnimation{
-                            let appUrl = URL(string:secondAppPath)!
-
-
-                            WKExtension.shared().openSystemURL(appUrl)
+//                            let appUrl = URL(string:secondAppPath)!
+                            
+//                            openURL(appUrl) ///  SPApplicationDelegate extensionConnection:openSystemURL:]:2401: URL with scheme "coziewatch" not supported
+//                            WKExtension.shared().openSystemURL(appUrl)
 //                            NSExtensionContext().open(appUrl)
 //                            if NSExtensionContext().canOpenURL(appUrl){
 //                                NSExtensionContext().open(appUrl)
 //                            }else{
 //                                print("cannot find cozie app")
 //                            }
+                            
+                            if let appURL = URL(string:secondAppPath) {
+                                WKExtension.shared().openSystemURL(appURL)
+                            } else {
+                                print("Invalid URL specified.")
+                            }
 
                             isSurvey.toggle()
                         }

@@ -42,6 +42,14 @@
 		03931B9C2943B9930093515D /* NIOPosix in Frameworks */ = {isa = PBXBuildFile; productRef = 03931B9B2943B9930093515D /* NIOPosix */; };
 		03931B9E2943BAB90093515D /* NetworkConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03931B9D2943BAB90093515D /* NetworkConstants.swift */; };
 		03931BA02943BDB90093515D /* NIO_TCP_Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03931B9F2943BDB90093515D /* NIO_TCP_Client.swift */; };
+		03A9F606296CB24A00BC9100 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03A9F605296CB24A00BC9100 /* WidgetKit.framework */; };
+		03A9F608296CB24A00BC9100 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03A9F607296CB24A00BC9100 /* SwiftUI.framework */; };
+		03A9F60B296CB24A00BC9100 /* AirSpec_iOS_Watch_Complication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9F60A296CB24A00BC9100 /* AirSpec_iOS_Watch_Complication.swift */; };
+		03A9F610296CB24E00BC9100 /* AirSpec_iOS_Watch_Complication.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 03A9F60C296CB24A00BC9100 /* AirSpec_iOS_Watch_Complication.intentdefinition */; };
+		03A9F611296CB24E00BC9100 /* AirSpec_iOS_Watch_Complication.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 03A9F60C296CB24A00BC9100 /* AirSpec_iOS_Watch_Complication.intentdefinition */; };
+		03A9F614296CB24E00BC9100 /* AirSpec_iOS Watch ComplicationExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 03A9F604296CB24A00BC9100 /* AirSpec_iOS Watch ComplicationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		03A9F61A296CB69A00BC9100 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03A9F619296CB69A00BC9100 /* Assets.xcassets */; };
+		03A9F61D296CB94800BC9100 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03F21BEA292AE866001D4D8E /* Assets.xcassets */; };
 		03BC95C32950D3B300AD89BE /* HeartAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC95C22950D3B300AD89BE /* HeartAnimation.swift */; };
 		03BC95C42950D3B300AD89BE /* HeartAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC95C22950D3B300AD89BE /* HeartAnimation.swift */; };
 		03BC95CA2951075F00AD89BE /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03BC95C92951075F00AD89BE /* HealthKit.framework */; };
@@ -100,6 +108,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		03A9F612296CB24E00BC9100 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 03F21BB3292AE85C001D4D8E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 03A9F603296CB24A00BC9100;
+			remoteInfo = "AirSpec_iOS Watch ComplicationExtension";
+		};
 		03F21BCC292AE863001D4D8E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 03F21BB3292AE85C001D4D8E /* Project object */;
@@ -138,6 +153,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		03A9F618296CB24E00BC9100 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				03A9F614296CB24E00BC9100 /* AirSpec_iOS Watch ComplicationExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		03F21C0A292AE867001D4D8E /* Embed Watch Content */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -171,6 +197,13 @@
 		038C4DC2292B09BC00699753 /* AirSpec-iOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "AirSpec-iOS-Info.plist"; sourceTree = SOURCE_ROOT; };
 		03931B9D2943BAB90093515D /* NetworkConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkConstants.swift; sourceTree = "<group>"; };
 		03931B9F2943BDB90093515D /* NIO_TCP_Client.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NIO_TCP_Client.swift; sourceTree = "<group>"; };
+		03A9F604296CB24A00BC9100 /* AirSpec_iOS Watch ComplicationExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "AirSpec_iOS Watch ComplicationExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		03A9F605296CB24A00BC9100 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		03A9F607296CB24A00BC9100 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		03A9F60A296CB24A00BC9100 /* AirSpec_iOS_Watch_Complication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirSpec_iOS_Watch_Complication.swift; sourceTree = "<group>"; };
+		03A9F60C296CB24A00BC9100 /* AirSpec_iOS_Watch_Complication.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = AirSpec_iOS_Watch_Complication.intentdefinition; sourceTree = "<group>"; };
+		03A9F60F296CB24E00BC9100 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		03A9F619296CB69A00BC9100 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		03BC95C22950D3B300AD89BE /* HeartAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartAnimation.swift; sourceTree = "<group>"; };
 		03BC95C52951022C00AD89BE /* AirSpec_iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AirSpec_iOS.entitlements; sourceTree = "<group>"; };
 		03BC95C62951046000AD89BE /* AirSpec_iOS Watch App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "AirSpec_iOS Watch App.entitlements"; sourceTree = "<group>"; };
@@ -220,6 +253,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		03A9F601296CB24A00BC9100 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				03A9F608296CB24A00BC9100 /* SwiftUI.framework in Frameworks */,
+				03A9F606296CB24A00BC9100 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		03F21BB8292AE85D001D4D8E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -341,11 +383,24 @@
 			path = Data;
 			sourceTree = "<group>";
 		};
+		03A9F609296CB24A00BC9100 /* AirSpec_iOS Watch Complication */ = {
+			isa = PBXGroup;
+			children = (
+				03A9F60A296CB24A00BC9100 /* AirSpec_iOS_Watch_Complication.swift */,
+				03A9F60C296CB24A00BC9100 /* AirSpec_iOS_Watch_Complication.intentdefinition */,
+				03A9F619296CB69A00BC9100 /* Assets.xcassets */,
+				03A9F60F296CB24E00BC9100 /* Info.plist */,
+			);
+			path = "AirSpec_iOS Watch Complication";
+			sourceTree = "<group>";
+		};
 		03BC95C82951075F00AD89BE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				03BC95CB2951078900AD89BE /* HealthKit.framework */,
 				03BC95C92951075F00AD89BE /* HealthKit.framework */,
+				03A9F605296CB24A00BC9100 /* WidgetKit.framework */,
+				03A9F607296CB24A00BC9100 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -386,6 +441,7 @@
 				03F21BE5292AE863001D4D8E /* AirSpec_iOS Watch App */,
 				03F21BF6292AE866001D4D8E /* AirSpec_iOS Watch AppTests */,
 				03F21C00292AE867001D4D8E /* AirSpec_iOS Watch AppUITests */,
+				03A9F609296CB24A00BC9100 /* AirSpec_iOS Watch Complication */,
 				03F21BBC292AE85D001D4D8E /* Products */,
 				03BC95C82951075F00AD89BE /* Frameworks */,
 			);
@@ -400,6 +456,7 @@
 				03F21BE1292AE863001D4D8E /* AirSpec_iOS Watch App.app */,
 				03F21BF3292AE866001D4D8E /* AirSpec_iOS Watch AppTests.xctest */,
 				03F21BFD292AE867001D4D8E /* AirSpec_iOS Watch AppUITests.xctest */,
+				03A9F604296CB24A00BC9100 /* AirSpec_iOS Watch ComplicationExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -486,6 +543,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		03A9F603296CB24A00BC9100 /* AirSpec_iOS Watch ComplicationExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 03A9F615296CB24E00BC9100 /* Build configuration list for PBXNativeTarget "AirSpec_iOS Watch ComplicationExtension" */;
+			buildPhases = (
+				03A9F600296CB24A00BC9100 /* Sources */,
+				03A9F601296CB24A00BC9100 /* Frameworks */,
+				03A9F602296CB24A00BC9100 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "AirSpec_iOS Watch ComplicationExtension";
+			productName = "AirSpec_iOS Watch ComplicationExtension";
+			productReference = 03A9F604296CB24A00BC9100 /* AirSpec_iOS Watch ComplicationExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		03F21BBA292AE85D001D4D8E /* AirSpec_iOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 03F21C0B292AE867001D4D8E /* Build configuration list for PBXNativeTarget "AirSpec_iOS" */;
@@ -556,10 +630,12 @@
 				03F21BDD292AE863001D4D8E /* Sources */,
 				03F21BDE292AE863001D4D8E /* Frameworks */,
 				03F21BDF292AE863001D4D8E /* Resources */,
+				03A9F618296CB24E00BC9100 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				03A9F613296CB24E00BC9100 /* PBXTargetDependency */,
 			);
 			name = "AirSpec_iOS Watch App";
 			packageProductDependencies = (
@@ -617,6 +693,9 @@
 				LastSwiftUpdateCheck = 1410;
 				LastUpgradeCheck = 1410;
 				TargetAttributes = {
+					03A9F603296CB24A00BC9100 = {
+						CreatedOnToolsVersion = 14.1;
+					};
 					03F21BBA292AE85D001D4D8E = {
 						CreatedOnToolsVersion = 14.1;
 					};
@@ -665,11 +744,21 @@
 				03F21BE0292AE863001D4D8E /* AirSpec_iOS Watch App */,
 				03F21BF2292AE866001D4D8E /* AirSpec_iOS Watch AppTests */,
 				03F21BFC292AE867001D4D8E /* AirSpec_iOS Watch AppUITests */,
+				03A9F603296CB24A00BC9100 /* AirSpec_iOS Watch ComplicationExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		03A9F602296CB24A00BC9100 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				03A9F61D296CB94800BC9100 /* Assets.xcassets in Resources */,
+				03A9F61A296CB69A00BC9100 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		03F21BB9292AE85D001D4D8E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -719,6 +808,15 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		03A9F600296CB24A00BC9100 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				03A9F610296CB24E00BC9100 /* AirSpec_iOS_Watch_Complication.intentdefinition in Sources */,
+				03A9F60B296CB24A00BC9100 /* AirSpec_iOS_Watch_Complication.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		03F21BB7292AE85D001D4D8E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -806,6 +904,7 @@
 				03BC96312956637800AD89BE /* Grid.swift in Sources */,
 				03BC95C42950D3B300AD89BE /* HeartAnimation.swift in Sources */,
 				03BC95EC29525F9000AD89BE /* IdentifiableCharacter.swift in Sources */,
+				03A9F611296CB24E00BC9100 /* AirSpec_iOS_Watch_Complication.intentdefinition in Sources */,
 				03BC961B295662E400AD89BE /* HealthData.swift in Sources */,
 				030FE313296719F000AC5E24 /* PopUpView.swift in Sources */,
 				03F21BE7292AE863001D4D8E /* AirSpec_iOSApp.swift in Sources */,
@@ -838,6 +937,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		03A9F613296CB24E00BC9100 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 03A9F603296CB24A00BC9100 /* AirSpec_iOS Watch ComplicationExtension */;
+			targetProxy = 03A9F612296CB24E00BC9100 /* PBXContainerItemProxy */;
+		};
 		03F21BCD292AE863001D4D8E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 03F21BBA292AE85D001D4D8E /* AirSpec_iOS */;
@@ -866,6 +970,69 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		03A9F616296CB24E00BC9100 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "AirSpec_iOS\\ Watch\\ Complication/Assets.xcassets";
+				DEVELOPMENT_TEAM = C428CUJN6B;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "AirSpec_iOS Watch Complication/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "AirSpec_iOS Watch Complication";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "medialab.AirSpec-iOS.watchkitapp.AirSpec-iOS-Watch-Complication";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 9.1;
+			};
+			name = Debug;
+		};
+		03A9F617296CB24E00BC9100 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "AirSpec_iOS\\ Watch\\ Complication/Assets.xcassets";
+				DEVELOPMENT_TEAM = C428CUJN6B;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "AirSpec_iOS Watch Complication/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "AirSpec_iOS Watch Complication";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "medialab.AirSpec-iOS.watchkitapp.AirSpec-iOS-Watch-Complication";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 9.1;
+			};
+			name = Release;
+		};
 		03F21C05292AE867001D4D8E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -978,6 +1145,7 @@
 		03F21C08292AE867001D4D8E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "AirSpec_iOS Watch App/AirSpec_iOS Watch App.entitlements";
@@ -1013,6 +1181,7 @@
 		03F21C09292AE867001D4D8E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "AirSpec_iOS Watch App/AirSpec_iOS Watch App.entitlements";
@@ -1298,6 +1467,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		03A9F615296CB24E00BC9100 /* Build configuration list for PBXNativeTarget "AirSpec_iOS Watch ComplicationExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				03A9F616296CB24E00BC9100 /* Debug */,
+				03A9F617296CB24E00BC9100 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		03F21BB6292AE85C001D4D8E /* Build configuration list for PBXProject "AirSpec_iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
