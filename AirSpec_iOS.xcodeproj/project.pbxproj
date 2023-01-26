@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		030FE313296719F000AC5E24 /* PopUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030FE311296719EA00AC5E24 /* PopUpView.swift */; };
+		032FEAD92981C2D100A2819F /* SurveyQuestionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FEAD82981C2D100A2819F /* SurveyQuestionView.swift */; };
+		032FEADB2981C67200A2819F /* QuestionFlows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FEADA2981C67200A2819F /* QuestionFlows.swift */; };
+		032FEADC2981C67200A2819F /* QuestionFlows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FEADA2981C67200A2819F /* QuestionFlows.swift */; };
 		034B0D6A2942A50500F21CFB /* MyDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034B0D692942A50500F21CFB /* MyDataView.swift */; };
 		034D16DE294A7FD7005BE966 /* OpenCircularGauge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D16DD294A7FD7005BE966 /* OpenCircularGauge.swift */; };
 		034D16DF294A7FD7005BE966 /* OpenCircularGauge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D16DD294A7FD7005BE966 /* OpenCircularGauge.swift */; };
@@ -50,6 +53,7 @@
 		03A9F614296CB24E00BC9100 /* AirSpec_iOS Watch ComplicationExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 03A9F604296CB24A00BC9100 /* AirSpec_iOS Watch ComplicationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		03A9F61A296CB69A00BC9100 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03A9F619296CB69A00BC9100 /* Assets.xcassets */; };
 		03A9F61D296CB94800BC9100 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03F21BEA292AE866001D4D8E /* Assets.xcassets */; };
+		03AF9927297BA71A00C465C5 /* BlurView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AF9926297BA71A00C465C5 /* BlurView.swift */; };
 		03BC95C32950D3B300AD89BE /* HeartAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC95C22950D3B300AD89BE /* HeartAnimation.swift */; };
 		03BC95C42950D3B300AD89BE /* HeartAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC95C22950D3B300AD89BE /* HeartAnimation.swift */; };
 		03BC95CA2951075F00AD89BE /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03BC95C92951075F00AD89BE /* HealthKit.framework */; };
@@ -105,6 +109,7 @@
 		03F21BF8292AE866001D4D8E /* AirSpec_iOS_Watch_AppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F21BF7292AE866001D4D8E /* AirSpec_iOS_Watch_AppTests.swift */; };
 		03F21C02292AE867001D4D8E /* AirSpec_iOS_Watch_AppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F21C01292AE867001D4D8E /* AirSpec_iOS_Watch_AppUITests.swift */; };
 		03F21C04292AE867001D4D8E /* AirSpec_iOS_Watch_AppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F21C03292AE867001D4D8E /* AirSpec_iOS_Watch_AppUITestsLaunchTests.swift */; };
+		03FE132329760247001EC500 /* SelfLoggingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FE132229760247001EC500 /* SelfLoggingView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -179,6 +184,8 @@
 
 /* Begin PBXFileReference section */
 		030FE311296719EA00AC5E24 /* PopUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopUpView.swift; sourceTree = "<group>"; };
+		032FEAD82981C2D100A2819F /* SurveyQuestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyQuestionView.swift; sourceTree = "<group>"; };
+		032FEADA2981C67200A2819F /* QuestionFlows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionFlows.swift; sourceTree = "<group>"; };
 		034B0D692942A50500F21CFB /* MyDataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyDataView.swift; sourceTree = "<group>"; };
 		034D16DD294A7FD7005BE966 /* OpenCircularGauge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenCircularGauge.swift; sourceTree = "<group>"; };
 		034D16E2294CF9A2005BE966 /* LinearGauge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinearGauge.swift; sourceTree = "<group>"; };
@@ -204,6 +211,7 @@
 		03A9F60C296CB24A00BC9100 /* AirSpec_iOS_Watch_Complication.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = AirSpec_iOS_Watch_Complication.intentdefinition; sourceTree = "<group>"; };
 		03A9F60F296CB24E00BC9100 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		03A9F619296CB69A00BC9100 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		03AF9926297BA71A00C465C5 /* BlurView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurView.swift; sourceTree = "<group>"; };
 		03BC95C22950D3B300AD89BE /* HeartAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartAnimation.swift; sourceTree = "<group>"; };
 		03BC95C52951022C00AD89BE /* AirSpec_iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AirSpec_iOS.entitlements; sourceTree = "<group>"; };
 		03BC95C62951046000AD89BE /* AirSpec_iOS Watch App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "AirSpec_iOS Watch App.entitlements"; sourceTree = "<group>"; };
@@ -250,6 +258,7 @@
 		03F21BFD292AE867001D4D8E /* AirSpec_iOS Watch AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "AirSpec_iOS Watch AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		03F21C01292AE867001D4D8E /* AirSpec_iOS_Watch_AppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirSpec_iOS_Watch_AppUITests.swift; sourceTree = "<group>"; };
 		03F21C03292AE867001D4D8E /* AirSpec_iOS_Watch_AppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirSpec_iOS_Watch_AppUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		03FE132229760247001EC500 /* SelfLoggingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelfLoggingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -355,6 +364,9 @@
 				03BC961129560E4600AD89BE /* MyDataPlaceView.swift */,
 				03BC96132956106700AD89BE /* MyDataTimeView.swift */,
 				030FE311296719EA00AC5E24 /* PopUpView.swift */,
+				03FE132229760247001EC500 /* SelfLoggingView.swift */,
+				03AF9926297BA71A00C465C5 /* BlurView.swift */,
+				032FEAD82981C2D100A2819F /* SurveyQuestionView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -370,6 +382,7 @@
 				03931B9D2943BAB90093515D /* NetworkConstants.swift */,
 				03931B9F2943BDB90093515D /* NIO_TCP_Client.swift */,
 				034D16E8294D22A0005BE966 /* SensorIconConstants.swift */,
+				032FEADA2981C67200A2819F /* QuestionFlows.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -832,6 +845,7 @@
 				034D16E9294D22A0005BE966 /* SensorIconConstants.swift in Sources */,
 				038AA942295930040086EC1B /* ThermalView.swift in Sources */,
 				03BC96262956637800AD89BE /* Data.swift in Sources */,
+				03AF9927297BA71A00C465C5 /* BlurView.swift in Sources */,
 				03BC96282956637800AD89BE /* GitHubData.swift in Sources */,
 				03BC96402956669800AD89BE /* ChartStrideBy.swift in Sources */,
 				03BC96322956637800AD89BE /* StockData.swift in Sources */,
@@ -855,6 +869,9 @@
 				03BC963D2956668B00AD89BE /* InterpolationMethod.swift in Sources */,
 				03BC96302956637800AD89BE /* Grid.swift in Sources */,
 				03BC95EB29525F9000AD89BE /* IdentifiableCharacter.swift in Sources */,
+				03FE132329760247001EC500 /* SelfLoggingView.swift in Sources */,
+				032FEAD92981C2D100A2819F /* SurveyQuestionView.swift in Sources */,
+				032FEADB2981C67200A2819F /* QuestionFlows.swift in Sources */,
 				034B0D6A2942A50500F21CFB /* MyDataView.swift in Sources */,
 				03931BA02943BDB90093515D /* NIO_TCP_Client.swift in Sources */,
 				038AA945295932DD0086EC1B /* AirQualityView.swift in Sources */,
@@ -911,6 +928,7 @@
 				034D16EA294D22A0005BE966 /* SensorIconConstants.swift in Sources */,
 				03BC95E529525EFD00AD89BE /* CrookedText.swift in Sources */,
 				03BC963E2956668B00AD89BE /* InterpolationMethod.swift in Sources */,
+				032FEADC2981C67200A2819F /* QuestionFlows.swift in Sources */,
 				038AA93D295915DF0086EC1B /* VisualView.swift in Sources */,
 				034D16DF294A7FD7005BE966 /* OpenCircularGauge.swift in Sources */,
 				038AA941295915FD0086EC1B /* AcousticsView.swift in Sources */,

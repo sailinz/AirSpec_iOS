@@ -29,6 +29,7 @@ struct SettingView: View {
     @State private var minValueNoise: Float = Float(SensorIconConstants.sensorAcoustics[0].color1Position) * sliderWidth
     @State private var maxValueNoise: Float = Float(SensorIconConstants.sensorAcoustics[0].color3Position) * sliderWidth
 
+
     
     var body: some View {
         
@@ -64,6 +65,7 @@ struct SettingView: View {
                                 /// in production
                                 toggleScanning()
                                 connectToAirSpec()
+//                                UserDefaults.standard.set($user_id, forKey: "user_id")
                                     
                                 })
                                 .multilineTextAlignment(.trailing)
@@ -153,24 +155,37 @@ struct SettingView: View {
                                 .font(.system(.subheadline))
                             Spacer()
                             Button(action: receiver.testLightReset) {
-                                    Text("Reset")
-                                    .font(.system(.subheadline) .weight(.semibold))
-                                    .foregroundColor(.white)
-                                }
-                                .padding(.all,5)
-                                .background(.gray.opacity(0.5))
-                                .clipShape(Capsule())
-                            Button(action: receiver.testLight) {
-                                    Text("Test")
-                                    .font(.system(.subheadline) .weight(.semibold))
-                                    .foregroundColor(.white)
-                                }
-                                .padding(.all,5)
-                                .background(.pink.opacity(0.5))
-                                .clipShape(Capsule())
-                                
-                                
-                                
+                                Text("Reset")
+                                .font(.system(.subheadline) .weight(.semibold))
+                                .foregroundColor(.white)
+                            }
+                            .padding(.all,5)
+                            .background(.gray.opacity(0.5))
+                            .clipShape(Capsule())
+                            
+                            Button(action:{
+                                        Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { timer in
+                                            receiver.testLight()
+                                        }
+                                    }
+                                    
+                                ) {
+                                Text("Test")
+                                .font(.system(.subheadline) .weight(.semibold))
+                                .foregroundColor(.white)
+                            }
+                            .padding(.all,5)
+                            .background(.pink.opacity(0.5))
+                            .clipShape(Capsule())
+                            
+//                            Button(action: receiver.testLight) {
+//                                    Text("Test")
+//                                    .font(.system(.subheadline) .weight(.semibold))
+//                                    .foregroundColor(.white)
+//                                }
+//                                .padding(.all,5)
+//                                .background(.pink.opacity(0.5))
+//                                .clipShape(Capsule())
                         }
                         
                     }
@@ -437,6 +452,8 @@ struct SettingView: View {
             }else{
                 maxValueNoise = UserDefaults.standard.float(forKey: "maxValueNoise") * sliderWidth
             }
+            
+            
         }
     }
     

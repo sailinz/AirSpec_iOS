@@ -34,9 +34,17 @@ enum BluetoothConstants {
 
     /// An identifier for the characteristic for read data from AirSpec.
     static let airspecTXCharacteristicUUID = CBUUID(string: "0000fe81-0000-1000-8000-00805f9b34fb") /// short FE81
-
     /// An identifier for the characteristic for write data from AirSpec.
     static let airspecRXCharacteristicUUID = CBUUID(string: "0000fe82-0000-1000-8000-00805f9b34fb")
+    
+    
+    /// directly assign UUID of 10 users - this should be the same so no need but the name will be different
+//    static let airspecServiceUUIDs = [CBUUID(string: "0000fe80-0000-1000-8000-00805f9b34fb")]
+//    static let airspecTXCharacteristicUUIDs = [CBUUID(string: "0000fe81-0000-1000-8000-00805f9b34fb")]
+//    static let airspecRXCharacteristicUUIDs = [CBUUID(string: "0000fe82-0000-1000-8000-00805f9b34fb")]
+    static let influx_user_ids = ["9067133"]
+    
+    
     
 //    /// An identifier for the AirSpec service.
 //    static let airspecServiceUUID = CBUUID(string: "180D") /// short FE80
