@@ -77,7 +77,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         self.serviceUUID = service
         self.TXcharacteristicUUID = characteristic
         self.centralManager = CBCentralManager(delegate: self, queue: nil)
-        self.connectToServer()
+//        self.connectToServer() /// connect to AirSpec 2022 version server
         
     }
     
@@ -329,16 +329,17 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //            csvText.append(newline)
 //            self.socket.write(string:"Test airspec")
 //            self.socket.write(string:self.glassesData.sensorData)
-            print(self.glassesData.sensorData)
+//            print(self.glassesData.sensorData)
             
-            do {
+            /// try to send the airspec server (2022 version)
+//            do {
 //                try satServerClient?.send(Data(Data(referencing: dataReceived).hexEncodedString().utf8))
-
-            } catch {
-                logger.error("TCP connection problems: \(error).")
-                connectedToSatServer = false
-                ///https://stackoverflow.com/questions/59718703/swift-nio-tcp-client-auto-reconnect 
-            }
+//
+//            } catch {
+//                logger.error("TCP connection problems: \(error).")
+//                connectedToSatServer = false
+//                ///https://stackoverflow.com/questions/59718703/swift-nio-tcp-client-auto-reconnect
+//            }
             
         }
     }

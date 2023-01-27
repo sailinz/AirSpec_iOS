@@ -163,8 +163,12 @@ struct SettingView: View {
                             .background(.gray.opacity(0.5))
                             .clipShape(Capsule())
                             
-                            Button(action:{
+                            Button(action:
+//                                    receiver.testLight
+                                    {
                                         Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { timer in
+                                            print("test light with timer")
+//                                            receiver.testLightReset()
                                             receiver.testLight()
                                         }
                                     }
@@ -271,6 +275,7 @@ struct SettingView: View {
                                     .frame(maxWidth: .infinity, alignment: .center)
                                     Text(SensorIconConstants.sensorThermal[0].unit)
                                         .font(.system(.subheadline))
+                                        .frame(maxWidth: .infinity, alignment: .trailing)
                                         .frame(maxWidth: .infinity, alignment: .trailing)
                                         .foregroundColor(Color.black)
                                     
