@@ -320,7 +320,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             let sensorString2 = dataReceived.base64EncodedData()
             self.glassesData.sensorData = sensorString
 //            self.sensorData = String(sensorString[40])
-//            print(self.glassesData.sensorData)
+            print(self.glassesData.sensorData)
 //            let dateFormatter : DateFormatter = DateFormatter()
 //            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
 //            let date = Date()

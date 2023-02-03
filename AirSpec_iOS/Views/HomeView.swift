@@ -316,17 +316,19 @@ struct HomeView: View {
                 color1PositionAcoutstics = [UserDefaults.standard.double(forKey: "minValueNoise"), UserDefaults.standard.double(forKey: "minValueNoise")]
                 color3PositionAcoutstics = [UserDefaults.standard.double(forKey: "maxValueNoise"), UserDefaults.standard.double(forKey: "maxValueNoise")]
                 
-                timer = DispatchSource.makeTimerSource()
-                timer?.schedule(deadline: .now(), repeating: .seconds(updateFrequence))
-                timer?.setEventHandler {
-                    startQueries()
-                }
-                timer?.resume()
+                /// retrieve data from influxdb
+//                timer = DispatchSource.makeTimerSource()
+//                timer?.schedule(deadline: .now(), repeating: .seconds(updateFrequence))
+//                timer?.setEventHandler {
+//                    startQueries()
+//                }
+//                timer?.resume()
                 
                 
             }else{
-                timer?.cancel()
-                timer = nil
+                
+//                timer?.cancel()
+//                timer = nil
             }
         }
         
@@ -340,12 +342,13 @@ struct HomeView: View {
             color1PositionAcoutstics = [UserDefaults.standard.double(forKey: "minValueNoise"), UserDefaults.standard.double(forKey: "minValueNoise")]
             color3PositionAcoutstics = [UserDefaults.standard.double(forKey: "maxValueNoise"), UserDefaults.standard.double(forKey: "maxValueNoise")]
             
-            timer = DispatchSource.makeTimerSource()
-            timer?.schedule(deadline: .now(), repeating: .seconds(updateFrequence))
-            timer?.setEventHandler {
-                startQueries()
-            }
-            timer?.resume()
+            /// retrieve data from influxdb
+//            timer = DispatchSource.makeTimerSource()
+//            timer?.schedule(deadline: .now(), repeating: .seconds(updateFrequence))
+//            timer?.setEventHandler {
+//                startQueries()
+//            }
+//            timer?.resume()
             
             
         }
@@ -368,134 +371,122 @@ struct HomeView: View {
     }
 
     /// - get data from influxdb
-    func startQueries() {
-        let sensorList = [SensorIconConstants.sensorThermal,SensorIconConstants.sensorAirQuality, SensorIconConstants.sensorVisual]
-//        var dataList = [thermalData, airQualityData, visualData]
-        
-        /// environmental sensing
-        DispatchQueue.global().async {
-            for i in 0..<sensorList.count{
-                for j in 0..<sensorList[i].count{
-                    var query = """
-                                """
-
-                    
-                    if(i == 2){ ///lux has no type
-                        query = """
-                                        from(bucket: "\(NetworkConstants.bucket)")
-                                        |> range(start: -2m)
-                                        |> filter(fn: (r) => r["_measurement"] == "\(sensorList[i][j].measurement)")
-                                        |> filter(fn: (r) => r["_field"] == "signal")
-                                        |> filter(fn: (r) => r["id"] == "\(user_id)")
-                                        |> mean()
-                                """
-                    }else{
-                        query = """
-                                        from(bucket: "\(NetworkConstants.bucket)")
-                                        |> range(start: -2m)
-                                        |> filter(fn: (r) => r["_measurement"] == "\(sensorList[i][j].measurement)")
-                                        |> filter(fn: (r) => r["_field"] == "signal")
-                                        |> filter(fn: (r) => r["id"] == "\(user_id)")
-                                        |> filter(fn: (r) => r["\(sensorList[i][j].identifier)"] == "\(sensorList[i][j].type)")
-                                        |> mean()
-                                """
-                    }
-                    
-                    influxClient.queryAPI.query(query: query, org: NetworkConstants.org) {response, error in
-                        // Error response
-                        if let error = error {
-                            print("Error:\n\n\(error)")
-                        }
-                        
-                        // Success response
-                        if let response = response {
-                            
-                            print("\nSuccess response...\n")
-                            do {
-                                try response.forEach { record in
-                                    DispatchQueue.main.async {
-                                        if i == 0 {
-                                            thermalData[j] = Double("\(record.values["_value"]!)") ?? 0.0
-                                            thermalDataTrend[j] = Int.random(in: -2 ..< 2)
-//                                            print(record.values["_value"]!)
-                                        }else if i == 1{
-                                            airQualityData[j] = Double("\(record.values["_value"]!)") ?? 0.0
-                                            airQualityDataTrend[j] = Int.random(in: -2 ..< 2)
-//                                            print(record.values["_value"]!)
-                                        }else if i == 2{
-                                            visualData[j] = Double("\(record.values["_value"]!)") ?? 0.0
-                                            visualDataTrend[j] = Int.random(in: -2 ..< 2)
-//                                            print(record.values["_value"]!)
-                                        }else if i == 3{
-                                            /// placeholder for noise value
-                                        }else{
-                                            
-                                        }
-                                        //                                        dataList[i][j] = Double("\(record.values["_value"]!)") ?? 0.0
-                                    }
-                                }
-                            } catch {
-                                print("Error:\n\n\(error)")
-                            }
-                        }
-                    }
-                    
-                    
-                }
-            }
-        }
-        
-        DispatchQueue.global().async {
-            var query_cog = """
-                            from(bucket: "\(NetworkConstants.bucket)")
-                            |> range(start: -2m)
-                            |> filter(fn: (r) => r["_measurement"] == "thermopile_nose_tip"
-                                    or r["_measurement"] == "thermopile_nose_bridge"
-                                    or r["_measurement"] == "thermopile_temple_front"
-                                    or r["_measurement"] == "thermopile_temple_middle"
-                                    or r["_measurement"] == "thermopile_temple_back")
-                            |> filter(fn: (r) => r["_field"] == "signal")
-                            |> filter(fn: (r) => r["id"] == "\(user_id)")
-                            |> filter(fn: (r) => r["type"] == "objectTemp")
-                            |> mean()
-                    """
-            
-            influxClient.queryAPI.query(query: query_cog, org: NetworkConstants.org) {response, error in
-                // Error response
-                if let error = error {
-                    print("Error:\n\n\(error)")
-                }
-                
-                // Success response
-                if let response = response {
-                    
-                    print("\nSuccess response...\n")
-                    var count  = 0
-                    do {
-                        try response.forEach { record in
-                            DispatchQueue.main.async {
-                                var skinTempIndex = skinTempDataName.index(of: "\(record.values["_measurement"]!)")
-                                skinTempData[skinTempIndex!] = Double("\(record.values["_value"]!)") ?? 0.0
-                            }
-                        }
-                        cogIntensity = Int(abs(skinTempData[4] - skinTempData[0])*10+5)
-                        print(cogIntensity)
-//                        print(skinTempData[4] - skinTempData[0]) /// middle - bridge
-                    } catch {
-                        print("Error:\n\n\(error)")
-                    }
-                }
-            }
-        }
-        
-        
-        
-
-    }
+//    func startQueries() {
+//        let sensorList = [SensorIconConstants.sensorThermal,SensorIconConstants.sensorAirQuality, SensorIconConstants.sensorVisual]
+//
+//        /// environmental sensing
+//        DispatchQueue.global().async {
+//            for i in 0..<sensorList.count{
+//                for j in 0..<sensorList[i].count{
+//                    var query = """
+//                                """
+//
+//
+//                    if(i == 2){ ///lux has no type
+//                        query = """
+//                                        from(bucket: "\(NetworkConstants.bucket)")
+//                                        |> range(start: -2m)
+//                                        |> filter(fn: (r) => r["_measurement"] == "\(sensorList[i][j].measurement)")
+//                                        |> filter(fn: (r) => r["_field"] == "signal")
+//                                        |> filter(fn: (r) => r["id"] == "\(user_id)")
+//                                        |> mean()
+//                                """
+//                    }else{
+//                        query = """
+//                                        from(bucket: "\(NetworkConstants.bucket)")
+//                                        |> range(start: -2m)
+//                                        |> filter(fn: (r) => r["_measurement"] == "\(sensorList[i][j].measurement)")
+//                                        |> filter(fn: (r) => r["_field"] == "signal")
+//                                        |> filter(fn: (r) => r["id"] == "\(user_id)")
+//                                        |> filter(fn: (r) => r["\(sensorList[i][j].identifier)"] == "\(sensorList[i][j].type)")
+//                                        |> mean()
+//                                """
+//                    }
+//
+//                    influxClient.queryAPI.query(query: query, org: NetworkConstants.org) {response, error in
+//                        // Error response
+//                        if let error = error {
+//                            print("Error:\n\n\(error)")
+//                        }
+//
+//                        // Success response
+//                        if let response = response {
+//
+//                            print("\nSuccess response...\n")
+//                            do {
+//                                try response.forEach { record in
+//                                    DispatchQueue.main.async {
+//                                        if i == 0 {
+//                                            thermalData[j] = Double("\(record.values["_value"]!)") ?? 0.0
+//                                            thermalDataTrend[j] = Int.random(in: -2 ..< 2)
+//                                        }else if i == 1{
+//                                            airQualityData[j] = Double("\(record.values["_value"]!)") ?? 0.0
+//                                            airQualityDataTrend[j] = Int.random(in: -2 ..< 2)
+//                                        }else if i == 2{
+//                                            visualData[j] = Double("\(record.values["_value"]!)") ?? 0.0
+//                                            visualDataTrend[j] = Int.random(in: -2 ..< 2)
+//                                        }else if i == 3{
+//                                            /// placeholder for noise value
+//                                        }else{
+//
+//                                        }
+//
+//                                    }
+//                                }
+//                            } catch {
+//                                print("Error:\n\n\(error)")
+//                            }
+//                        }
+//                    }
+//
+//
+//                }
+//            }
+//        }
+//
+//        DispatchQueue.global().async {
+//            var query_cog = """
+//                            from(bucket: "\(NetworkConstants.bucket)")
+//                            |> range(start: -2m)
+//                            |> filter(fn: (r) => r["_measurement"] == "thermopile_nose_tip"
+//                                    or r["_measurement"] == "thermopile_nose_bridge"
+//                                    or r["_measurement"] == "thermopile_temple_front"
+//                                    or r["_measurement"] == "thermopile_temple_middle"
+//                                    or r["_measurement"] == "thermopile_temple_back")
+//                            |> filter(fn: (r) => r["_field"] == "signal")
+//                            |> filter(fn: (r) => r["id"] == "\(user_id)")
+//                            |> filter(fn: (r) => r["type"] == "objectTemp")
+//                            |> mean()
+//                    """
+//
+//            influxClient.queryAPI.query(query: query_cog, org: NetworkConstants.org) {response, error in
+//                // Error response
+//                if let error = error {
+//                    print("Error:\n\n\(error)")
+//                }
+//
+//                // Success response
+//                if let response = response {
+//
+//                    print("\nSuccess response...\n")
+//                    var count  = 0
+//                    do {
+//                        try response.forEach { record in
+//                            DispatchQueue.main.async {
+//                                var skinTempIndex = skinTempDataName.index(of: "\(record.values["_measurement"]!)")
+//                                skinTempData[skinTempIndex!] = Double("\(record.values["_value"]!)") ?? 0.0
+//                            }
+//                        }
+//                        cogIntensity = Int(abs(skinTempData[4] - skinTempData[0])*10+5) /// middle - bridge
+//                    } catch {
+//                        print("Error:\n\n\(error)")
+//                    }
+//                }
+//            }
+//        }
+//    }
     
 }
-
-
 
 
 extension Color {
@@ -509,27 +500,5 @@ struct HomeView_Previews: PreviewProvider {
         HomeView()
     }
 }
-
-//struct HomeView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        let thingToPreview = "9067133"  // ERROR
-//        StatefulPreviewWrapper(thingToPreview) { HomeView(user_id: $0) }
-//    }
-//}
-
-//struct StatefulPreviewWrapper<Value, Content: View>: View {
-//    @State var value: Value
-//    var content: (Binding<Value>) -> Content
-//
-//    var body: some View {
-//        content($value)
-//    }
-//
-//    init(_ value: Value, content: @escaping (Binding<Value>) -> Content) {
-//        self._value = State(wrappedValue: value)
-//        self.content = content
-//    }
-//}
-
 
 

@@ -28,12 +28,10 @@ struct MyDataTimeView: View {
     private let showSymbols = true
     
     private let showLollipop = true
-//    var data = TempData.last30minutes
+
     @State var data: [(minutes: Date, values: Double)] = []
     @State private var selectedElement: temp?
     
-//    @State private var toggleImage: Image = Image(systemName: "circle")
-//    @State private var isOn = false
     @State var flags = Array(repeating: false, count: 8)
     @State var user_id:String = "9067133"
     
@@ -57,9 +55,6 @@ struct MyDataTimeView: View {
             chartEnv
             
             
-                
-//            Toggle("", isOn: $isOn)
-//                .toggleStyle(CheckToggleStyle(checkTogglekImage: SensorIconConstants.sensorThermal[0].icon))
             LazyVGrid(columns: columns, spacing: 20){
                 ForEach(flags.indices) { j in
                     VStack{
@@ -131,7 +126,7 @@ struct MyDataTimeView: View {
                             .onEnded { value in
                                 let element = findElement(location: value.location, proxy: proxy, geometry: geo)
                                 if selectedElement?.minutes == element?.minutes {
-                                    // If tapping the same element, clear the selection.
+                                    /// If tapping the same element, clear the selection.
                                     selectedElement = nil
                                 } else {
                                     selectedElement = element
@@ -197,7 +192,7 @@ struct MyDataTimeView: View {
         let relativeXPosition = location.x - geometry[proxy.plotAreaFrame].origin.x
         let mappedData = data.map {temp(minutes: $0.minutes, values: Int($0.values)) }
         if let date = proxy.value(atX: relativeXPosition) as Date? {
-            // Find the closest date element.
+            /// Find the closest date element.
             var minDistance: TimeInterval = .infinity
             var index: Int? = nil
             for valuesDataIndex in mappedData.indices {
@@ -243,78 +238,65 @@ struct ToggleItem: View {
         
         if(self.storage[self.tag]){
             print(self.tag)
-//            print(storage)
-            
-            startQueries(i:self.tag)
+
+//            startQueries(i:self.tag)
             
         }
         return Toggle(label, isOn: isOn)
                 .toggleStyle(CheckToggleStyle(checkTogglekImage: checkTogglekImage, checkToggleText: checkToggleText))
     }
     
-    func startQueries(i:Int) {
-        
-        /// environmental sensing
-//        DispatchQueue.global().async {
-        var tempData: [(minutes: Date, values: Double)] = []
-        var query = """
-                    """
-        if(i == 6){ ///lux has no type
-            query = """
-                            from(bucket: "\(NetworkConstants.bucket)")
-                            |> range(start: -1h)
-                            |> filter(fn: (r) => r["_measurement"] == "\(sensorSettingList[i].measurement)")
-                            |> filter(fn: (r) => r["_field"] == "signal")
-                            |> filter(fn: (r) => r["id"] == "\(user_id)")
-                            |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)
-                    """
-        }else{
-            query = """
-                            from(bucket: "\(NetworkConstants.bucket)")
-                            |> range(start: -30m)
-                            |> filter(fn: (r) => r["_measurement"] == "\(sensorSettingList[i].measurement)")
-                            |> filter(fn: (r) => r["_field"] == "signal")
-                            |> filter(fn: (r) => r["id"] == "\(user_id)")
-                            |> filter(fn: (r) => r["\(sensorSettingList[i].identifier)"] == "\(sensorSettingList[i].type)")
-                            |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)
-                    """
-        }
-        
-        influxClient.queryAPI.query(query: query, org: NetworkConstants.org) {response, error in
-            // Error response
-            if let error = error {
-                print("Error:\n\n\(error)")
-            }
-            
-            // Success response
-            if let response = response {
-                
-                print("\nSuccess response...\n")
-                do {
-                    try response.forEach { record in
-//                            DispatchQueue.main.async {
-//                                print(record.values["_time"]!)
-//                                print(record.values["_value"]!)
-                        if let result = convertToData(dateString: "\(record.values["_time"]!)", valuesString: "\(record.values["_value"]!)") {
-                            tempData.append(result)
-                        }
-//                            }
-                        
-                    }
-                    self.data = tempData
-//                        print(tempData)
-//                        print(self.data)
-                } catch {
-                    print("Error:\n\n\(error)")
-                }
-            }
-            
-        }
-            
-            
-
+//    func startQueries(i:Int) {
+//
+//        /// environmental sensing
+//        var tempData: [(minutes: Date, values: Double)] = []
+//        var query = """
+//                    """
+//        if(i == 6){ ///lux has no type
+//            query = """
+//                            from(bucket: "\(NetworkConstants.bucket)")
+//                            |> range(start: -1h)
+//                            |> filter(fn: (r) => r["_measurement"] == "\(sensorSettingList[i].measurement)")
+//                            |> filter(fn: (r) => r["_field"] == "signal")
+//                            |> filter(fn: (r) => r["id"] == "\(user_id)")
+//                            |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)
+//                    """
+//        }else{
+//            query = """
+//                            from(bucket: "\(NetworkConstants.bucket)")
+//                            |> range(start: -30m)
+//                            |> filter(fn: (r) => r["_measurement"] == "\(sensorSettingList[i].measurement)")
+//                            |> filter(fn: (r) => r["_field"] == "signal")
+//                            |> filter(fn: (r) => r["id"] == "\(user_id)")
+//                            |> filter(fn: (r) => r["\(sensorSettingList[i].identifier)"] == "\(sensorSettingList[i].type)")
+//                            |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)
+//                    """
 //        }
-    }
+//
+//        influxClient.queryAPI.query(query: query, org: NetworkConstants.org) {response, error in
+//            // Error response
+//            if let error = error {
+//                print("Error:\n\n\(error)")
+//            }
+//
+//            // Success response
+//            if let response = response {
+//
+//                print("\nSuccess response...\n")
+//                do {
+//                    try response.forEach { record in
+//                        if let result = convertToData(dateString: "\(record.values["_time"]!)", valuesString: "\(record.values["_value"]!)") {
+//                            tempData.append(result)
+//                        }
+//                    }
+//                    self.data = tempData
+//                } catch {
+//                    print("Error:\n\n\(error)")
+//                }
+//            }
+//        }
+//    }
+    
 }
 
 func convertToData(dateString: String, valuesString: String) -> (minutes: Date, values: Double)? {

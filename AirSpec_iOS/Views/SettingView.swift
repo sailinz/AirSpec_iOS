@@ -167,7 +167,7 @@ struct SettingView: View {
 //                                    receiver.testLight
                                     {
                                         Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { timer in
-                                            print("test light with timer")
+//                                            print("test light with timer")
 //                                            receiver.testLightReset()
                                             receiver.testLight()
                                         }
