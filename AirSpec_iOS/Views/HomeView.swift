@@ -21,12 +21,12 @@ struct HomeView: View {
         GridItem(.flexible()),
         GridItem(.flexible()),
     ]
-    
+
     let influxClient = try InfluxDBClient(url: NetworkConstants.url, token: NetworkConstants.token)
-    
+
     @State private var timer: DispatchSourceTimer?
-    
-    
+
+
     //    @State var current: Double = 60.0
     //    @State var minValue: Double = 50.0
     //    @State var maxValue: Double = 100.0
@@ -35,7 +35,7 @@ struct HomeView: View {
     //    @State var color3:Color = Color.red
     //    @State var color1Position: Double = 0.1
     //    @State var color3Position: Double = 0.9
-    
+
     @State private var thermalData = Array(repeating: -1.0, count: SensorIconConstants.sensorThermal.count)
     @State private var airQualityData = Array(repeating: -1.0, count: SensorIconConstants.sensorAirQuality.count)
     @State private var visualData = Array(repeating: -1.0, count: SensorIconConstants.sensorVisual.count)
@@ -43,15 +43,15 @@ struct HomeView: View {
     let skinTempDataName = ["thermopile_nose_bridge","thermopile_nose_tip","thermopile_temple_back","thermopile_temple_front","thermopile_temple_middle"]
     @State private var skinTempData = Array(repeating: -1.0, count: 5)
     var user_id:String = "9067133"
-    
+
     @State private var thermalDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorThermal.count)
     @State private var airQualityDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorAirQuality.count)
     @State private var visualDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorVisual.count)
     @State private var acoutsticsDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorAcoustics.count)
     @State private var cogIntensity = 1 /// must scale to a int
     let updateFrequence = 10 /// seconds
-    
-    
+
+
     ///get user set comfort range from userdefault
 //    @State private var color1PositionThermal = [UserDefaults.standard.double(forKey: "minValueTemp"), UserDefaults.standard.double(forKey: "minValueHum")]
 //    @State private var color3PositionThermal = [UserDefaults.standard.double(forKey: "maxValueTemp"), UserDefaults.standard.double(forKey: "maxValueHum")]
@@ -59,18 +59,18 @@ struct HomeView: View {
 //    @State private var color3PositionVisual = [UserDefaults.standard.double(forKey: "maxValueLightIntensity")]
 //    @State private var color1PositionAcoutstics = [UserDefaults.standard.double(forKey: "minValueNoise"), UserDefaults.standard.double(forKey: "minValueNoise")]
 //    @State private var color3PositionAcoutstics = [UserDefaults.standard.double(forKey: "maxValueNoise"), UserDefaults.standard.double(forKey: "maxValueNoise")]
-    
+
     @State private var color1PositionThermal: [Double]?
     @State private var color3PositionThermal: [Double]?
     @State private var color1PositionVisual: [Double]?
     @State private var color3PositionVisual: [Double]?
     @State private var color1PositionAcoutstics: [Double]?
     @State private var color3PositionAcoutstics: [Double]?
-    
-    
-    
+
+
+
     var body: some View {
-        
+
         NavigationView{
             VStack{
 //                Text("Home")
@@ -89,7 +89,7 @@ struct HomeView: View {
 //                //                }
 //
                 ZStack{
-                    
+
                     GeometryReader { geometry in
                         ForEach(0..<cogIntensity, id: \.self) { index in
                             Image("Asset " + String(Int.random(in: 1...18)))
@@ -100,17 +100,17 @@ struct HomeView: View {
                                     color:Color.pink.opacity(0.5),
                                     radius:4)
                                 .animation(Animation.easeIn(duration: 1).delay(1))
-                                
+
                         }
                     }
-                    
+
                     ScrollView {
 
             //            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        
+
                         HeartAnimation()
                             .padding(.all, 80)
-                        
+
                         /// Thermal
                         VStack (alignment: .leading) {
                             Text("Thermal")
@@ -131,7 +131,7 @@ struct HomeView: View {
                                             valueTrend: thermalDataTrend[i],
                                             icon: SensorIconConstants.sensorThermal[i].icon){
                                             }
-                                        
+
                                         VStack (alignment: .leading) {
                                             Text(SensorIconConstants.sensorThermal[i].name)
                                                 .foregroundColor(Color.white)
@@ -156,7 +156,7 @@ struct HomeView: View {
                             }
                             .padding(.horizontal)
                         }
-                        
+
                         VStack (alignment: .leading) {
                             Text("Air quality")
                                 .font(.system(.title2) .weight(.heavy))
@@ -177,7 +177,7 @@ struct HomeView: View {
                                             valueTrend: airQualityDataTrend[i],
                                             icon: SensorIconConstants.sensorAirQuality[i].icon){
                                             }
-                                        
+
                                         VStack (alignment: .leading) {
                                             Text(SensorIconConstants.sensorAirQuality[i].name)
                                                 .foregroundColor(Color.white)
@@ -204,7 +204,7 @@ struct HomeView: View {
                             }
                             .padding(.horizontal)
                         }
-                        
+
                         VStack (alignment: .leading) {
                             Text("Lighting")
                                 .font(.system(.title2) .weight(.heavy))
@@ -225,7 +225,7 @@ struct HomeView: View {
                                             valueTrend: visualDataTrend[i],
                                             icon: SensorIconConstants.sensorVisual[i].icon){
                                             }
-                                        
+
                                         VStack (alignment: .leading) {
                                             Text(SensorIconConstants.sensorVisual[i].name)
                                                 .foregroundColor(Color.white)
@@ -248,11 +248,11 @@ struct HomeView: View {
                                         color:Color.pink.opacity(0.4),
                                         radius: 4)
                                 }
-                                
+
                             }
                             .padding(.horizontal)
                         }
-                        
+
                         VStack (alignment: .leading) {
                             Text("Noise")
                                 .font(.system(.title2) .weight(.heavy))
@@ -273,7 +273,7 @@ struct HomeView: View {
                                             valueTrend: 0,
                                             icon: SensorIconConstants.sensorAcoustics[i].icon){
                                             }
-                                        
+
                                         VStack (alignment: .leading) {
                                             Text(SensorIconConstants.sensorAcoustics[i].name)
                                                 .foregroundColor(Color.white)
@@ -295,7 +295,7 @@ struct HomeView: View {
                                     .shadow(
                                         color:Color.pink.opacity(0.4),
                                         radius: 4)
-                                    
+
                                 }
                             }
                             .padding(.horizontal)
@@ -305,7 +305,7 @@ struct HomeView: View {
             }
             .navigationTitle("Home")
         }
-        
+
         .onChange(of: scenePhase) { newPhase in
             if newPhase == .active {
                 /// get user's comfort range
@@ -315,7 +315,7 @@ struct HomeView: View {
                 color3PositionVisual = [UserDefaults.standard.double(forKey: "maxValueLightIntensity")]
                 color1PositionAcoutstics = [UserDefaults.standard.double(forKey: "minValueNoise"), UserDefaults.standard.double(forKey: "minValueNoise")]
                 color3PositionAcoutstics = [UserDefaults.standard.double(forKey: "maxValueNoise"), UserDefaults.standard.double(forKey: "maxValueNoise")]
-                
+
                 /// retrieve data from influxdb
 //                timer = DispatchSource.makeTimerSource()
 //                timer?.schedule(deadline: .now(), repeating: .seconds(updateFrequence))
@@ -323,15 +323,15 @@ struct HomeView: View {
 //                    startQueries()
 //                }
 //                timer?.resume()
-                
-                
+
+
             }else{
-                
+
 //                timer?.cancel()
 //                timer = nil
             }
         }
-        
+
         .onAppear{
             print("Active")
             /// get user's comfort range
@@ -341,7 +341,7 @@ struct HomeView: View {
             color3PositionVisual = [UserDefaults.standard.double(forKey: "maxValueLightIntensity")]
             color1PositionAcoutstics = [UserDefaults.standard.double(forKey: "minValueNoise"), UserDefaults.standard.double(forKey: "minValueNoise")]
             color3PositionAcoutstics = [UserDefaults.standard.double(forKey: "maxValueNoise"), UserDefaults.standard.double(forKey: "maxValueNoise")]
-            
+
             /// retrieve data from influxdb
 //            timer = DispatchSource.makeTimerSource()
 //            timer?.schedule(deadline: .now(), repeating: .seconds(updateFrequence))
@@ -349,22 +349,22 @@ struct HomeView: View {
 //                startQueries()
 //            }
 //            timer?.resume()
-            
-            
+
+
         }
-        
+
         .onDisappear{
             timer?.cancel()
             timer = nil
         }
     }
-    
+
     /// to render the cog load
     func randomX(geometry: GeometryProxy) -> CGFloat {
         // Generate a random x coordinate within the bounds of the view
         return CGFloat.random(in: 0...geometry.size.width)
     }
-    
+
     func randomY(geometry: GeometryProxy) -> CGFloat {
         // Generate a random y coordinate within the bounds of the view
         return CGFloat.random(in: 0...geometry.size.height)
@@ -485,7 +485,7 @@ struct HomeView: View {
 //            }
 //        }
 //    }
-    
+
 }
 
 

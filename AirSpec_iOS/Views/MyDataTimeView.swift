@@ -14,61 +14,61 @@ import Foundation
 private let sensorSettingList = [SensorIconConstants.sensorThermal[0],SensorIconConstants.sensorThermal[1], SensorIconConstants.sensorAirQuality[0],SensorIconConstants.sensorAirQuality[1],SensorIconConstants.sensorAirQuality[2],SensorIconConstants.sensorAirQuality[3],SensorIconConstants.sensorVisual[0], SensorIconConstants.sensorAcoustics[0]]
 
 struct MyDataTimeView: View {
-    
+
 
     /// comfort
     @State var comfortDataIn = comfortData.today
     private let pointSize = 10.0
     private let showLegend = false
-    
+
     /// environment
     private let lineWidth = 1.0
     private let interpolationMethod: ChartInterpolationMethod = .cardinal
     private let chartColor: Color = .pink
     private let showSymbols = true
-    
+
     private let showLollipop = true
 
     @State var data: [(minutes: Date, values: Double)] = []
     @State private var selectedElement: temp?
-    
+
     @State var flags = Array(repeating: false, count: 8)
     @State var user_id:String = "9067133"
-    
+
     private let columns = [
         GridItem(.flexible()),
         GridItem(.flexible()),
         GridItem(.flexible()),
         GridItem(.flexible()),
     ]
-    
+
     var body: some View {
         VStack(alignment: .center){
             Text("Comfort votes")
                 .font(.system(.caption).weight(.semibold))
-            
+
             chartComfort
             Text("Sensor readings")
                 .font(.system(.caption).weight(.semibold))
             Spacer()
                 .frame(height: 60)
             chartEnv
-            
-            
+
+
             LazyVGrid(columns: columns, spacing: 20){
                 ForEach(flags.indices) { j in
                     VStack{
                         ToggleItem(storage: self.$flags, user_id: self.$user_id, data: self.$data, checkTogglekImage: sensorSettingList[j].icon, checkToggleText:sensorSettingList[j].name, tag: j, label: "")
-                        
+
                     }
-                    
+
                 }
             }.padding()
         }
     }
-    
-    
-    
+
+
+
     private var chartComfort: some View {
         Chart {
             ForEach(comfortDataIn) { series in
@@ -97,7 +97,7 @@ struct MyDataTimeView: View {
             "not comfy": Circle().strokeBorder(lineWidth: lineWidth)
         ])
     }
-    
+
     private var chartEnv: some View {
         Chart(data, id: \.minutes) {
 //            BarMark(
@@ -214,19 +214,19 @@ struct ToggleItem: View {
     @Binding var storage: [Bool]
     @Binding var user_id: String
     @Binding var data: [(minutes: Date, values: Double)]
-    
+
     var checkTogglekImage:String
     var checkToggleText:String
     var tag: Int
 //    var lastTag: Int
     var label: String = ""
-    
+
     let influxClient = try InfluxDBClient(url: NetworkConstants.url, token: NetworkConstants.token)
-    
+
 //    mutating func updateLastTag() {
 //        self.lastTag = self.tag
 //    }
-    
+
     var body: some View {
         let isOn = Binding (get: { self.storage[self.tag] },
             set: { value in
@@ -234,18 +234,17 @@ struct ToggleItem: View {
                     self.storage = self.storage.enumerated().map { $0.0 == self.tag }
                 }
             })
-        
-        
+
+
         if(self.storage[self.tag]){
             print(self.tag)
-
 //            startQueries(i:self.tag)
-            
+
         }
         return Toggle(label, isOn: isOn)
                 .toggleStyle(CheckToggleStyle(checkTogglekImage: checkTogglekImage, checkToggleText: checkToggleText))
     }
-    
+
 //    func startQueries(i:Int) {
 //
 //        /// environmental sensing
@@ -296,7 +295,7 @@ struct ToggleItem: View {
 //            }
 //        }
 //    }
-    
+
 }
 
 func convertToData(dateString: String, valuesString: String) -> (minutes: Date, values: Double)? {
@@ -326,7 +325,7 @@ struct CheckToggleStyle: ToggleStyle {
                         .foregroundColor(configuration.isOn ? .pink : .gray)
                         .imageScale(.large)
                         .frame(width: 30, height: 30)
-                    
+
                     Text(checkToggleText)
                         .foregroundColor(configuration.isOn ? .pink : .gray)
                         .font(configuration.isOn ? (.system(size: 10) .weight(.semibold)) : (.system(size: 8).weight(.regular)))
