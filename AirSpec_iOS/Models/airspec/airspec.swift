@@ -5,7 +5,7 @@ import FoundationNetworking
 #endif
 
 public class Airspec {
-    public static let DefaultEndpoint: URL = URL(string: "https://airspecs.media.mit.edu")!
+    public static let DefaultEndpoint: URL = URL(string: "https://airspecs.media.mit.edu/api")!
 
     public static func decode_packet(_ bytes: Data) throws -> SensorPacket {
         try SensorPacket(serializedData: bytes)
