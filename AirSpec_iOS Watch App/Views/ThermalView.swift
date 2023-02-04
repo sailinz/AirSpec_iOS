@@ -20,8 +20,6 @@ struct ThermalView: View {
         GridItem(.flexible()),
     ]
     
-    let influxClient = try InfluxDBClient(url: NetworkConstants.url, token: NetworkConstants.token)
-    @State private var timer: DispatchSourceTimer?
     @State private var thermalData = Array(repeating: -1.0, count: SensorIconConstants.sensorThermal.count)
     @State private var thermalDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorThermal.count)
     var user_id:String = "9067133"
@@ -65,84 +63,6 @@ struct ThermalView: View {
                 }
                 .padding(.horizontal)
             }
-        }
-            
-        .onChange(of: scenePhase) { newPhase in
-            if newPhase == .active {
-                timer = DispatchSource.makeTimerSource()
-                timer?.schedule(deadline: .now(), repeating: .seconds(updateFrequence))
-                timer?.setEventHandler {
-                    startQueries()
-                }
-                timer?.resume()
-            }else{
-                timer?.cancel()
-                timer = nil
-            }
-        }
-        
-        .onAppear{
-            print("Active")
-            timer = DispatchSource.makeTimerSource()
-            timer?.schedule(deadline: .now(), repeating: .seconds(updateFrequence))
-            timer?.setEventHandler {
-                startQueries()
-            }
-            timer?.resume()
-        }
-        
-        .onDisappear{
-            timer?.cancel()
-            timer = nil
-        }
-    }
-
-    /// - get data from influxdb
-    func startQueries() {
-        let sensorList = [SensorIconConstants.sensorThermal,SensorIconConstants.sensorAirQuality, SensorIconConstants.sensorVisual]
-//        var dataList = [thermalData, airQualityData, visualData]
-        
-        /// environmental sensing
-        DispatchQueue.global().async {
-            let i = 0
-            for j in 0..<sensorList[i].count{
-
-                var query = """
-                                from(bucket: "\(NetworkConstants.bucket)")
-                                |> range(start: -2m)
-                                |> filter(fn: (r) => r["_measurement"] == "\(sensorList[i][j].measurement)")
-                                |> filter(fn: (r) => r["_field"] == "signal")
-                                |> filter(fn: (r) => r["id"] == "\(user_id)")
-                                |> filter(fn: (r) => r["\(sensorList[i][j].identifier)"] == "\(sensorList[i][j].type)")
-                                |> mean()
-                        """
-                
-                
-                influxClient.queryAPI.query(query: query, org: NetworkConstants.org) {response, error in
-                    // Error response
-                    if let error = error {
-                        print("Error:\n\n\(error)")
-                    }
-                    
-                    // Success response
-                    if let response = response {
-                        
-                        print("\nSuccess response...\n")
-                        do {
-                            try response.forEach { record in
-                                DispatchQueue.main.async {
-                                    thermalData[j] = Double("\(record.values["_value"]!)") ?? 0.0
-                                    thermalDataTrend[j] = Int.random(in: -2 ..< 2)
-//                                            print(record.values["_value"]!)
-                                }
-                            }
-                        } catch {
-                            print("Error:\n\n\(error)")
-                        }
-                    }
-                }
-            }
-            
         }
     }
     

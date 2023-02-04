@@ -53,6 +53,8 @@ public class Airspec {
                 print("error: bad http status \(httpResponse.statusCode)")
             }
         }
+        
+        task.resume()
     }
 }
 

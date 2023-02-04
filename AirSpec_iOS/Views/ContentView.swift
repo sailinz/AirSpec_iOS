@@ -20,7 +20,7 @@ struct ContentView: View {
     var body: some View {
         ZStack(alignment: .top){
             TabView{
-                HomeView()
+                HomeView().environmentObject(delegate.bluetoothReceiver)
                     .tabItem{
                         Label("Home", systemImage: "heart.circle.fill")
                     }
@@ -83,7 +83,11 @@ struct ContentView: View {
                 
             }
             .frame(maxWidth: .infinity, alignment: .trailing)
-            .padding(30)
+            .padding(.leading, 30)
+            .padding(.trailing, 30)
+            .padding(.bottom, 30)
+            .padding(.top, 50)
+            
             
             if feedbackButton{
                 SelfLoggingView(show: $feedbackButton)

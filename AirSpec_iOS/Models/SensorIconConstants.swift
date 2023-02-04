@@ -54,7 +54,7 @@ enum SensorIconConstants {
         Icon(name: "Ambient Noise", icon: "ear.and.waveform", color1: Color.yellow, color2: Color.white, color3: Color.yellow, minValue: 0.0, maxValue: 150.0, color1Position:0.2, color3Position:0.8, unit: "dBA", measurement:"",type:""),
     ]
     
-    static let goodStateOpacity = 1.0
+    static let goodStateOpacity = 0.7
     static let badStateOpacity = 0.3
 }
 

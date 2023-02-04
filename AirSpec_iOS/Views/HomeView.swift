@@ -22,9 +22,9 @@ struct HomeView: View {
         GridItem(.flexible()),
     ]
 
-    let influxClient = try InfluxDBClient(url: NetworkConstants.url, token: NetworkConstants.token)
+//    let influxClient = try InfluxDBClient(url: NetworkConstants.url, token: NetworkConstants.token)
 
-    @State private var timer: DispatchSourceTimer?
+//    @State private var timer: DispatchSourceTimer?
 
 
     //    @State var current: Double = 60.0
@@ -35,11 +35,10 @@ struct HomeView: View {
     //    @State var color3:Color = Color.red
     //    @State var color1Position: Double = 0.1
     //    @State var color3Position: Double = 0.9
+    
+    @EnvironmentObject private var receiver: BluetoothReceiver
 
-    @State private var thermalData = Array(repeating: -1.0, count: SensorIconConstants.sensorThermal.count)
-    @State private var airQualityData = Array(repeating: -1.0, count: SensorIconConstants.sensorAirQuality.count)
-    @State private var visualData = Array(repeating: -1.0, count: SensorIconConstants.sensorVisual.count)
-    @State private var acoutsticsData = Array(repeating: -1.0, count: SensorIconConstants.sensorAcoustics.count)
+    
     let skinTempDataName = ["thermopile_nose_bridge","thermopile_nose_tip","thermopile_temple_back","thermopile_temple_front","thermopile_temple_middle"]
     @State private var skinTempData = Array(repeating: -1.0, count: 5)
     var user_id:String = "9067133"
@@ -120,7 +119,7 @@ struct HomeView: View {
                                 ForEach(0..<SensorIconConstants.sensorThermal.count){i in
                                     HStack{
                                         OpenCircularGauge(
-                                            current: thermalData[i],
+                                            current: receiver.thermalData[i],
                                             minValue: SensorIconConstants.sensorThermal[i].minValue,
                                             maxValue: SensorIconConstants.sensorThermal[i].maxValue,
                                             color1: SensorIconConstants.sensorThermal[i].color1,
@@ -140,7 +139,7 @@ struct HomeView: View {
 //                                                .minimumScaleFactor(0.01)
 //                                                .lineLimit(1)
                                             Spacer()
-                                            Text("\(Int(thermalData[i]))")
+                                            Text("\(Int(receiver.thermalData[i]))")
                                                 .font(.system(.title, design: .rounded) .weight(.heavy))
                                                 .foregroundColor(Color.white)
                                         }
@@ -166,7 +165,7 @@ struct HomeView: View {
                                     let dummyValue = Double.random(in: 50.0 ..< 80.0)
                                     HStack{
                                         OpenCircularGauge(
-                                            current: airQualityData[i],
+                                            current: receiver.airQualityData[i],
                                             minValue: SensorIconConstants.sensorAirQuality[i].minValue,
                                             maxValue: SensorIconConstants.sensorAirQuality[i].maxValue,
                                             color1: SensorIconConstants.sensorAirQuality[i].color1,
@@ -188,7 +187,7 @@ struct HomeView: View {
 //                                                .minimumScaleFactor(0.01)
 //                                                .lineLimit(1)
                                             Spacer()
-                                            Text("\(Int(airQualityData[i]))")
+                                            Text("\(Int(receiver.airQualityData[i]))")
                                                 .font(.system(.title, design: .rounded) .weight(.heavy))
                                                 .foregroundColor(Color.white)
                                         }
@@ -214,7 +213,7 @@ struct HomeView: View {
                                     let dummyValue = Double.random(in: 50.0 ..< 80.0)
                                     HStack{
                                         OpenCircularGauge(
-                                            current: visualData[i],
+                                            current: receiver.visualData[i],
                                             minValue: SensorIconConstants.sensorVisual[i].minValue,
                                             maxValue: SensorIconConstants.sensorVisual[i].maxValue,
                                             color1: SensorIconConstants.sensorVisual[i].color1,
@@ -235,7 +234,7 @@ struct HomeView: View {
 //                                                .minimumScaleFactor(0.01)
 //                                                .lineLimit(1)
                                             Spacer()
-                                            Text("\(Int(visualData[i]))")
+                                            Text("\(Int(receiver.visualData[i]))")
                                                 .font(.system(.title, design: .rounded) .weight(.heavy))
                                                 .foregroundColor(Color.white)
                                         }
@@ -353,10 +352,10 @@ struct HomeView: View {
 
         }
 
-        .onDisappear{
-            timer?.cancel()
-            timer = nil
-        }
+//        .onDisappear{
+//            timer?.cancel()
+//            timer = nil
+//        }
     }
 
     /// to render the cog load

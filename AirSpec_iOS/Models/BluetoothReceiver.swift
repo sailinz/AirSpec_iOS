@@ -7,10 +7,6 @@ A class for connecting to a Bluetooth peripheral and reading its characteristic 
 
 import CoreBluetooth
 import os.log
-//import Foundation
-//import InfluxDBSwift
-//import ArgumentParser
-//import InfluxDBSwiftApis
 
 protocol BluetoothReceiverDelegate: AnyObject {
     func didReceiveData(_ message: Data) -> Int
@@ -29,26 +25,18 @@ enum BluetoothReceiverError: Error {
 ///
 class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
 
-//    private var backgroundSession: WorkoutDataStore // dummy workoutsession to keep the background mode running
-
     private var logger = Logger(
         subsystem: AirSpec_iOSApp.name,
         category: String(describing: BluetoothReceiver.self)
     )
-
-    //    let GLASSNAME = "CAPTIVATE"
-    //    var statusText:String = ""
-    //    var csvText:String = ""
 
     /// -- BLE connection variables
     weak var delegate: BluetoothReceiverDelegate? = nil
     var centralManager: CBCentralManager!
     private var serviceUUID: CBUUID!
     private var TXcharacteristicUUID: CBUUID!
-//    private var RXcharacteristicUUID: CBUUID!
     var sendCharacteristic: CBCharacteristic!
     let GLASSNAME =  "AirSpec"///"CAPTIVATE"
-    @Published var glassesData: GlassesData
     @Published private(set) var connectedPeripheral: CBPeripheral? = nil
     private(set) var knownDisconnectedPeripheral: CBPeripheral? = nil
     @Published private(set) var isScanning: Bool = false
@@ -56,96 +44,21 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     var mustDisconnect = false
     @Published var discoveredPeripherals = Set<CBPeripheral>()
     /// -- BLE connection variables end
-
-    /// -- TCP client to server connection variables
-    @Published var connectedToSatServer: Bool = false
-    @Published var status: String = ""
-    private var satServerClient: NIO_TCP_Client?
-    private var notificationServerClient: NIO_TCP_Client?
-//    private var influxClient: InfluxDBClient
-    @Published var temperatureValue: String = ""
-    /// -- TCP client to server connection variables end
     ///
+    /// -- realtime sensor data
+    @Published var thermalData = Array(repeating: -1.0, count: SensorIconConstants.sensorThermal.count)
+    @Published var airQualityData = Array(repeating: -1.0, count: SensorIconConstants.sensorAirQuality.count)
+    @Published var visualData = Array(repeating: -1.0, count: SensorIconConstants.sensorVisual.count)
+    @Published var acoutsticsData = Array(repeating: -1.0, count: SensorIconConstants.sensorAcoustics.count)
 
 
     init(service: CBUUID, characteristic: CBUUID) {
-        self.glassesData = GlassesData(sensorData: "")
-//        self.backgroundSession = WorkoutDataStore()
-//        self.backgroundSession.startWorkoutSession()
-//        self.influxClient = InfluxDBClient(url: NetworkConstants.url, token: NetworkConstants.token)
         super.init()
         self.serviceUUID = service
         self.TXcharacteristicUUID = characteristic
         self.centralManager = CBCentralManager(delegate: self, queue: nil)
-//        self.connectToServer() /// connect to AirSpec 2022 version server
 
     }
-
-    /// -- TCP server connection
-    func connectToServer() { // called from RootView.onAppwar
-        status = "Connecting to AirSpec Server..."
-        do {
-//            satServerClient = try NIO_TCP_Client.connect(host: NetworkConstants.host, port: NetworkConstants.port) {
-//                self.satServerCallback(data: $0)
-//            }
-            satServerClient = try NIO_TCP_Client.connect(host: NetworkConstants.host, port: NetworkConstants.port)
-//            notificationServerClient = try NIO_TCP_Client.connect(host: "127.0.0.1", port: 64237)
-            connectedToSatServer = true
-            status = "Connected to AirSpec server"
-        } catch {
-            status = "Unable to connect to AirSpec server"
-        }
-    }
-
-//    /// --- influx query
-//    func influxQuery(){
-//        let query = """
-//                    from(bucket: "\(NetworkConstants.bucket)")
-//                    |> range(start: -1h)
-//                    |> filter(fn: (r) => r["_measurement"] == "sht45")
-//                    |> filter(fn: (r) => r["_field"] == "signal")
-//                    |> filter(fn: (r) => r["id"] == "9067133")
-//                    |> filter(fn: (r) => r["type"] == "temperature")
-//                    |> aggregateWindow(every: 1h, fn: mean, createEmpty: false)
-//                    |> yield(name: "mean")
-//        """
-//
-//        self.influxClient.queryAPI.query(query: query, org: NetworkConstants.org) { [self] response, error in
-//          // Error response
-//          if let error = error {
-//            print("Error:\n\n\(error)")
-//          }
-//
-//          // Success response
-//          if let response = response {
-//
-//            print("\nSuccess response...\n")
-//            do {
-//              try response.forEach { record in
-////                  logger.info("\t\(record.values["_field"]!): \(record.values["_value"]!)")
-//                  self.temperatureValue = "\(record.values["_value"]!)"
-//              }
-//            } catch {
-//               print("Error:\n\n\(error)")
-//            }
-//          }
-//        }
-//    }
-
-//    func disconnectToServer() {
-//        status = "Disconnecting..."
-//        if satServerOnline() {
-//            satServerClient?.disconnect()
-//            connectedToSatServer = false
-//        }
-//        status = "Disconnected"
-//    }
-
-    func satServerOnline() -> Bool {
-        return satServerClient?.isConnected != nil
-    }
-
-
 
     /// -- BLE connection
     func startScanning() {
@@ -310,38 +223,63 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             return
         }
 
-//        logger.info("\(peripheral.name ?? "unnamed peripheral") did update characteristic: \(data)")
-//        let value = delegate?.didReceiveData(data) ?? -1
-
         if characteristic.uuid == TXcharacteristicUUID {
 
-//            self.sensorData = String(sensorString[40])
-//            let dateFormatter : DateFormatter = DateFormatter()
-//            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-//            let date = Date()
-//            let dateString = dateFormatter.string(from: date)
-//            let newline = "\(dateString),\(String(describing: sensorString))\n"
-//            csvText.append(newline)
-//            self.socket.write(string:"Test airspec")
-//            self.socket.write(string:self.glassesData.sensorData)
 
             do {
-                let packet = try? Airspec.decode_packet(data)
-//                print(packet)
+                guard let packet = try? Airspec.decode_packet(data) else {
+                    print("failed parsing packet: \(error)")
+                    return
+                }
+                print(packet)
 
-                try Airspec.send_packets(packets: [packet!], auth_token: "")
-//                try satServerClient?.send(Data(Data(referencing: dataReceived).hexEncodedString().utf8))
-//
+                if(packet.hasBmePacket){
+                   
+                    for sensorPayload in packet.bmePacket.payload {
+                        if(sensorPayload.sensorID == 3){
+                            self.airQualityData[2] = Double(sensorPayload.signal) /// CO2
+                        }else if(sensorPayload.sensorID == 1){
+                            self.airQualityData[3] = Double(sensorPayload.signal) /// IAQ
+                        }
+                    }
+                }else if(packet.hasLuxPacket){
+                    for sensorPayload in packet.luxPacket.payload {
+                        if(sensorPayload.lux != nil){
+                            self.visualData[0] = Double(sensorPayload.lux) /// lux
+                        }
+                    }
+                }else if(packet.hasShtPacket){
+                    print("sht: ", packet.shtPacket)
+//                    var  sensorPayload = packet!.shtPacket.payload[0]
+//                    self.thermalData[0] = Double(sensorPayload.temperature) /// temperature
+                    for sensorPayload in packet.shtPacket.payload {
+                        if(sensorPayload.temperature != 0.0){
+                            self.thermalData[0] = Double(sensorPayload.temperature) /// temperature
+                        }else if(sensorPayload.humidity != 0.0){
+                            self.thermalData[1] = Double(sensorPayload.humidity) /// humidity
+                        }
+                    }
+                    
+                }else if((packet.hasSgpPacket)){
+                    for sensorPayload in packet.sgpPacket.payload {
+                        if(sensorPayload.vocIndexValue != nil){
+                            self.airQualityData[0] = Double(sensorPayload.vocIndexValue) /// voc index
+                        }else if(sensorPayload.noxIndexValue != nil){
+                            self.airQualityData[1] = Double(sensorPayload.noxIndexValue) /// nox index
+                        }
+                    }
+                }
+                
+                
+                try Airspec.send_packets(packets: [packet], auth_token: "")
+
             } catch {
                 logger.error("packet decode/send problems: \(error).")
-//                connectedToSatServer = false
-//                ///https://stackoverflow.com/questions/59718703/swift-nio-tcp-client-auto-reconnect
             }
 
         }
     }
 
-//    func testLight() -> String{ /// toggle version
     func testLight(){
         /// https://stackoverflow.com/questions/57985152/how-to-write-a-value-to-characteristc-for-ble-device-in-ios-swift
         /// Bytes are read from right to left, like german language
@@ -392,26 +330,6 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         let cmd = Data(headerBytes + payloadBytes)
         connectedPeripheral?.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
     }
-
-//    func testLight(){
-//
-//        do {
-//            if connectedPeripheral?.state == CBPeripheralState.connected {
-//
-//                if let characteristic:CBCharacteristic = sendCharacteristic{
-//                    let data: Data = Data("0123456789".utf8) as Data
-//                    logger.info("read characteristics \(data)")
-//                    connectedPeripheral!.writeValue(data,
-//                                            for: characteristic,
-//                                         BluetoothReceiver   type: CBCharacteristicWriteType.withoutResponse)
-//                    logger.info("read characteristics \(characteristic)")
-//                    print("Try to set LED light")
-//                }
-//            }
-//        } catch {
-//            print("cannot write to the glasses")
-//        }
-//    }
 }
 
 
