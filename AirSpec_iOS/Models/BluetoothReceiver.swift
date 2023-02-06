@@ -51,13 +51,18 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     @Published var visualData = Array(repeating: -1.0, count: SensorIconConstants.sensorVisual.count)
     @Published var acoutsticsData = Array(repeating: -1.0, count: SensorIconConstants.sensorAcoustics.count)
 
-
+    /// -- watchConnectivity
+//    @Published var prog : ProgramObject
+//    let viewModel = ProgramViewModel(connectivityProvider: ConnectionProvider())
+//    let connect = ConnectionProvider()
+    @Published var counter = Counter()
+    
     init(service: CBUUID, characteristic: CBUUID) {
         super.init()
         self.serviceUUID = service
         self.TXcharacteristicUUID = characteristic
         self.centralManager = CBCentralManager(delegate: self, queue: nil)
-
+//        connect.connect()
     }
 
     /// -- BLE connection
@@ -232,12 +237,17 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     return
                 }
                 print(packet)
+                
+//                viewModel.connectivityProvider.connect()
+                
+                
 
                 if(packet.hasBmePacket){
                    
                     for sensorPayload in packet.bmePacket.payload {
                         if(sensorPayload.sensorID == 3){
                             self.airQualityData[2] = Double(sensorPayload.signal) /// CO2
+                            counter.updateValue(sensorValue: Int(self.airQualityData[0]))
                         }else if(sensorPayload.sensorID == 1){
                             self.airQualityData[3] = Double(sensorPayload.signal) /// IAQ
                         }
@@ -255,8 +265,10 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     for sensorPayload in packet.shtPacket.payload {
                         if(sensorPayload.temperature != 0.0){
                             self.thermalData[0] = Double(sensorPayload.temperature) /// temperature
+//                            self.prog.temperature = String(self.thermalData[0])
                         }else if(sensorPayload.humidity != 0.0){
                             self.thermalData[1] = Double(sensorPayload.humidity) /// humidity
+//                            self.prog.humidity = String(self.thermalData[1])
                         }
                     }
                     
@@ -264,6 +276,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     for sensorPayload in packet.sgpPacket.payload {
                         if(sensorPayload.vocIndexValue != nil){
                             self.airQualityData[0] = Double(sensorPayload.vocIndexValue) /// voc index
+                            
                         }else if(sensorPayload.noxIndexValue != nil){
                             self.airQualityData[1] = Double(sensorPayload.noxIndexValue) /// nox index
                         }

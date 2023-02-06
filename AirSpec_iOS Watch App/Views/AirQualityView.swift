@@ -24,6 +24,8 @@ struct AirQualityView: View {
     @State private var AirQualityData = Array(repeating: -1.0, count: SensorIconConstants.sensorAirQuality.count)
     @State private var AirQualityDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorAirQuality.count)
     var user_id:String = "9067133"
+    
+    @StateObject var counter = Counter()
 
     let updateFrequence = 10 /// seconds
     
@@ -36,11 +38,13 @@ struct AirQualityView: View {
                 LazyVGrid(columns: columns, alignment: .center, spacing: 5) {
                     ForEach(0..<SensorIconConstants.sensorAirQuality.count){i in
                         VStack{
-                            Text("\(Int(AirQualityData[i]))")
+//                            Text("\(Int(AirQualityData[i]))")
+                            Text(String(self.counter.count))
                                 .font(.system(size: 10, design: .rounded) .weight(.heavy))
                                 .foregroundColor(Color.white)
                             OpenCircularGauge(
-                                current: AirQualityData[i],
+//                                current: AirQualityData[i],
+                                current: Double(counter.count),
                                 minValue: SensorIconConstants.sensorAirQuality[i].minValue,
                                 maxValue: SensorIconConstants.sensorAirQuality[i].maxValue,
                                 color1: SensorIconConstants.sensorAirQuality[i].color1,

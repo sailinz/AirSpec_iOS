@@ -99,6 +99,20 @@
 		03D53E8A298D5E8F0008B74D /* airspec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D53E86298D5E8F0008B74D /* airspec.swift */; };
 		03D53E8B298D5E8F0008B74D /* svc.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D53E88298D5E8F0008B74D /* svc.pb.swift */; };
 		03D53E8C298D5E8F0008B74D /* message.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D53E89298D5E8F0008B74D /* message.pb.swift */; };
+		03D53E8E29900BEC0008B74D /* SessionDelegator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D53E8D29900BEC0008B74D /* SessionDelegator.swift */; };
+		03D53E8F29900BEC0008B74D /* SessionDelegator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D53E8D29900BEC0008B74D /* SessionDelegator.swift */; };
+		03D53E9129900D330008B74D /* CommandStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D53E9029900D330008B74D /* CommandStatus.swift */; };
+		03D53E9229900D330008B74D /* CommandStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D53E9029900D330008B74D /* CommandStatus.swift */; };
+		03D53E9A29904C340008B74D /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03D53E9929904C340008B74D /* WatchConnectivity.framework */; };
+		03D53E9B29904C480008B74D /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03D53E9929904C340008B74D /* WatchConnectivity.framework */; };
+		03D53E9D29904C5E0008B74D /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03D53E9C29904C5D0008B74D /* WatchConnectivity.framework */; };
+		03D53E9F299071980008B74D /* ProgramObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D53E9E299071980008B74D /* ProgramObject.swift */; };
+		03D53EA0299075900008B74D /* ProgramObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D53E9E299071980008B74D /* ProgramObject.swift */; };
+		03D53EA2299075B90008B74D /* ConnectionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D53EA1299075B90008B74D /* ConnectionProvider.swift */; };
+		03D53EA3299075B90008B74D /* ConnectionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D53EA1299075B90008B74D /* ConnectionProvider.swift */; };
+		03D53EA529907EBE0008B74D /* ProgramViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D53EA429907EBE0008B74D /* ProgramViewModel.swift */; };
+		03D53EA9299093EA0008B74D /* Counter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D53EA8299093EA0008B74D /* Counter.swift */; };
+		03D53EAA299093EA0008B74D /* Counter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D53EA8299093EA0008B74D /* Counter.swift */; };
 		03F21BBF292AE85D001D4D8E /* AirSpec_iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F21BBE292AE85D001D4D8E /* AirSpec_iOSApp.swift */; };
 		03F21BC1292AE85D001D4D8E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F21BC0292AE85D001D4D8E /* ContentView.swift */; };
 		03F21BC3292AE862001D4D8E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03F21BC2292AE862001D4D8E /* Assets.xcassets */; };
@@ -246,6 +260,14 @@
 		03D53E86298D5E8F0008B74D /* airspec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = airspec.swift; sourceTree = "<group>"; };
 		03D53E88298D5E8F0008B74D /* svc.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = svc.pb.swift; sourceTree = "<group>"; };
 		03D53E89298D5E8F0008B74D /* message.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = message.pb.swift; sourceTree = "<group>"; };
+		03D53E8D29900BEC0008B74D /* SessionDelegator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDelegator.swift; sourceTree = "<group>"; };
+		03D53E9029900D330008B74D /* CommandStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandStatus.swift; sourceTree = "<group>"; };
+		03D53E9929904C340008B74D /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS9.1.sdk/System/Library/Frameworks/WatchConnectivity.framework; sourceTree = DEVELOPER_DIR; };
+		03D53E9C29904C5D0008B74D /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.1.sdk/System/Library/Frameworks/WatchConnectivity.framework; sourceTree = DEVELOPER_DIR; };
+		03D53E9E299071980008B74D /* ProgramObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgramObject.swift; sourceTree = "<group>"; };
+		03D53EA1299075B90008B74D /* ConnectionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionProvider.swift; sourceTree = "<group>"; };
+		03D53EA429907EBE0008B74D /* ProgramViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgramViewModel.swift; sourceTree = "<group>"; };
+		03D53EA8299093EA0008B74D /* Counter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Counter.swift; sourceTree = "<group>"; };
 		03F21BBB292AE85D001D4D8E /* AirSpec_iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AirSpec_iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		03F21BBE292AE85D001D4D8E /* AirSpec_iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirSpec_iOSApp.swift; sourceTree = "<group>"; };
 		03F21BC0292AE85D001D4D8E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -276,6 +298,7 @@
 			files = (
 				03A9F608296CB24A00BC9100 /* SwiftUI.framework in Frameworks */,
 				03A9F606296CB24A00BC9100 /* WidgetKit.framework in Frameworks */,
+				03D53E9A29904C340008B74D /* WatchConnectivity.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,6 +315,7 @@
 				038AA92E2958058C0086EC1B /* InfluxDBSwift in Frameworks */,
 				03931B982943B9930093515D /* NIOCore in Frameworks */,
 				038AA9302958058C0086EC1B /* InfluxDBSwiftApis in Frameworks */,
+				03D53E9D29904C5E0008B74D /* WatchConnectivity.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -317,6 +341,7 @@
 				038AA925295802B50086EC1B /* InfluxDBSwiftApis in Frameworks */,
 				038AA93729580AC60086EC1B /* ArgumentParser in Frameworks */,
 				03BC95CC2951078900AD89BE /* HealthKit.framework in Frameworks */,
+				03D53E9B29904C480008B74D /* WatchConnectivity.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -393,6 +418,9 @@
 				03931B9F2943BDB90093515D /* NIO_TCP_Client.swift */,
 				034D16E8294D22A0005BE966 /* SensorIconConstants.swift */,
 				032FEADA2981C67200A2819F /* QuestionFlows.swift */,
+				03D53E9029900D330008B74D /* CommandStatus.swift */,
+				03D53E8D29900BEC0008B74D /* SessionDelegator.swift */,
+				03D53EA8299093EA0008B74D /* Counter.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -400,6 +428,7 @@
 		038C4DB5292AF8E700699753 /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				03D53EA7299093A40008B74D /* DoesNotWork */,
 				03BC9618295662CC00AD89BE /* SampleDataForCharts */,
 				038C4DBE292AFD9D00699753 /* GlassesData.swift */,
 			);
@@ -420,6 +449,8 @@
 		03BC95C82951075F00AD89BE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				03D53E9929904C340008B74D /* WatchConnectivity.framework */,
+				03D53E9C29904C5D0008B74D /* WatchConnectivity.framework */,
 				03BC95CB2951078900AD89BE /* HealthKit.framework */,
 				03BC95C92951075F00AD89BE /* HealthKit.framework */,
 				03A9F605296CB24A00BC9100 /* WidgetKit.framework */,
@@ -472,6 +503,23 @@
 			);
 			name = airspec_msg;
 			path = Models/airspec_msg;
+			sourceTree = "<group>";
+		};
+		03D53E96299021060008B74D /* Models */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		03D53EA7299093A40008B74D /* DoesNotWork */ = {
+			isa = PBXGroup;
+			children = (
+				03D53EA429907EBE0008B74D /* ProgramViewModel.swift */,
+				03D53E9E299071980008B74D /* ProgramObject.swift */,
+				03D53EA1299075B90008B74D /* ConnectionProvider.swift */,
+			);
+			path = DoesNotWork;
 			sourceTree = "<group>";
 		};
 		03F21BB2292AE85C001D4D8E = {
@@ -551,6 +599,7 @@
 			children = (
 				03BC95C72951046D00AD89BE /* AirSpec-iOS-Watch-App-Info.plist */,
 				03BC95C62951046000AD89BE /* AirSpec_iOS Watch App.entitlements */,
+				03D53E96299021060008B74D /* Models */,
 				038C4DB0292AF5FD00699753 /* Views */,
 				03F21BE6292AE863001D4D8E /* AirSpec_iOSApp.swift */,
 				03F21BEA292AE866001D4D8E /* Assets.xcassets */,
@@ -868,7 +917,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03D53EA2299075B90008B74D /* ConnectionProvider.swift in Sources */,
 				03BC962C2956637800AD89BE /* Point.swift in Sources */,
+				03D53E9129900D330008B74D /* CommandStatus.swift in Sources */,
 				03BC95F129525FD200AD89BE /* SizeKey.swift in Sources */,
 				03D53E8C298D5E8F0008B74D /* message.pb.swift in Sources */,
 				03BC95EE29525FB600AD89BE /* CrookedText+Modifiers.swift in Sources */,
@@ -877,7 +928,9 @@
 				03931B9E2943BAB90093515D /* NetworkConstants.swift in Sources */,
 				03BC960429550EA300AD89BE /* PieChartView.swift in Sources */,
 				03D53E8A298D5E8F0008B74D /* airspec.swift in Sources */,
+				03D53EA529907EBE0008B74D /* ProgramViewModel.swift in Sources */,
 				038AA944295932A60086EC1B /* AcousticsView.swift in Sources */,
+				03D53E8E29900BEC0008B74D /* SessionDelegator.swift in Sources */,
 				034D16E9294D22A0005BE966 /* SensorIconConstants.swift in Sources */,
 				038AA942295930040086EC1B /* ThermalView.swift in Sources */,
 				03BC96262956637800AD89BE /* Data.swift in Sources */,
@@ -892,6 +945,7 @@
 				03BC961229560E4600AD89BE /* MyDataPlaceView.swift in Sources */,
 				03BC962A2956637800AD89BE /* ScreenTimeData.swift in Sources */,
 				03BC96012954ADCA00AD89BE /* RRRangeSliderSwiftUI.swift in Sources */,
+				03D53EA9299093EA0008B74D /* Counter.swift in Sources */,
 				03BC96242956637800AD89BE /* WineData.swift in Sources */,
 				03F21BC1292AE85D001D4D8E /* ContentView.swift in Sources */,
 				034D16DE294A7FD7005BE966 /* OpenCircularGauge.swift in Sources */,
@@ -903,6 +957,7 @@
 				038AA9432959328C0086EC1B /* VisualView.swift in Sources */,
 				038C4DBF292AFD9D00699753 /* GlassesData.swift in Sources */,
 				03BC963D2956668B00AD89BE /* InterpolationMethod.swift in Sources */,
+				03D53E9F299071980008B74D /* ProgramObject.swift in Sources */,
 				03BC96302956637800AD89BE /* Grid.swift in Sources */,
 				03BC95EB29525F9000AD89BE /* IdentifiableCharacter.swift in Sources */,
 				03D53E8B298D5E8F0008B74D /* svc.pb.swift in Sources */,
@@ -950,8 +1005,10 @@
 				03F21BE9292AE863001D4D8E /* ContentView.swift in Sources */,
 				03BC95EF29525FB600AD89BE /* CrookedText+Modifiers.swift in Sources */,
 				03BC96332956637800AD89BE /* StockData.swift in Sources */,
+				03D53E8F29900BEC0008B74D /* SessionDelegator.swift in Sources */,
 				03BC96272956637800AD89BE /* Data.swift in Sources */,
 				03BC96292956637800AD89BE /* GitHubData.swift in Sources */,
+				03D53EA3299075B90008B74D /* ConnectionProvider.swift in Sources */,
 				03BC96252956637800AD89BE /* WineData.swift in Sources */,
 				03BC962D2956637800AD89BE /* Point.swift in Sources */,
 				03BC95F229525FD200AD89BE /* SizeKey.swift in Sources */,
@@ -962,12 +1019,15 @@
 				03BC961B295662E400AD89BE /* HealthData.swift in Sources */,
 				030FE313296719F000AC5E24 /* PopUpView.swift in Sources */,
 				03F21BE7292AE863001D4D8E /* AirSpec_iOSApp.swift in Sources */,
+				03D53EA0299075900008B74D /* ProgramObject.swift in Sources */,
 				034D16EA294D22A0005BE966 /* SensorIconConstants.swift in Sources */,
 				03BC95E529525EFD00AD89BE /* CrookedText.swift in Sources */,
 				03BC963E2956668B00AD89BE /* InterpolationMethod.swift in Sources */,
 				032FEADC2981C67200A2819F /* QuestionFlows.swift in Sources */,
 				038AA93D295915DF0086EC1B /* VisualView.swift in Sources */,
+				03D53EAA299093EA0008B74D /* Counter.swift in Sources */,
 				034D16DF294A7FD7005BE966 /* OpenCircularGauge.swift in Sources */,
+				03D53E9229900D330008B74D /* CommandStatus.swift in Sources */,
 				038AA941295915FD0086EC1B /* AcousticsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -10,6 +10,7 @@ import SwiftUI
 import CoreBluetooth
 
 struct ContentView: View {
+//    let viewModel = ProgramViewModel(connectivityProvider: ConnectionProvider())
     var body: some View {
         WatchHomeView()
 //        SensorReadingView()
