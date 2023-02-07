@@ -29,9 +29,13 @@ import ClockKit
 class SessionDelegator: NSObject, WCSessionDelegate {
     
 //    @Published var receivedValue: String?
-    let sensorReading: PassthroughSubject<Int, Never>
+    let sensorReading: PassthroughSubject<[[Double]], Never>
+    var sensorValueNew: [[Double]] = [Array(repeating: -1.0, count: SensorIconConstants.sensorThermal.count),
+                                      Array(repeating: -1.0, count: SensorIconConstants.sensorAirQuality.count),
+                                      Array(repeating: -1.0, count: SensorIconConstants.sensorVisual.count),
+                                      Array(repeating: -1.0, count: SensorIconConstants.sensorAcoustics.count)]
     
-    init(sensorReading: PassthroughSubject<Int, Never>) {
+    init(sensorReading: PassthroughSubject<[[Double]], Never>) {
         self.sensorReading = sensorReading
         super.init()
     }
@@ -43,28 +47,40 @@ class SessionDelegator: NSObject, WCSessionDelegate {
     
     /// Did receive an app context.
     func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
-//        guard let value = applicationContext["sensorValue"] as? String else { return }
-//                receivedValue = value
         DispatchQueue.main.async {
-            if let temp = applicationContext["sensorValue"] as? Int {
-                self.sensorReading.send(temp)
+            if let sensorReading = applicationContext["temperatureData"] as? Double {
+                self.sensorValueNew[0][0] = sensorReading
+            }else if let sensorReading = applicationContext["humidityData"] as? Double {
+                self.sensorValueNew[0][1] = sensorReading
+            }else if let sensorReading = applicationContext["vocIndexData"] as? Double {
+                self.sensorValueNew[1][0] = sensorReading
+            }else if let sensorReading = applicationContext["noxIndexData"] as? Double {
+                self.sensorValueNew[1][1] = sensorReading
+            }else if let sensorReading = applicationContext["co2Data"] as? Double {
+                self.sensorValueNew[1][2] = sensorReading
+            }else if let sensorReading = applicationContext["iaqData"] as? Double {
+                self.sensorValueNew[1][3] = sensorReading
+            }else if let sensorReading = applicationContext["luxData"] as? Double {
+                self.sensorValueNew[2][0] = sensorReading
             } else {
                 print("There was an error")
             }
+            
+            self.sensorReading.send(self.sensorValueNew)
         }
         
     }
     
     
-    func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
-        DispatchQueue.main.async {
-            if let temp = message["sensorValue"] as? Int {
-                self.sensorReading.send(temp)
-            } else {
-                print("There was an error")
-            }
-        }
-    }
+//    func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
+//        DispatchQueue.main.async {
+//            if let temp = message["sensorValue"] as? Int {
+//                self.sensorReading.send(temp)
+//            } else {
+//                print("There was an error")
+//            }
+//        }
+//    }
     
     /// WCSessionDelegate methods for iOS only.
     #if os(iOS)

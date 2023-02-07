@@ -44,8 +44,8 @@ struct SurveyQuestionView: View {
 //    @State var voteLog = 0
     @State var currentAnswer = 999 /// single choice
     @State var currentAnswers = [Int]() /// multiple choices
-    @State var currentQuestion = 0
-    @State var nextQuestion = 0
+    @State var currentQuestion = 1
+    @State var nextQuestion = 1
 //    @State var backPressed: Bool = false
     
     @Binding var showSurvey: Bool

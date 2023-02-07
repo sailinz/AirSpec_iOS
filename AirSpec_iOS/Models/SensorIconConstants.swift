@@ -50,8 +50,8 @@ enum SensorIconConstants {
     ]
     
     static let sensorAcoustics = [
-        Icon(name: "Human Noise", icon: "ear", color1: Color.yellow, color2: Color.white, color3: Color.yellow, minValue: 0.0, maxValue: 150.0, color1Position:0.2, color3Position:0.8, unit:"dBA", measurement:"",type:""),
-        Icon(name: "Ambient Noise", icon: "ear.and.waveform", color1: Color.yellow, color2: Color.white, color3: Color.yellow, minValue: 0.0, maxValue: 150.0, color1Position:0.2, color3Position:0.8, unit: "dBA", measurement:"",type:""),
+        Icon(name: "Noise Level", icon: "ear", color1: Color.yellow, color2: Color.white, color3: Color.yellow, minValue: 0.0, maxValue: 150.0, color1Position:0.2, color3Position:0.8, unit:"dBA", measurement:"",type:""),
+//        Icon(name: "FFT", icon: "ear.and.waveform", color1: Color.yellow, color2: Color.white, color3: Color.yellow, minValue: 0.0, maxValue: 150.0, color1Position:0.2, color3Position:0.8, unit: "dBA", measurement:"",type:""),
     ]
     
     static let goodStateOpacity = 0.7

@@ -11,6 +11,7 @@
 		032FEAD92981C2D100A2819F /* SurveyQuestionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FEAD82981C2D100A2819F /* SurveyQuestionView.swift */; };
 		032FEADB2981C67200A2819F /* QuestionFlows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FEADA2981C67200A2819F /* QuestionFlows.swift */; };
 		032FEADC2981C67200A2819F /* QuestionFlows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FEADA2981C67200A2819F /* QuestionFlows.swift */; };
+		03344E132991F4CD00FFCEBF /* test.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03344E122991F4CD00FFCEBF /* test.swift */; };
 		034B0D6A2942A50500F21CFB /* MyDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034B0D692942A50500F21CFB /* MyDataView.swift */; };
 		034D16DE294A7FD7005BE966 /* OpenCircularGauge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D16DD294A7FD7005BE966 /* OpenCircularGauge.swift */; };
 		034D16DF294A7FD7005BE966 /* OpenCircularGauge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D16DD294A7FD7005BE966 /* OpenCircularGauge.swift */; };
@@ -111,8 +112,8 @@
 		03D53EA2299075B90008B74D /* ConnectionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D53EA1299075B90008B74D /* ConnectionProvider.swift */; };
 		03D53EA3299075B90008B74D /* ConnectionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D53EA1299075B90008B74D /* ConnectionProvider.swift */; };
 		03D53EA529907EBE0008B74D /* ProgramViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D53EA429907EBE0008B74D /* ProgramViewModel.swift */; };
-		03D53EA9299093EA0008B74D /* Counter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D53EA8299093EA0008B74D /* Counter.swift */; };
-		03D53EAA299093EA0008B74D /* Counter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D53EA8299093EA0008B74D /* Counter.swift */; };
+		03D53EA9299093EA0008B74D /* SensorData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D53EA8299093EA0008B74D /* SensorData.swift */; };
+		03D53EAA299093EA0008B74D /* SensorData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D53EA8299093EA0008B74D /* SensorData.swift */; };
 		03F21BBF292AE85D001D4D8E /* AirSpec_iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F21BBE292AE85D001D4D8E /* AirSpec_iOSApp.swift */; };
 		03F21BC1292AE85D001D4D8E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F21BC0292AE85D001D4D8E /* ContentView.swift */; };
 		03F21BC3292AE862001D4D8E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03F21BC2292AE862001D4D8E /* Assets.xcassets */; };
@@ -205,6 +206,7 @@
 		030FE311296719EA00AC5E24 /* PopUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopUpView.swift; sourceTree = "<group>"; };
 		032FEAD82981C2D100A2819F /* SurveyQuestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyQuestionView.swift; sourceTree = "<group>"; };
 		032FEADA2981C67200A2819F /* QuestionFlows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionFlows.swift; sourceTree = "<group>"; };
+		03344E122991F4CD00FFCEBF /* test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = test.swift; sourceTree = "<group>"; };
 		034B0D692942A50500F21CFB /* MyDataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyDataView.swift; sourceTree = "<group>"; };
 		034D16DD294A7FD7005BE966 /* OpenCircularGauge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenCircularGauge.swift; sourceTree = "<group>"; };
 		034D16E2294CF9A2005BE966 /* LinearGauge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinearGauge.swift; sourceTree = "<group>"; };
@@ -267,7 +269,7 @@
 		03D53E9E299071980008B74D /* ProgramObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgramObject.swift; sourceTree = "<group>"; };
 		03D53EA1299075B90008B74D /* ConnectionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionProvider.swift; sourceTree = "<group>"; };
 		03D53EA429907EBE0008B74D /* ProgramViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgramViewModel.swift; sourceTree = "<group>"; };
-		03D53EA8299093EA0008B74D /* Counter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Counter.swift; sourceTree = "<group>"; };
+		03D53EA8299093EA0008B74D /* SensorData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorData.swift; sourceTree = "<group>"; };
 		03F21BBB292AE85D001D4D8E /* AirSpec_iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AirSpec_iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		03F21BBE292AE85D001D4D8E /* AirSpec_iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirSpec_iOSApp.swift; sourceTree = "<group>"; };
 		03F21BC0292AE85D001D4D8E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -402,6 +404,7 @@
 				03FE132229760247001EC500 /* SelfLoggingView.swift */,
 				03AF9926297BA71A00C465C5 /* BlurView.swift */,
 				032FEAD82981C2D100A2819F /* SurveyQuestionView.swift */,
+				03344E122991F4CD00FFCEBF /* test.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -420,7 +423,7 @@
 				032FEADA2981C67200A2819F /* QuestionFlows.swift */,
 				03D53E9029900D330008B74D /* CommandStatus.swift */,
 				03D53E8D29900BEC0008B74D /* SessionDelegator.swift */,
-				03D53EA8299093EA0008B74D /* Counter.swift */,
+				03D53EA8299093EA0008B74D /* SensorData.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -945,7 +948,7 @@
 				03BC961229560E4600AD89BE /* MyDataPlaceView.swift in Sources */,
 				03BC962A2956637800AD89BE /* ScreenTimeData.swift in Sources */,
 				03BC96012954ADCA00AD89BE /* RRRangeSliderSwiftUI.swift in Sources */,
-				03D53EA9299093EA0008B74D /* Counter.swift in Sources */,
+				03D53EA9299093EA0008B74D /* SensorData.swift in Sources */,
 				03BC96242956637800AD89BE /* WineData.swift in Sources */,
 				03F21BC1292AE85D001D4D8E /* ContentView.swift in Sources */,
 				034D16DE294A7FD7005BE966 /* OpenCircularGauge.swift in Sources */,
@@ -956,6 +959,7 @@
 				034D16E3294CF9A2005BE966 /* LinearGauge.swift in Sources */,
 				038AA9432959328C0086EC1B /* VisualView.swift in Sources */,
 				038C4DBF292AFD9D00699753 /* GlassesData.swift in Sources */,
+				03344E132991F4CD00FFCEBF /* test.swift in Sources */,
 				03BC963D2956668B00AD89BE /* InterpolationMethod.swift in Sources */,
 				03D53E9F299071980008B74D /* ProgramObject.swift in Sources */,
 				03BC96302956637800AD89BE /* Grid.swift in Sources */,
@@ -1025,7 +1029,7 @@
 				03BC963E2956668B00AD89BE /* InterpolationMethod.swift in Sources */,
 				032FEADC2981C67200A2819F /* QuestionFlows.swift in Sources */,
 				038AA93D295915DF0086EC1B /* VisualView.swift in Sources */,
-				03D53EAA299093EA0008B74D /* Counter.swift in Sources */,
+				03D53EAA299093EA0008B74D /* SensorData.swift in Sources */,
 				034D16DF294A7FD7005BE966 /* OpenCircularGauge.swift in Sources */,
 				03D53E9229900D330008B74D /* CommandStatus.swift in Sources */,
 				038AA941295915FD0086EC1B /* AcousticsView.swift in Sources */,

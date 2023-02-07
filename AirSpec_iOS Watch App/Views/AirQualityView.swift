@@ -21,13 +21,11 @@ struct AirQualityView: View {
     ]
     
     
-    @State private var AirQualityData = Array(repeating: -1.0, count: SensorIconConstants.sensorAirQuality.count)
+//    @State private var AirQualityData = Array(repeating: -1.0, count: SensorIconConstants.sensorAirQuality.count)
     @State private var AirQualityDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorAirQuality.count)
     var user_id:String = "9067133"
     
-    @StateObject var counter = Counter()
-
-    let updateFrequence = 10 /// seconds
+    @StateObject var dataReceivedWatch = SensorData()
     
     var body: some View {
         VStack (alignment: .leading) {
@@ -38,13 +36,11 @@ struct AirQualityView: View {
                 LazyVGrid(columns: columns, alignment: .center, spacing: 5) {
                     ForEach(0..<SensorIconConstants.sensorAirQuality.count){i in
                         VStack{
-//                            Text("\(Int(AirQualityData[i]))")
-                            Text(String(self.counter.count))
+                            Text(Int(dataReceivedWatch.sensorValueNew[1][i]) == -1 ? "" : "\(Int(dataReceivedWatch.sensorValueNew[1][i]))")
                                 .font(.system(size: 10, design: .rounded) .weight(.heavy))
                                 .foregroundColor(Color.white)
                             OpenCircularGauge(
-//                                current: AirQualityData[i],
-                                current: Double(counter.count),
+                                current: dataReceivedWatch.sensorValueNew[1][i],
                                 minValue: SensorIconConstants.sensorAirQuality[i].minValue,
                                 maxValue: SensorIconConstants.sensorAirQuality[i].maxValue,
                                 color1: SensorIconConstants.sensorAirQuality[i].color1,
@@ -55,14 +51,11 @@ struct AirQualityView: View {
                                 valueTrend: AirQualityDataTrend[i],
                                 icon: SensorIconConstants.sensorAirQuality[i].icon){
                                 }
-                            
+
 
                                 Text(SensorIconConstants.sensorAirQuality[i].name)
                                     .foregroundColor(Color.white)
                                     .font(.system(size: 10))
-//                                    .scaledToFit()
-//                                    .minimumScaleFactor(0.01)
-//                                    .lineLimit(1)
                         }
                     }
                 }

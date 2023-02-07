@@ -19,12 +19,12 @@ struct VisualView: View {
         GridItem(.flexible()),
     ]
     
-    @State private var VisualData = Array(repeating: -1.0, count: SensorIconConstants.sensorVisual.count)
+//    @State private var VisualData = Array(repeating: -1.0, count: SensorIconConstants.sensorVisual.count)
     @State private var VisualDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorVisual.count)
     var user_id:String = "9067133"
-
-    let updateFrequence = 10 /// seconds
     
+    @StateObject var dataReceivedWatch = SensorData()
+        
     var body: some View {
         VStack (alignment: .leading) {
             Text("Visual")
@@ -34,11 +34,11 @@ struct VisualView: View {
                 LazyVGrid(columns: columns, alignment: .center, spacing: 5) {
                     ForEach(0..<SensorIconConstants.sensorVisual.count){i in
                         VStack{
-                            Text("\(Int(VisualData[i]))")
+                            Text(Int(dataReceivedWatch.sensorValueNew[2][i]) == -1 ? "" : "\(Int(dataReceivedWatch.sensorValueNew[2][i]))")
                                 .font(.system(size: 10, design: .rounded) .weight(.heavy))
                                 .foregroundColor(Color.white)
                             OpenCircularGauge(
-                                current: VisualData[i],
+                                current: dataReceivedWatch.sensorValueNew[2][i],
                                 minValue: SensorIconConstants.sensorVisual[i].minValue,
                                 maxValue: SensorIconConstants.sensorVisual[i].maxValue,
                                 color1: SensorIconConstants.sensorVisual[i].color1,
@@ -54,9 +54,6 @@ struct VisualView: View {
                                 Text(SensorIconConstants.sensorVisual[i].name)
                                     .foregroundColor(Color.white)
                                     .font(.system(size: 10))
-//                                    .scaledToFit()
-//                                    .minimumScaleFactor(0.01)
-//                                    .lineLimit(1)
                         }
                     }
                 }

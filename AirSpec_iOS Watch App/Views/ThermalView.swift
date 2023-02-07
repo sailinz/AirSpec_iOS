@@ -23,17 +23,16 @@ struct ThermalView: View {
 //    @ObservedObject var viewModel : ProgramViewModel
 //    @State var sensorValues : ProgramObject
     
-    @State private var thermalData = Array(repeating: -1.0, count: SensorIconConstants.sensorThermal.count)
+//    @State private var thermalData = Array(repeating: -1.0, count: SensorIconConstants.sensorThermal.count)
     @State private var thermalDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorThermal.count)
     var user_id:String = "9067133"
 
     let updateFrequence = 10 /// seconds
     
     /// -- watch connectivity
-    @StateObject var counter = Counter()
+    @StateObject var dataReceivedWatch = SensorData()
     
     var body: some View {
-        
         VStack (alignment: .leading) {
             
             Text("Thermal")
@@ -43,16 +42,11 @@ struct ThermalView: View {
                 LazyVGrid(columns: columns, alignment: .center, spacing: 5) {
                     ForEach(0..<SensorIconConstants.sensorThermal.count){i in
                         VStack{
-                            Text(String(self.counter.count))
-//                            Text("\(Int(thermalData[i]))")
-//                            var value = (i == 0 ? sensorValues.temperature : sensorValues.humidity) ?? "-1"
-//                            Text(value)
+                            Text(Int(dataReceivedWatch.sensorValueNew[0][i]) == -1 ? "" : "\(Int(dataReceivedWatch.sensorValueNew[0][i]))")
                                 .font(.system(size: 10, design: .rounded) .weight(.heavy))
                                 .foregroundColor(Color.white)
                             OpenCircularGauge(
-                                current: Double(counter.count),
-//                                current: thermalData[i],
-//                                current:  Double(value) ?? 0,
+                                current: dataReceivedWatch.sensorValueNew[0][i],
                                 minValue: SensorIconConstants.sensorThermal[i].minValue,
                                 maxValue: SensorIconConstants.sensorThermal[i].maxValue,
                                 color1: SensorIconConstants.sensorThermal[i].color1,
@@ -68,10 +62,8 @@ struct ThermalView: View {
                                 Text(SensorIconConstants.sensorThermal[i].name)
                                     .foregroundColor(Color.white)
                                     .font(.system(size: 10))
-//                                    .scaledToFit()
-//                                    .minimumScaleFactor(0.01)
-//                                    .lineLimit(1)
                         }
+                            
                     }
                 }
                 .padding(.horizontal)
@@ -86,11 +78,11 @@ struct ThermalView: View {
 }
 
 
-//struct ThermalView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ThermalView()
-//    }
-//}
+struct ThermalView_Previews: PreviewProvider {
+    static var previews: some View {
+        ThermalView()
+    }
+}
 
 
 

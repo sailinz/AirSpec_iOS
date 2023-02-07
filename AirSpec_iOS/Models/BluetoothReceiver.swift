@@ -50,12 +50,17 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     @Published var airQualityData = Array(repeating: -1.0, count: SensorIconConstants.sensorAirQuality.count)
     @Published var visualData = Array(repeating: -1.0, count: SensorIconConstants.sensorVisual.count)
     @Published var acoutsticsData = Array(repeating: -1.0, count: SensorIconConstants.sensorAcoustics.count)
+    
+    @Published var cogIntensity = 1 /// must scale to a int
 
     /// -- watchConnectivity
 //    @Published var prog : ProgramObject
 //    let viewModel = ProgramViewModel(connectivityProvider: ConnectionProvider())
 //    let connect = ConnectionProvider()
-    @Published var counter = Counter()
+    @Published var dataToWatch = SensorData()
+//    @Published var temperatureData = TemperatureData()
+//    @Published var co2Data = CO2Data()
+//    @Published var vocIndexData = VOCIndexData()
     
     init(service: CBUUID, characteristic: CBUUID) {
         super.init()
@@ -236,51 +241,81 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     print("failed parsing packet: \(error)")
                     return
                 }
-                print(packet)
+//                print(packet)
                 
 //                viewModel.connectivityProvider.connect()
-                
-                
 
                 if(packet.hasBmePacket){
-                   
                     for sensorPayload in packet.bmePacket.payload {
                         if(sensorPayload.sensorID == 3){
                             self.airQualityData[2] = Double(sensorPayload.signal) /// CO2
-                            counter.updateValue(sensorValue: Int(self.airQualityData[0]))
+                            dataToWatch.updateValue(sensorValue: self.airQualityData[2], sensorName: "co2Data")
                         }else if(sensorPayload.sensorID == 1){
                             self.airQualityData[3] = Double(sensorPayload.signal) /// IAQ
+                            dataToWatch.updateValue(sensorValue: self.airQualityData[3], sensorName: "iaqData")
                         }
                     }
                 }else if(packet.hasLuxPacket){
+                    print("lux: ", packet.luxPacket)
                     for sensorPayload in packet.luxPacket.payload {
                         if(sensorPayload.lux != nil){
                             self.visualData[0] = Double(sensorPayload.lux) /// lux
+                            dataToWatch.updateValue(sensorValue: self.visualData[0], sensorName: "luxData")
                         }
                     }
                 }else if(packet.hasShtPacket){
                     print("sht: ", packet.shtPacket)
-//                    var  sensorPayload = packet!.shtPacket.payload[0]
-//                    self.thermalData[0] = Double(sensorPayload.temperature) /// temperature
                     for sensorPayload in packet.shtPacket.payload {
-                        if(sensorPayload.temperature != 0.0){
+                        if(sensorPayload.temperature != nil && sensorPayload.humidity != nil){
                             self.thermalData[0] = Double(sensorPayload.temperature) /// temperature
-//                            self.prog.temperature = String(self.thermalData[0])
-                        }else if(sensorPayload.humidity != 0.0){
+                            dataToWatch.updateValue(sensorValue: self.thermalData[0], sensorName: "temperatureData")
                             self.thermalData[1] = Double(sensorPayload.humidity) /// humidity
-//                            self.prog.humidity = String(self.thermalData[1])
+//                            dataToWatch.updateValue(sensorValue: self.thermalData[1], sensorName: "humidityData")
+                            
                         }
                     }
                     
-                }else if((packet.hasSgpPacket)){
+                }else if(packet.hasSgpPacket){
                     for sensorPayload in packet.sgpPacket.payload {
-                        if(sensorPayload.vocIndexValue != nil){
+                        if(sensorPayload.vocIndexValue != nil && sensorPayload.noxIndexValue != nil){
                             self.airQualityData[0] = Double(sensorPayload.vocIndexValue) /// voc index
-                            
-                        }else if(sensorPayload.noxIndexValue != nil){
+                            dataToWatch.updateValue(sensorValue: self.airQualityData[0], sensorName: "vocIndexData")
                             self.airQualityData[1] = Double(sensorPayload.noxIndexValue) /// nox index
+                            dataToWatch.updateValue(sensorValue: self.airQualityData[1], sensorName: "noxIndexData")
+//                            print(sensorPayload)
                         }
                     }
+                    
+                }else if(packet.hasMicPacket){
+                    // tbd
+                    
+                }else if(packet.hasThermPacket){
+                    var thermNoseTip: Double
+                    var thermNoseBridge: Double
+                    var thermNoseFront: Double
+                    var thermNoseMiddle: Double
+                    var thermNoseBack: Double
+
+                    for sensorPayload in packet.thermPacket.payload {
+                        if(sensorPayload.descriptor == 1){
+                            thermNoseTip = Double(sensorPayload.objectTemp)
+                        }else if(sensorPayload.descriptor == 2){
+                            thermNoseBridge = Double(sensorPayload.objectTemp)
+                        }else if(sensorPayload.descriptor == 3){
+                            thermNoseFront = Double(sensorPayload.objectTemp)
+                        }else if(sensorPayload.descriptor == 4){
+                            thermNoseMiddle = Double(sensorPayload.objectTemp)
+                        }else if(sensorPayload.descriptor == 5){
+                            thermNoseBack = Double(sensorPayload.objectTemp)
+                        }else{
+                            
+                        }
+                    }
+                    
+                    cogIntensity = Int(abs((thermNoseFront + thermNoseMiddle + thermNoseBack)/3 - (thermNoseTip + thermNoseBridge)/2)*10+5) /// temple - face
+                    
+                }else{
+//                    print(packet)
                 }
                 
                 

@@ -47,7 +47,7 @@ struct HomeView: View {
     @State private var airQualityDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorAirQuality.count)
     @State private var visualDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorVisual.count)
     @State private var acoutsticsDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorAcoustics.count)
-    @State private var cogIntensity = 1 /// must scale to a int
+//    @State private var cogIntensity = 1 /// must scale to a int
     let updateFrequence = 10 /// seconds
 
 
@@ -72,21 +72,6 @@ struct HomeView: View {
 
         NavigationView{
             VStack{
-//                Text("Home")
-//                    .font(
-//                            .custom(
-//                            "SF Pro Display",
-//                            fixedSize: 30)
-//                            .weight(.heavy)
-//                        )
-//                    .frame(maxWidth: .infinity, alignment: .leading)
-//                    .padding()
-//                //                List {
-//                //                    Section(header: Text("Temperature")){
-//                ////                        showDataFromInflux
-//                //                    }
-//                //                }
-//
                 ZStack{
 
                     GeometryReader { geometry in
@@ -104,9 +89,6 @@ struct HomeView: View {
                     }
 
                     ScrollView {
-
-            //            .frame(maxWidth: .infinity, maxHeight: .infinity)
-
                         HeartAnimation()
                             .padding(.all, 80)
 
@@ -117,40 +99,59 @@ struct HomeView: View {
                                 .padding()
                             LazyVGrid(columns: columns, spacing: 5) {
                                 ForEach(0..<SensorIconConstants.sensorThermal.count){i in
-                                    HStack{
-                                        OpenCircularGauge(
-                                            current: receiver.thermalData[i],
-                                            minValue: SensorIconConstants.sensorThermal[i].minValue,
-                                            maxValue: SensorIconConstants.sensorThermal[i].maxValue,
-                                            color1: SensorIconConstants.sensorThermal[i].color1,
-                                            color2: SensorIconConstants.sensorThermal[i].color2,
-                                            color3: SensorIconConstants.sensorThermal[i].color3,
-                                            color1Position: color1PositionThermal?[i] ?? SensorIconConstants.sensorThermal[i].color1Position,
-                                            color3Position: color3PositionThermal?[i] ?? SensorIconConstants.sensorThermal[i].color3Position,
-                                            valueTrend: thermalDataTrend[i],
-                                            icon: SensorIconConstants.sensorThermal[i].icon){
-                                            }
+                                    ZStack{
+                                        HStack{
+                                            OpenCircularGauge(
+                                                current: receiver.thermalData[i],
+                                                minValue: SensorIconConstants.sensorThermal[i].minValue,
+                                                maxValue: SensorIconConstants.sensorThermal[i].maxValue,
+                                                color1: SensorIconConstants.sensorThermal[i].color1,
+                                                color2: SensorIconConstants.sensorThermal[i].color2,
+                                                color3: SensorIconConstants.sensorThermal[i].color3,
+                                                color1Position: color1PositionThermal?[i] ?? SensorIconConstants.sensorThermal[i].color1Position,
+                                                color3Position: color3PositionThermal?[i] ?? SensorIconConstants.sensorThermal[i].color3Position,
+                                                valueTrend: thermalDataTrend[i],
+                                                icon: SensorIconConstants.sensorThermal[i].icon){
+                                                }
 
-                                        VStack (alignment: .leading) {
-                                            Text(SensorIconConstants.sensorThermal[i].name)
-                                                .foregroundColor(Color.white)
-                                                .font(.system(size: 13))
-//                                                .scaledToFit()
-//                                                .minimumScaleFactor(0.01)
-//                                                .lineLimit(1)
-                                            Spacer()
-                                            Text("\(Int(receiver.thermalData[i]))")
-                                                .font(.system(.title, design: .rounded) .weight(.heavy))
-                                                .foregroundColor(Color.white)
+                                            VStack (alignment: .leading) {
+                                                Text(SensorIconConstants.sensorThermal[i].name)
+                                                    .foregroundColor(Color.white)
+                                                    .font(.system(size: 13))
+    //                                                .scaledToFit()
+    //                                                .minimumScaleFactor(0.01)
+    //                                                .lineLimit(1)
+                                                Spacer()
+                                                Text(Int(receiver.thermalData[i]) == -1 ? "" : "\(Int(receiver.thermalData[i]))")
+                                                    .font(.system(.title, design: .rounded) .weight(.heavy))
+                                                    .foregroundColor(Color.white)
+                                            }
+                                            
                                         }
+                                        .frame(minWidth: screenWidth/2 - 50, alignment: .leading)
+                                        .padding(.all, 11)
+                                        .background(Color.black.opacity(0.6))
+                                        .cornerRadius(15)
+                                        .shadow(
+                                            color:Color.pink.opacity(0.4),
+                                            radius: 4)
+                                        
+                                        /// info
+                                        Button(action:{
+                                            withAnimation{
+                                                // xxButton.toggle()
+                                            }
+                                        }){
+                                            ZStack{
+                                                Image(systemName: "info.circle")
+                                                    .frame(width:26, height:26)
+                                                    .foregroundColor(.white)
+                                            }
+                                        }
+                                        .padding(.leading, 120)
+                                        .padding(.top, 40)
+
                                     }
-                                    .frame(minWidth: screenWidth/2 - 50, alignment: .leading)
-                                    .padding(.all, 11)
-                                    .background(Color.black.opacity(0.6))
-                                    .cornerRadius(15)
-                                    .shadow(
-                                        color:Color.pink.opacity(0.4),
-                                        radius: 4)
                                 }
                             }
                             .padding(.horizontal)
@@ -162,43 +163,61 @@ struct HomeView: View {
                                 .padding()
                             LazyVGrid(columns: columns, spacing: 5) {
                                 ForEach(0..<SensorIconConstants.sensorAirQuality.count){i in
-                                    let dummyValue = Double.random(in: 50.0 ..< 80.0)
-                                    HStack{
-                                        OpenCircularGauge(
-                                            current: receiver.airQualityData[i],
-                                            minValue: SensorIconConstants.sensorAirQuality[i].minValue,
-                                            maxValue: SensorIconConstants.sensorAirQuality[i].maxValue,
-                                            color1: SensorIconConstants.sensorAirQuality[i].color1,
-                                            color2: SensorIconConstants.sensorAirQuality[i].color2,
-                                            color3: SensorIconConstants.sensorAirQuality[i].color3,
-                                            color1Position: SensorIconConstants.sensorAirQuality[i].color1Position,
-                                            color3Position: SensorIconConstants.sensorAirQuality[i].color3Position,
-                                            valueTrend: airQualityDataTrend[i],
-                                            icon: SensorIconConstants.sensorAirQuality[i].icon){
-                                            }
+                                    ZStack{
+                                        HStack{
+                                            OpenCircularGauge(
+                                                current: receiver.airQualityData[i],
+                                                minValue: SensorIconConstants.sensorAirQuality[i].minValue,
+                                                maxValue: SensorIconConstants.sensorAirQuality[i].maxValue,
+                                                color1: SensorIconConstants.sensorAirQuality[i].color1,
+                                                color2: SensorIconConstants.sensorAirQuality[i].color2,
+                                                color3: SensorIconConstants.sensorAirQuality[i].color3,
+                                                color1Position: SensorIconConstants.sensorAirQuality[i].color1Position,
+                                                color3Position: SensorIconConstants.sensorAirQuality[i].color3Position,
+                                                valueTrend: airQualityDataTrend[i],
+                                                icon: SensorIconConstants.sensorAirQuality[i].icon){
+                                                }
 
-                                        VStack (alignment: .leading) {
-                                            Text(SensorIconConstants.sensorAirQuality[i].name)
-                                                .foregroundColor(Color.white)
-                                                .font(.system(size: 12))
-//                                                .frame(minWidth: 60)
-//
-//                                                .scaledToFit()
-//                                                .minimumScaleFactor(0.01)
-//                                                .lineLimit(1)
-                                            Spacer()
-                                            Text("\(Int(receiver.airQualityData[i]))")
-                                                .font(.system(.title, design: .rounded) .weight(.heavy))
-                                                .foregroundColor(Color.white)
+                                            VStack (alignment: .leading) {
+                                                Text(SensorIconConstants.sensorAirQuality[i].name)
+                                                    .foregroundColor(Color.white)
+                                                    .font(.system(size: 12))
+    //                                                .frame(minWidth: 60)
+    //
+    //                                                .scaledToFit()
+    //                                                .minimumScaleFactor(0.01)
+    //                                                .lineLimit(1)
+                                                Spacer()
+                                                Text(Int(receiver.airQualityData[i]) == -1 ? "" : "\(Int(receiver.airQualityData[i]))")
+                                                    .font(.system(.title, design: .rounded) .weight(.heavy))
+                                                    .foregroundColor(Color.white)
+                                            }
                                         }
+                                        .frame(minWidth: screenWidth/2 - 50, alignment: .leading)
+                                        .padding(.all, 11)
+                                        .background(Color.black.opacity(0.6))
+                                        .cornerRadius(15)
+                                        .shadow(
+                                            color:Color.pink.opacity(0.4),
+                                            radius: 4)
+                                        
+                                        /// info
+                                        Button(action:{
+                                            withAnimation{
+                                                // xxButton.toggle()
+                                            }
+                                        }){
+                                            ZStack{
+                                                Image(systemName: "info.circle")
+                                                    .frame(width:26, height:26)
+                                                    .foregroundColor(.white)
+                                            }
+                                        }
+                                        .padding(.leading, 120)
+                                        .padding(.top, 40)
+
                                     }
-                                    .frame(minWidth: screenWidth/2 - 50, alignment: .leading)
-                                    .padding(.all, 11)
-                                    .background(Color.black.opacity(0.6))
-                                    .cornerRadius(15)
-                                    .shadow(
-                                        color:Color.pink.opacity(0.4),
-                                        radius: 4)
+                                
                                 }
                             }
                             .padding(.horizontal)
@@ -210,42 +229,59 @@ struct HomeView: View {
                                 .padding()
                             LazyVGrid(columns: columns, spacing: 5) {
                                 ForEach(0..<SensorIconConstants.sensorVisual.count){i in
-                                    let dummyValue = Double.random(in: 50.0 ..< 80.0)
-                                    HStack{
-                                        OpenCircularGauge(
-                                            current: receiver.visualData[i],
-                                            minValue: SensorIconConstants.sensorVisual[i].minValue,
-                                            maxValue: SensorIconConstants.sensorVisual[i].maxValue,
-                                            color1: SensorIconConstants.sensorVisual[i].color1,
-                                            color2: SensorIconConstants.sensorVisual[i].color2,
-                                            color3: SensorIconConstants.sensorVisual[i].color3,
-                                            color1Position: color1PositionVisual?[i] ?? SensorIconConstants.sensorVisual[i].color1Position,
-                                            color3Position: color3PositionVisual?[i] ?? SensorIconConstants.sensorVisual[i].color1Position,
-                                            valueTrend: visualDataTrend[i],
-                                            icon: SensorIconConstants.sensorVisual[i].icon){
-                                            }
+                                    ZStack{
+                                        HStack{
+                                            OpenCircularGauge(
+                                                current: receiver.visualData[i],
+                                                minValue: SensorIconConstants.sensorVisual[i].minValue,
+                                                maxValue: SensorIconConstants.sensorVisual[i].maxValue,
+                                                color1: SensorIconConstants.sensorVisual[i].color1,
+                                                color2: SensorIconConstants.sensorVisual[i].color2,
+                                                color3: SensorIconConstants.sensorVisual[i].color3,
+                                                color1Position: color1PositionVisual?[i] ?? SensorIconConstants.sensorVisual[i].color1Position,
+                                                color3Position: color3PositionVisual?[i] ?? SensorIconConstants.sensorVisual[i].color1Position,
+                                                valueTrend: visualDataTrend[i],
+                                                icon: SensorIconConstants.sensorVisual[i].icon){
+                                                }
 
-                                        VStack (alignment: .leading) {
-                                            Text(SensorIconConstants.sensorVisual[i].name)
-                                                .foregroundColor(Color.white)
-                                                .font(.system(size: 12))
-//                                                .frame(minWidth: 60)
-//                                                .scaledToFit()
-//                                                .minimumScaleFactor(0.01)
-//                                                .lineLimit(1)
-                                            Spacer()
-                                            Text("\(Int(receiver.visualData[i]))")
-                                                .font(.system(.title, design: .rounded) .weight(.heavy))
-                                                .foregroundColor(Color.white)
+                                            VStack (alignment: .leading) {
+                                                Text(SensorIconConstants.sensorVisual[i].name)
+                                                    .foregroundColor(Color.white)
+                                                    .font(.system(size: 12))
+    //                                                .frame(minWidth: 60)
+    //                                                .scaledToFit()
+    //                                                .minimumScaleFactor(0.01)
+    //                                                .lineLimit(1)
+                                                Spacer()
+                                                Text(Int(receiver.visualData[i]) == -1 ? "" : "\(Int(receiver.visualData[i]))")
+                                                    .font(.system(.title, design: .rounded) .weight(.heavy))
+                                                    .foregroundColor(Color.white)
+                                            }
                                         }
+                                        .frame(minWidth: screenWidth/2 - 50, alignment: .leading)
+                                        .padding(.all, 11)
+                                        .background(Color.black.opacity(0.6))
+                                        .cornerRadius(15)
+                                        .shadow(
+                                            color:Color.pink.opacity(0.4),
+                                            radius: 4)
+                                        
+                                        /// info
+                                        Button(action:{
+                                            withAnimation{
+                                                // xxButton.toggle()
+                                            }
+                                        }){
+                                            ZStack{
+                                                Image(systemName: "info.circle")
+                                                    .frame(width:26, height:26)
+                                                    .foregroundColor(.white)
+                                            }
+                                        }
+                                        .padding(.leading, 120)
+                                        .padding(.top, 40)
+
                                     }
-                                    .frame(minWidth: screenWidth/2 - 50, alignment: .leading)
-                                    .padding(.all, 11)
-                                    .background(Color.black.opacity(0.6))
-                                    .cornerRadius(15)
-                                    .shadow(
-                                        color:Color.pink.opacity(0.4),
-                                        radius: 4)
                                 }
 
                             }
@@ -259,42 +295,59 @@ struct HomeView: View {
                             LazyVGrid(columns: columns, spacing: 5) {
                                 ForEach(0..<SensorIconConstants.sensorAcoustics.count){i in
                                     let dummyValue = Double.random(in: 50.0 ..< 80.0)
-                                    HStack{
-                                        OpenCircularGauge(
-                                            current: dummyValue,
-                                            minValue: SensorIconConstants.sensorAcoustics[i].minValue,
-                                            maxValue: SensorIconConstants.sensorAcoustics[i].maxValue,
-                                            color1: SensorIconConstants.sensorAcoustics[i].color1,
-                                            color2: SensorIconConstants.sensorAcoustics[i].color2,
-                                            color3: SensorIconConstants.sensorAcoustics[i].color3,
-                                            color1Position: color1PositionAcoutstics?[i] ?? SensorIconConstants.sensorAcoustics[i].color1Position,
-                                            color3Position: color3PositionAcoutstics?[i] ?? SensorIconConstants.sensorAcoustics[i].color3Position,
-                                            valueTrend: 0,
-                                            icon: SensorIconConstants.sensorAcoustics[i].icon){
+                                    ZStack{
+                                        HStack{
+                                            OpenCircularGauge(
+                                                current: dummyValue,
+                                                minValue: SensorIconConstants.sensorAcoustics[i].minValue,
+                                                maxValue: SensorIconConstants.sensorAcoustics[i].maxValue,
+                                                color1: SensorIconConstants.sensorAcoustics[i].color1,
+                                                color2: SensorIconConstants.sensorAcoustics[i].color2,
+                                                color3: SensorIconConstants.sensorAcoustics[i].color3,
+                                                color1Position: color1PositionAcoutstics?[i] ?? SensorIconConstants.sensorAcoustics[i].color1Position,
+                                                color3Position: color3PositionAcoutstics?[i] ?? SensorIconConstants.sensorAcoustics[i].color3Position,
+                                                valueTrend: 0,
+                                                icon: SensorIconConstants.sensorAcoustics[i].icon){
+                                                }
+
+                                            VStack (alignment: .leading) {
+                                                Text(SensorIconConstants.sensorAcoustics[i].name)
+                                                    .foregroundColor(Color.white)
+                                                    .font(.system(size: 12))
+    //                                                .scaledToFit()
+    //                                                .minimumScaleFactor(0.01)
+    //                                                .lineLimit(1)
+                                                Spacer()
+                                                Text("\(Int(dummyValue))")
+                                                    .font(.system(.title, design: .rounded) .weight(.heavy))
+                                                    .foregroundColor(Color.white)
                                             }
-
-                                        VStack (alignment: .leading) {
-                                            Text(SensorIconConstants.sensorAcoustics[i].name)
-                                                .foregroundColor(Color.white)
-                                                .font(.system(size: 12))
-//                                                .scaledToFit()
-//                                                .minimumScaleFactor(0.01)
-//                                                .lineLimit(1)
-                                            Spacer()
-                                            Text("\(Int(dummyValue))")
-                                                .font(.system(.title, design: .rounded) .weight(.heavy))
-                                                .foregroundColor(Color.white)
+                                            .frame(maxWidth: .infinity, alignment: .leading)
                                         }
-                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .frame(minWidth: screenWidth/2 - 50, alignment: .leading)
+                                        .padding(.all, 11)
+                                        .background(Color.black.opacity(0.6))
+                                        .cornerRadius(15)
+                                        .shadow(
+                                            color:Color.pink.opacity(0.4),
+                                            radius: 4)
+                                        
+                                        /// info
+                                        Button(action:{
+                                            withAnimation{
+                                                // xxButton.toggle()
+                                            }
+                                        }){
+                                            ZStack{
+                                                Image(systemName: "info.circle")
+                                                    .frame(width:26, height:26)
+                                                    .foregroundColor(.white)
+                                            }
+                                        }
+                                        .padding(.leading, 120)
+                                        .padding(.top, 40)
                                     }
-                                    .frame(minWidth: screenWidth/2 - 50, alignment: .leading)
-                                    .padding(.all, 11)
-                                    .background(Color.black.opacity(0.6))
-                                    .cornerRadius(15)
-                                    .shadow(
-                                        color:Color.pink.opacity(0.4),
-                                        radius: 4)
-
+                                    
                                 }
                             }
                             .padding(.horizontal)
