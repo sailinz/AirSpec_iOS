@@ -264,13 +264,15 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                         }
                     }
                 }else if(packet.hasShtPacket){
-                    print("sht: ", packet.shtPacket)
+                    print("sht: ", packet)
+                    
                     for sensorPayload in packet.shtPacket.payload {
                         if(sensorPayload.temperature != nil && sensorPayload.humidity != nil){
                             self.thermalData[0] = Double(sensorPayload.temperature) /// temperature
                             dataToWatch.updateValue(sensorValue: self.thermalData[0], sensorName: "temperatureData")
+                            print(sensorPayload.humidity)
                             self.thermalData[1] = Double(sensorPayload.humidity) /// humidity
-//                            dataToWatch.updateValue(sensorValue: self.thermalData[1], sensorName: "humidityData")
+                            dataToWatch.updateValue(sensorValue: self.thermalData[1], sensorName: "humidityData")
                             
                         }
                     }
@@ -312,7 +314,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                         }
                     }
                     
-                    cogIntensity = Int(abs((thermNoseFront + thermNoseMiddle + thermNoseBack)/3 - (thermNoseTip + thermNoseBridge)/2)*10+5) /// temple - face
+//                    cogIntensity = Int(abs((thermNoseFront + thermNoseMiddle + thermNoseBack)/3 - (thermNoseTip + thermNoseBridge)/2)*10+5) /// temple - face
                     
                 }else{
 //                    print(packet)

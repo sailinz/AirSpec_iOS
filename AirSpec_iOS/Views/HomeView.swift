@@ -47,7 +47,7 @@ struct HomeView: View {
     @State private var airQualityDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorAirQuality.count)
     @State private var visualDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorVisual.count)
     @State private var acoutsticsDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorAcoustics.count)
-//    @State private var cogIntensity = 1 /// must scale to a int
+    @State private var cogIntensity = 1 /// must scale to a int
     let updateFrequence = 10 /// seconds
 
 
