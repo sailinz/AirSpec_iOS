@@ -16,11 +16,12 @@ import WatchKit
 struct WatchHomeView: View {
     @Environment(\.scenePhase) var scenePhase
 
-    let skinTempDataName = ["thermopile_nose_bridge","thermopile_nose_tip","thermopile_temple_back","thermopile_temple_front","thermopile_temple_middle"]
-    @State private var skinTempData = Array(repeating: -1.0, count: 5)
+//    let skinTempDataName = ["thermopile_nose_bridge","thermopile_nose_tip","thermopile_temple_back","thermopile_temple_front","thermopile_temple_middle"]
+//    @State private var skinTempData = Array(repeating: -1.0, count: 5)
     var user_id:String = "9067133"
     
-    @State private var cogIntensity = 10 /// must scale to a int
+//    @State private var cogIntensity = 10 /// must scale to a int
+    @StateObject var dataReceivedWatch = SensorData()
     
     var body: some View {
         ZStack{
@@ -34,7 +35,7 @@ struct WatchHomeView: View {
     //            }
                 
                 GeometryReader { geometry in
-                    ForEach(0..<cogIntensity, id: \.self) { index in
+                    ForEach(0..<Int(dataReceivedWatch.sensorValueNew[4][0]), id: \.self) { index in /// cogIntensity
                         let seed = Bool.random()
                         Image("Asset " + String(Int.random(in: 1...18)))
                             .rotationEffect(.degrees(Double.random(in: 0...360)))

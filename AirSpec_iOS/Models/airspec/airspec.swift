@@ -24,6 +24,12 @@ public class Airspec {
         request.setValue("Basic \(auth_token)", forHTTPHeaderField: "Authorization")
 
         let data = try contents.serializedData()
+        
+        print(data)
+        
+        /// the byte array can be used to regenerate the data: https://medium.com/theengineeringgecko/protocol-buffers-for-swift-eda7eb114d08
+//        let reconstructedData = try SensorPacket.init(serializedData: data) /// does not work because the contents also have the epoch
+//        print(reconstructedData)
 
         let session = URLSession(configuration: URLSessionConfiguration.ephemeral)
 

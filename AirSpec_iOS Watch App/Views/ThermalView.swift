@@ -27,7 +27,7 @@ struct ThermalView: View {
     @State private var thermalDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorThermal.count)
     var user_id:String = "9067133"
 
-    let updateFrequence = 10 /// seconds
+//    let updateFrequence = 10 /// seconds
     
     /// -- watch connectivity
     @StateObject var dataReceivedWatch = SensorData()

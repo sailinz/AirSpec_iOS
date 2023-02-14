@@ -33,7 +33,8 @@ class SessionDelegator: NSObject, WCSessionDelegate {
     var sensorValueNew: [[Double]] = [Array(repeating: -1.0, count: SensorIconConstants.sensorThermal.count),
                                       Array(repeating: -1.0, count: SensorIconConstants.sensorAirQuality.count),
                                       Array(repeating: -1.0, count: SensorIconConstants.sensorVisual.count),
-                                      Array(repeating: -1.0, count: SensorIconConstants.sensorAcoustics.count)]
+                                      Array(repeating: -1.0, count: SensorIconConstants.sensorAcoustics.count),
+                                      Array(repeating: 3, count: 1)  ] /// cog load
     
     init(sensorReading: PassthroughSubject<[[Double]], Never>) {
         self.sensorReading = sensorReading
@@ -62,6 +63,8 @@ class SessionDelegator: NSObject, WCSessionDelegate {
                 self.sensorValueNew[1][3] = sensorReading
             }else if let sensorReading = applicationContext["luxData"] as? Double {
                 self.sensorValueNew[2][0] = sensorReading
+            }else if let sensorReading = applicationContext["cogLoadData"] as? Double {
+                self.sensorValueNew[4][0] = sensorReading
             } else {
                 print("There was an error")
             }

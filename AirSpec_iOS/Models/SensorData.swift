@@ -16,7 +16,8 @@ final class SensorData: ObservableObject {
     @Published private(set) var sensorValueNew: [[Double]] = [Array(repeating: -1.0, count: SensorIconConstants.sensorThermal.count),
                                                               Array(repeating: -1.0, count: SensorIconConstants.sensorAirQuality.count),
                                                               Array(repeating: -1.0, count: SensorIconConstants.sensorVisual.count),
-                                                              Array(repeating: -1.0, count: SensorIconConstants.sensorAcoustics.count)]
+                                                              Array(repeating: -1.0, count: SensorIconConstants.sensorAcoustics.count),
+                                                              Array(repeating: 3, count: 1)  ] /// cog load
     
 
     init(session: WCSession = .default) {

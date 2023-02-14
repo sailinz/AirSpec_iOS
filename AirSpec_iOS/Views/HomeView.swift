@@ -47,7 +47,7 @@ struct HomeView: View {
     @State private var airQualityDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorAirQuality.count)
     @State private var visualDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorVisual.count)
     @State private var acoutsticsDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorAcoustics.count)
-    @State private var cogIntensity = 1 /// must scale to a int
+//    @State private var cogIntensity = 1 /// must scale to a int
     let updateFrequence = 10 /// seconds
 
 
@@ -75,7 +75,7 @@ struct HomeView: View {
                 ZStack{
 
                     GeometryReader { geometry in
-                        ForEach(0..<cogIntensity, id: \.self) { index in
+                        ForEach(0..<receiver.cogIntensity, id: \.self) { index in
                             Image("Asset " + String(Int.random(in: 1...18)))
                                 .rotationEffect(.degrees(Double.random(in: 0...360)))
                                 .frame(width: CGFloat.random(in: 5...15), height: CGFloat.random(in: 5...15))

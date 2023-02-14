@@ -132,22 +132,6 @@ struct SettingView: View {
                         
                         }
                         
-//                        HStack() {
-//                            Image(systemName: "lightbulb.led.wide.fill")
-//                                .frame(width: 30, height: 20)
-//                            Text("Test light")
-//                                .font(.system(.subheadline))
-//                            Toggle(isOn: $toggleTestLight) {
-//                                    if(toggleTestLight){
-//                                        Text("\(receiver.testLight())")
-//                                    }
-//                                }
-//                                .buttonStyle(PlainButtonStyle())
-//                                .tint(.pink)
-//                                .alignmentGuide(.trailing) { _ in return -10 }
-//
-//                        }
-                        
                         HStack() {
                             Image(systemName: "lightbulb.led.wide.fill")
                                 .frame(width: 30, height: 20)
@@ -164,14 +148,14 @@ struct SettingView: View {
                             .clipShape(Capsule())
                             
                             Button(action:
-//                                    receiver.testLight
-                                    {
-                                        Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { timer in
-//                                            print("test light with timer")
-//                                            receiver.testLightReset()
-                                            receiver.testLight()
-                                        }
-                                    }
+                                    receiver.testLight
+//                                    {
+//                                        Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { timer in
+////                                            print("test light with timer")
+////                                            receiver.testLightReset()
+//                                            receiver.testLight()
+//                                        }
+//                                    }
                                     
                                 ) {
                                 Text("Test")
@@ -182,14 +166,6 @@ struct SettingView: View {
                             .background(.pink.opacity(0.5))
                             .clipShape(Capsule())
                             
-//                            Button(action: receiver.testLight) {
-//                                    Text("Test")
-//                                    .font(.system(.subheadline) .weight(.semibold))
-//                                    .foregroundColor(.white)
-//                                }
-//                                .padding(.all,5)
-//                                .background(.pink.opacity(0.5))
-//                                .clipShape(Capsule())
                         }
                         
                     }
