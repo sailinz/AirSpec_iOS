@@ -11,7 +11,6 @@
 		032FEAD92981C2D100A2819F /* SurveyQuestionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FEAD82981C2D100A2819F /* SurveyQuestionView.swift */; };
 		032FEADB2981C67200A2819F /* QuestionFlows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FEADA2981C67200A2819F /* QuestionFlows.swift */; };
 		032FEADC2981C67200A2819F /* QuestionFlows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FEADA2981C67200A2819F /* QuestionFlows.swift */; };
-		03344E132991F4CD00FFCEBF /* test.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03344E122991F4CD00FFCEBF /* test.swift */; };
 		034B0D6A2942A50500F21CFB /* MyDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034B0D692942A50500F21CFB /* MyDataView.swift */; };
 		034D16DE294A7FD7005BE966 /* OpenCircularGauge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D16DD294A7FD7005BE966 /* OpenCircularGauge.swift */; };
 		034D16DF294A7FD7005BE966 /* OpenCircularGauge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D16DD294A7FD7005BE966 /* OpenCircularGauge.swift */; };
@@ -19,6 +18,12 @@
 		034D16E4294CF9A2005BE966 /* LinearGauge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D16E2294CF9A2005BE966 /* LinearGauge.swift */; };
 		034D16E9294D22A0005BE966 /* SensorIconConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D16E8294D22A0005BE966 /* SensorIconConstants.swift */; };
 		034D16EA294D22A0005BE966 /* SensorIconConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D16E8294D22A0005BE966 /* SensorIconConstants.swift */; };
+		0380B8E9299C733500D070FF /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0380B8E8299C733400D070FF /* CoreData.framework */; };
+		0380B8EC299C73D000D070FF /* SurveyDataViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0380B8EB299C73D000D070FF /* SurveyDataViewModel.swift */; };
+		0380B8EF299C794F00D070FF /* SurveyDataContainer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0380B8ED299C794F00D070FF /* SurveyDataContainer.xcdatamodeld */; };
+		0380B8F2299C7B5700D070FF /* TempDataContainer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0380B8F0299C7B5700D070FF /* TempDataContainer.xcdatamodeld */; };
+		0380B8F5299C7BBC00D070FF /* RawData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0380B8F3299C7BBC00D070FF /* RawData.xcdatamodeld */; };
+		0380B8F8299C7C0900D070FF /* MetaData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0380B8F6299C7C0900D070FF /* MetaData.xcdatamodeld */; };
 		038AA9152957ED870086EC1B /* NetworkConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03931B9D2943BAB90093515D /* NetworkConstants.swift */; };
 		038AA923295802B50086EC1B /* InfluxDBSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 038AA922295802B50086EC1B /* InfluxDBSwift */; };
 		038AA925295802B50086EC1B /* InfluxDBSwiftApis in Frameworks */ = {isa = PBXBuildFile; productRef = 038AA924295802B50086EC1B /* InfluxDBSwiftApis */; };
@@ -206,11 +211,16 @@
 		030FE311296719EA00AC5E24 /* PopUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopUpView.swift; sourceTree = "<group>"; };
 		032FEAD82981C2D100A2819F /* SurveyQuestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyQuestionView.swift; sourceTree = "<group>"; };
 		032FEADA2981C67200A2819F /* QuestionFlows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionFlows.swift; sourceTree = "<group>"; };
-		03344E122991F4CD00FFCEBF /* test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = test.swift; sourceTree = "<group>"; };
 		034B0D692942A50500F21CFB /* MyDataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyDataView.swift; sourceTree = "<group>"; };
 		034D16DD294A7FD7005BE966 /* OpenCircularGauge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenCircularGauge.swift; sourceTree = "<group>"; };
 		034D16E2294CF9A2005BE966 /* LinearGauge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinearGauge.swift; sourceTree = "<group>"; };
 		034D16E8294D22A0005BE966 /* SensorIconConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorIconConstants.swift; sourceTree = "<group>"; };
+		0380B8E8299C733400D070FF /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.1.sdk/System/Library/Frameworks/CoreData.framework; sourceTree = DEVELOPER_DIR; };
+		0380B8EB299C73D000D070FF /* SurveyDataViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyDataViewModel.swift; sourceTree = "<group>"; };
+		0380B8EE299C794F00D070FF /* SurveyDataContainer.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SurveyDataContainer.xcdatamodel; sourceTree = "<group>"; };
+		0380B8F1299C7B5700D070FF /* TempDataContainer.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TempDataContainer.xcdatamodel; sourceTree = "<group>"; };
+		0380B8F4299C7BBC00D070FF /* RawData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = RawData.xcdatamodel; sourceTree = "<group>"; };
+		0380B8F7299C7C0900D070FF /* MetaData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MetaData.xcdatamodel; sourceTree = "<group>"; };
 		038AA93A29590FE80086EC1B /* ThermalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThermalView.swift; sourceTree = "<group>"; };
 		038AA93C295915DF0086EC1B /* VisualView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualView.swift; sourceTree = "<group>"; };
 		038AA93E295915ED0086EC1B /* AirQualityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirQualityView.swift; sourceTree = "<group>"; };
@@ -317,6 +327,7 @@
 				038AA92E2958058C0086EC1B /* InfluxDBSwift in Frameworks */,
 				03931B982943B9930093515D /* NIOCore in Frameworks */,
 				038AA9302958058C0086EC1B /* InfluxDBSwiftApis in Frameworks */,
+				0380B8E9299C733500D070FF /* CoreData.framework in Frameworks */,
 				03D53E9D29904C5E0008B74D /* WatchConnectivity.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -378,6 +389,14 @@
 			path = Components;
 			sourceTree = "<group>";
 		};
+		0380B8EA299C739800D070FF /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				0380B8EB299C73D000D070FF /* SurveyDataViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
 		038C4DB0292AF5FD00699753 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -394,6 +413,7 @@
 		038C4DB3292AF8C700699753 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				0380B8EA299C739800D070FF /* ViewModels */,
 				03F21BC0292AE85D001D4D8E /* ContentView.swift */,
 				038C4DB6292AFCBE00699753 /* HomeView.swift */,
 				038C4DB8292AFCF700699753 /* SettingView.swift */,
@@ -404,7 +424,6 @@
 				03FE132229760247001EC500 /* SelfLoggingView.swift */,
 				03AF9926297BA71A00C465C5 /* BlurView.swift */,
 				032FEAD82981C2D100A2819F /* SurveyQuestionView.swift */,
-				03344E122991F4CD00FFCEBF /* test.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -421,7 +440,6 @@
 				03931B9F2943BDB90093515D /* NIO_TCP_Client.swift */,
 				034D16E8294D22A0005BE966 /* SensorIconConstants.swift */,
 				032FEADA2981C67200A2819F /* QuestionFlows.swift */,
-				03D53E9029900D330008B74D /* CommandStatus.swift */,
 				03D53E8D29900BEC0008B74D /* SessionDelegator.swift */,
 				03D53EA8299093EA0008B74D /* SensorData.swift */,
 			);
@@ -434,6 +452,10 @@
 				03D53EA7299093A40008B74D /* DoesNotWork */,
 				03BC9618295662CC00AD89BE /* SampleDataForCharts */,
 				038C4DBE292AFD9D00699753 /* GlassesData.swift */,
+				0380B8ED299C794F00D070FF /* SurveyDataContainer.xcdatamodeld */,
+				0380B8F0299C7B5700D070FF /* TempDataContainer.xcdatamodeld */,
+				0380B8F3299C7BBC00D070FF /* RawData.xcdatamodeld */,
+				0380B8F6299C7C0900D070FF /* MetaData.xcdatamodeld */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -452,6 +474,7 @@
 		03BC95C82951075F00AD89BE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0380B8E8299C733400D070FF /* CoreData.framework */,
 				03D53E9929904C340008B74D /* WatchConnectivity.framework */,
 				03D53E9C29904C5D0008B74D /* WatchConnectivity.framework */,
 				03BC95CB2951078900AD89BE /* HealthKit.framework */,
@@ -521,6 +544,7 @@
 				03D53EA429907EBE0008B74D /* ProgramViewModel.swift */,
 				03D53E9E299071980008B74D /* ProgramObject.swift */,
 				03D53EA1299075B90008B74D /* ConnectionProvider.swift */,
+				03D53E9029900D330008B74D /* CommandStatus.swift */,
 			);
 			path = DoesNotWork;
 			sourceTree = "<group>";
@@ -923,6 +947,7 @@
 				03D53EA2299075B90008B74D /* ConnectionProvider.swift in Sources */,
 				03BC962C2956637800AD89BE /* Point.swift in Sources */,
 				03D53E9129900D330008B74D /* CommandStatus.swift in Sources */,
+				0380B8F2299C7B5700D070FF /* TempDataContainer.xcdatamodeld in Sources */,
 				03BC95F129525FD200AD89BE /* SizeKey.swift in Sources */,
 				03D53E8C298D5E8F0008B74D /* message.pb.swift in Sources */,
 				03BC95EE29525FB600AD89BE /* CrookedText+Modifiers.swift in Sources */,
@@ -950,6 +975,7 @@
 				03BC96012954ADCA00AD89BE /* RRRangeSliderSwiftUI.swift in Sources */,
 				03D53EA9299093EA0008B74D /* SensorData.swift in Sources */,
 				03BC96242956637800AD89BE /* WineData.swift in Sources */,
+				0380B8EF299C794F00D070FF /* SurveyDataContainer.xcdatamodeld in Sources */,
 				03F21BC1292AE85D001D4D8E /* ContentView.swift in Sources */,
 				034D16DE294A7FD7005BE966 /* OpenCircularGauge.swift in Sources */,
 				03BC95E829525F7600AD89BE /* Array+SafeSubscript.swift in Sources */,
@@ -958,9 +984,10 @@
 				03BC95C32950D3B300AD89BE /* HeartAnimation.swift in Sources */,
 				034D16E3294CF9A2005BE966 /* LinearGauge.swift in Sources */,
 				038AA9432959328C0086EC1B /* VisualView.swift in Sources */,
+				0380B8F5299C7BBC00D070FF /* RawData.xcdatamodeld in Sources */,
 				038C4DBF292AFD9D00699753 /* GlassesData.swift in Sources */,
-				03344E132991F4CD00FFCEBF /* test.swift in Sources */,
 				03BC963D2956668B00AD89BE /* InterpolationMethod.swift in Sources */,
+				0380B8F8299C7C0900D070FF /* MetaData.xcdatamodeld in Sources */,
 				03D53E9F299071980008B74D /* ProgramObject.swift in Sources */,
 				03BC96302956637800AD89BE /* Grid.swift in Sources */,
 				03BC95EB29525F9000AD89BE /* IdentifiableCharacter.swift in Sources */,
@@ -971,6 +998,7 @@
 				034B0D6A2942A50500F21CFB /* MyDataView.swift in Sources */,
 				03931BA02943BDB90093515D /* NIO_TCP_Client.swift in Sources */,
 				038AA945295932DD0086EC1B /* AirQualityView.swift in Sources */,
+				0380B8EC299C73D000D070FF /* SurveyDataViewModel.swift in Sources */,
 				038C4DBD292AFD7900699753 /* BluetoothConstants.swift in Sources */,
 				03F21BBF292AE85D001D4D8E /* AirSpec_iOSApp.swift in Sources */,
 			);
@@ -1752,6 +1780,49 @@
 			productName = SwiftProtobufPluginLibrary;
 		};
 /* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		0380B8ED299C794F00D070FF /* SurveyDataContainer.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				0380B8EE299C794F00D070FF /* SurveyDataContainer.xcdatamodel */,
+			);
+			currentVersion = 0380B8EE299C794F00D070FF /* SurveyDataContainer.xcdatamodel */;
+			path = SurveyDataContainer.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+		0380B8F0299C7B5700D070FF /* TempDataContainer.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				0380B8F1299C7B5700D070FF /* TempDataContainer.xcdatamodel */,
+			);
+			currentVersion = 0380B8F1299C7B5700D070FF /* TempDataContainer.xcdatamodel */;
+			path = TempDataContainer.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+		0380B8F3299C7BBC00D070FF /* RawData.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				0380B8F4299C7BBC00D070FF /* RawData.xcdatamodel */,
+			);
+			currentVersion = 0380B8F4299C7BBC00D070FF /* RawData.xcdatamodel */;
+			path = RawData.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+		0380B8F6299C7C0900D070FF /* MetaData.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				0380B8F7299C7C0900D070FF /* MetaData.xcdatamodel */,
+			);
+			currentVersion = 0380B8F7299C7C0900D070FF /* MetaData.xcdatamodel */;
+			path = MetaData.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 03F21BB3292AE85C001D4D8E /* Project object */;
 }

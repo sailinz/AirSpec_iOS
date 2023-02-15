@@ -61,10 +61,6 @@ let questionFlows = [
                 "Others"
             ],
             icons: [
-//                SensorIconConstants.sensorThermal[0].icon,
-//                SensorIconConstants.sensorAirQuality[2].icon,
-//                SensorIconConstants.sensorVisual[0].icon,
-//                SensorIconConstants.sensorAcoustics[0].icon,
                 "thermal-privacy",
                 "air-quality-smelly",
                 "light-bright",

@@ -20,7 +20,7 @@
 //  along with  SatServer.  If not, see <https://www.gnu.org/licenses/>.
 //  -------------------------------------------------------------------
 
-// Adapted from Cory's Client Example
+// Adapted from Cory's Client Example - this code is redundant in the server_v2 version
 // https://forums.swift.org/t/which-nio-example-to-adapt/56768/2
 
 import Foundation
