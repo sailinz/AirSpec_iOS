@@ -21,12 +21,12 @@ public class Airspec {
 
         request.httpMethod = "POST"
         request.setValue("application/protobuf", forHTTPHeaderField: "Content-Type")
-        request.setValue("Basic \(auth_token)", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(auth_token)", forHTTPHeaderField: "Authorization")
 
         let data = try contents.serializedData()
-        
+
         print(data)
-        
+
         /// the byte array can be used to regenerate the data: https://medium.com/theengineeringgecko/protocol-buffers-for-swift-eda7eb114d08
 //        let reconstructedData = try SensorPacket.init(serializedData: data) /// does not work because the contents also have the epoch
 //        print(reconstructedData)
@@ -44,22 +44,22 @@ public class Airspec {
                 print("error sending data: \(error)")
                 return
             }
-            
+
             guard let httpResponse = response as? HTTPURLResponse else {
                 print("error: reqeust was not over http")
                 return
             }
-            
+
             switch httpResponse.statusCode {
             case 200..<300:
                 print("sent ok")
                 break
-                
+
             default:
                 print("error: bad http status \(httpResponse.statusCode)")
             }
         }
-        
+
         task.resume()
     }
 }

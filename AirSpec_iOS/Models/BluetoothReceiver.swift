@@ -21,6 +21,8 @@ enum BluetoothReceiverError: Error {
     case failedToReceiveCharacteristicUpdate
 }
 
+let AUTH_TOKEN = "ccdcd5080f5ff837c42f349ce56868955ad7909cb2f5dddb9639c8da3b7d4f9c"
+
 /// A listener to subscribe to a Bluetooth LE peripheral and get characteristic updates the data to a TCP server.
 ///
 class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
@@ -50,7 +52,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     @Published var airQualityData = Array(repeating: -1.0, count: SensorIconConstants.sensorAirQuality.count)
     @Published var visualData = Array(repeating: -1.0, count: SensorIconConstants.sensorVisual.count)
     @Published var acoutsticsData = Array(repeating: -1.0, count: SensorIconConstants.sensorAcoustics.count)
-    
+
     @Published var cogIntensity = 3 /// must scale to a int
 
     /// -- watchConnectivity
@@ -61,7 +63,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //    @Published var temperatureData = TemperatureData()
 //    @Published var co2Data = CO2Data()
 //    @Published var vocIndexData = VOCIndexData()
-    
+
     init(service: CBUUID, characteristic: CBUUID) {
         super.init()
         self.serviceUUID = service
@@ -242,7 +244,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     return
                 }
 //                print(packet)
-                
+
                 switch packet.payload{
                 case .some(.sgpPacket(_)):
 //                    print(packet.sgpPacket)
@@ -254,7 +256,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                             dataToWatch.updateValue(sensorValue: self.airQualityData[1], sensorName: "noxIndexData")
                         }
                     }
-                    
+
                 case .some(.bmePacket(_)):
                     for sensorPayload in packet.bmePacket.payload {
                         if(sensorPayload.sensorID == BME680_signal_id.co2Eq){
@@ -265,7 +267,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                             dataToWatch.updateValue(sensorValue: self.airQualityData[3], sensorName: "iaqData")
                         }
                     }
-                    
+
                 case .some(.luxPacket(_)):
 //                    print("lux packet")
 //                    print(packet.luxPacket)
@@ -309,14 +311,14 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
                         }
                     }
-                    
+
                     /// estimate cog load:  - (temple - face)  (high cog load: low temp -- https://neurosciencenews.com/stress-nasal-temperature-8579/)
                     cogIntensity = Int( 10 - (((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2) - 3) * 10 + 3)
-                    
+
                     print("cogload est: \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
                     dataToWatch.updateValue(sensorValue: Double(cogIntensity), sensorName: "cogLoadData")
                     print(cogIntensity)
-                    
+
                 case .some(.imuPacket(_)):
                     break
                 case .some(.micPacket(_)):
@@ -327,8 +329,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     print("unknown type")
 
                 }
-                
-                try Airspec.send_packets(packets: [packet], auth_token: "")
+
+                try Airspec.send_packets(packets: [packet], auth_token: AUTH_TOKEN)
 
             } catch {
                 logger.error("packet decode/send problems: \(error).")
@@ -336,16 +338,16 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
         }
     }
-    
-    
-    
+
+
+
     func testLight(){
-        
+
         /// dfu
         var dfu = AirSpecConfigPacket()
         dfu.header.timestampUnix = UInt32(Date().timeIntervalSince1970)
         dfu.dfuMode.enable = true
-        
+
         do {
             let cmd = try dfu.serializedData()
             connectedPeripheral?.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
@@ -354,8 +356,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             //handle error
             print("fail to send LED notification")
         }
-        
-        
+
+
         /// single LED
 //        var singleLED = AirSpecConfigPacket()
 //        singleLED.header.timestampUnix = UInt32(Date().timeIntervalSince1970)
@@ -395,9 +397,9 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //            //handle error
 //            print("fail to send LED notification")
 //        }
-        
-        
-        
+
+
+
         /// blue green transition
 //        var blueGreenTransition = AirSpecConfigPacket()
 //        blueGreenTransition.header.timestampUnix = UInt32(Date().timeIntervalSince1970)
@@ -421,7 +423,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //            //handle error
 //            print("fail to send LED notification")
 //        }
-        
+
     }
 
 //    func testLight(){
