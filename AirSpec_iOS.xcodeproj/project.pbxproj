@@ -24,6 +24,9 @@
 		0380B8F2299C7B5700D070FF /* TempDataContainer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0380B8F0299C7B5700D070FF /* TempDataContainer.xcdatamodeld */; };
 		0380B8F5299C7BBC00D070FF /* RawData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0380B8F3299C7BBC00D070FF /* RawData.xcdatamodeld */; };
 		0380B8F8299C7C0900D070FF /* MetaData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0380B8F6299C7C0900D070FF /* MetaData.xcdatamodeld */; };
+		0380B904299D4A6800D070FF /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0380B8FD299D4A6800D070FF /* Data.swift */; };
+		0380B909299D791F00D070FF /* Grid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0380B907299D791F00D070FF /* Grid.swift */; };
+		0380B90A299D791F00D070FF /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0380B908299D791F00D070FF /* Point.swift */; };
 		038AA9152957ED870086EC1B /* NetworkConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03931B9D2943BAB90093515D /* NetworkConstants.swift */; };
 		038AA923295802B50086EC1B /* InfluxDBSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 038AA922295802B50086EC1B /* InfluxDBSwift */; };
 		038AA925295802B50086EC1B /* InfluxDBSwiftApis in Frameworks */ = {isa = PBXBuildFile; productRef = 038AA924295802B50086EC1B /* InfluxDBSwiftApis */; };
@@ -80,22 +83,6 @@
 		03BC96142956106700AD89BE /* MyDataTimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC96132956106700AD89BE /* MyDataTimeView.swift */; };
 		03BC96162956507000AD89BE /* testChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC96152956507000AD89BE /* testChart.swift */; };
 		03BC96172956507000AD89BE /* testChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC96152956507000AD89BE /* testChart.swift */; };
-		03BC961A295662E400AD89BE /* HealthData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC9619295662E400AD89BE /* HealthData.swift */; };
-		03BC961B295662E400AD89BE /* HealthData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC9619295662E400AD89BE /* HealthData.swift */; };
-		03BC96242956637800AD89BE /* WineData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC961C2956637700AD89BE /* WineData.swift */; };
-		03BC96252956637800AD89BE /* WineData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC961C2956637700AD89BE /* WineData.swift */; };
-		03BC96262956637800AD89BE /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC961D2956637700AD89BE /* Data.swift */; };
-		03BC96272956637800AD89BE /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC961D2956637700AD89BE /* Data.swift */; };
-		03BC96282956637800AD89BE /* GitHubData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC961E2956637700AD89BE /* GitHubData.swift */; };
-		03BC96292956637800AD89BE /* GitHubData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC961E2956637700AD89BE /* GitHubData.swift */; };
-		03BC962A2956637800AD89BE /* ScreenTimeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC961F2956637800AD89BE /* ScreenTimeData.swift */; };
-		03BC962B2956637800AD89BE /* ScreenTimeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC961F2956637800AD89BE /* ScreenTimeData.swift */; };
-		03BC962C2956637800AD89BE /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC96202956637800AD89BE /* Point.swift */; };
-		03BC962D2956637800AD89BE /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC96202956637800AD89BE /* Point.swift */; };
-		03BC96302956637800AD89BE /* Grid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC96222956637800AD89BE /* Grid.swift */; };
-		03BC96312956637800AD89BE /* Grid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC96222956637800AD89BE /* Grid.swift */; };
-		03BC96322956637800AD89BE /* StockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC96232956637800AD89BE /* StockData.swift */; };
-		03BC96332956637800AD89BE /* StockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC96232956637800AD89BE /* StockData.swift */; };
 		03BC963D2956668B00AD89BE /* InterpolationMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC963C2956668B00AD89BE /* InterpolationMethod.swift */; };
 		03BC963E2956668B00AD89BE /* InterpolationMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC963C2956668B00AD89BE /* InterpolationMethod.swift */; };
 		03BC96402956669800AD89BE /* ChartStrideBy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC963F2956669800AD89BE /* ChartStrideBy.swift */; };
@@ -221,6 +208,9 @@
 		0380B8F1299C7B5700D070FF /* TempDataContainer.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TempDataContainer.xcdatamodel; sourceTree = "<group>"; };
 		0380B8F4299C7BBC00D070FF /* RawData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = RawData.xcdatamodel; sourceTree = "<group>"; };
 		0380B8F7299C7C0900D070FF /* MetaData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MetaData.xcdatamodel; sourceTree = "<group>"; };
+		0380B8FD299D4A6800D070FF /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
+		0380B907299D791F00D070FF /* Grid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Grid.swift; sourceTree = "<group>"; };
+		0380B908299D791F00D070FF /* Point.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Point.swift; sourceTree = "<group>"; };
 		038AA93A29590FE80086EC1B /* ThermalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThermalView.swift; sourceTree = "<group>"; };
 		038AA93C295915DF0086EC1B /* VisualView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualView.swift; sourceTree = "<group>"; };
 		038AA93E295915ED0086EC1B /* AirQualityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirQualityView.swift; sourceTree = "<group>"; };
@@ -259,14 +249,6 @@
 		03BC961129560E4600AD89BE /* MyDataPlaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyDataPlaceView.swift; sourceTree = "<group>"; };
 		03BC96132956106700AD89BE /* MyDataTimeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyDataTimeView.swift; sourceTree = "<group>"; };
 		03BC96152956507000AD89BE /* testChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = testChart.swift; sourceTree = "<group>"; };
-		03BC9619295662E400AD89BE /* HealthData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthData.swift; sourceTree = "<group>"; };
-		03BC961C2956637700AD89BE /* WineData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WineData.swift; path = "../../../../../../../Downloads/Swift-Charts-Examples-main/Swift Charts Examples/Data/WineData.swift"; sourceTree = "<group>"; };
-		03BC961D2956637700AD89BE /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Data.swift; path = "../../../../../../../Downloads/Swift-Charts-Examples-main/Swift Charts Examples/Data/Data.swift"; sourceTree = "<group>"; };
-		03BC961E2956637700AD89BE /* GitHubData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GitHubData.swift; path = "../../../../../../../Downloads/Swift-Charts-Examples-main/Swift Charts Examples/Data/GitHubData.swift"; sourceTree = "<group>"; };
-		03BC961F2956637800AD89BE /* ScreenTimeData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ScreenTimeData.swift; path = "../../../../../../../Downloads/Swift-Charts-Examples-main/Swift Charts Examples/Data/ScreenTimeData.swift"; sourceTree = "<group>"; };
-		03BC96202956637800AD89BE /* Point.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Point.swift; path = "../../../../../../../Downloads/Swift-Charts-Examples-main/Swift Charts Examples/Data/Point.swift"; sourceTree = "<group>"; };
-		03BC96222956637800AD89BE /* Grid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Grid.swift; path = "../../../../../../../Downloads/Swift-Charts-Examples-main/Swift Charts Examples/Data/Grid.swift"; sourceTree = "<group>"; };
-		03BC96232956637800AD89BE /* StockData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StockData.swift; path = "../../../../../../../Downloads/Swift-Charts-Examples-main/Swift Charts Examples/Data/StockData.swift"; sourceTree = "<group>"; };
 		03BC963C2956668B00AD89BE /* InterpolationMethod.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InterpolationMethod.swift; sourceTree = "<group>"; };
 		03BC963F2956669800AD89BE /* ChartStrideBy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartStrideBy.swift; sourceTree = "<group>"; };
 		03D53E86298D5E8F0008B74D /* airspec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = airspec.swift; sourceTree = "<group>"; };
@@ -500,14 +482,9 @@
 		03BC9618295662CC00AD89BE /* SampleDataForCharts */ = {
 			isa = PBXGroup;
 			children = (
-				03BC961D2956637700AD89BE /* Data.swift */,
-				03BC961E2956637700AD89BE /* GitHubData.swift */,
-				03BC96222956637800AD89BE /* Grid.swift */,
-				03BC96202956637800AD89BE /* Point.swift */,
-				03BC961F2956637800AD89BE /* ScreenTimeData.swift */,
-				03BC96232956637800AD89BE /* StockData.swift */,
-				03BC961C2956637700AD89BE /* WineData.swift */,
-				03BC9619295662E400AD89BE /* HealthData.swift */,
+				0380B8FD299D4A6800D070FF /* Data.swift */,
+				0380B907299D791F00D070FF /* Grid.swift */,
+				0380B908299D791F00D070FF /* Point.swift */,
 			);
 			path = SampleDataForCharts;
 			sourceTree = "<group>";
@@ -945,10 +922,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				03D53EA2299075B90008B74D /* ConnectionProvider.swift in Sources */,
-				03BC962C2956637800AD89BE /* Point.swift in Sources */,
 				03D53E9129900D330008B74D /* CommandStatus.swift in Sources */,
 				0380B8F2299C7B5700D070FF /* TempDataContainer.xcdatamodeld in Sources */,
 				03BC95F129525FD200AD89BE /* SizeKey.swift in Sources */,
+				0380B90A299D791F00D070FF /* Point.swift in Sources */,
 				03D53E8C298D5E8F0008B74D /* message.pb.swift in Sources */,
 				03BC95EE29525FB600AD89BE /* CrookedText+Modifiers.swift in Sources */,
 				038C4DBB292AFD4F00699753 /* BluetoothReceiver.swift in Sources */,
@@ -961,20 +938,15 @@
 				03D53E8E29900BEC0008B74D /* SessionDelegator.swift in Sources */,
 				034D16E9294D22A0005BE966 /* SensorIconConstants.swift in Sources */,
 				038AA942295930040086EC1B /* ThermalView.swift in Sources */,
-				03BC96262956637800AD89BE /* Data.swift in Sources */,
 				03AF9927297BA71A00C465C5 /* BlurView.swift in Sources */,
-				03BC96282956637800AD89BE /* GitHubData.swift in Sources */,
 				03BC96402956669800AD89BE /* ChartStrideBy.swift in Sources */,
-				03BC96322956637800AD89BE /* StockData.swift in Sources */,
 				038C4DC1292B090E00699753 /* ExtensionDelegate.swift in Sources */,
 				038C4DB9292AFCF700699753 /* SettingView.swift in Sources */,
-				03BC961A295662E400AD89BE /* HealthData.swift in Sources */,
 				03BC96142956106700AD89BE /* MyDataTimeView.swift in Sources */,
 				03BC961229560E4600AD89BE /* MyDataPlaceView.swift in Sources */,
-				03BC962A2956637800AD89BE /* ScreenTimeData.swift in Sources */,
 				03BC96012954ADCA00AD89BE /* RRRangeSliderSwiftUI.swift in Sources */,
+				0380B904299D4A6800D070FF /* Data.swift in Sources */,
 				03D53EA9299093EA0008B74D /* SensorData.swift in Sources */,
-				03BC96242956637800AD89BE /* WineData.swift in Sources */,
 				0380B8EF299C794F00D070FF /* SurveyDataContainer.xcdatamodeld in Sources */,
 				03F21BC1292AE85D001D4D8E /* ContentView.swift in Sources */,
 				034D16DE294A7FD7005BE966 /* OpenCircularGauge.swift in Sources */,
@@ -989,12 +961,12 @@
 				03BC963D2956668B00AD89BE /* InterpolationMethod.swift in Sources */,
 				0380B8F8299C7C0900D070FF /* MetaData.xcdatamodeld in Sources */,
 				03D53E9F299071980008B74D /* ProgramObject.swift in Sources */,
-				03BC96302956637800AD89BE /* Grid.swift in Sources */,
 				03BC95EB29525F9000AD89BE /* IdentifiableCharacter.swift in Sources */,
 				03D53E8B298D5E8F0008B74D /* svc.pb.swift in Sources */,
 				03FE132329760247001EC500 /* SelfLoggingView.swift in Sources */,
 				032FEAD92981C2D100A2819F /* SurveyQuestionView.swift in Sources */,
 				032FEADB2981C67200A2819F /* QuestionFlows.swift in Sources */,
+				0380B909299D791F00D070FF /* Grid.swift in Sources */,
 				034B0D6A2942A50500F21CFB /* MyDataView.swift in Sources */,
 				03931BA02943BDB90093515D /* NIO_TCP_Client.swift in Sources */,
 				038AA945295932DD0086EC1B /* AirQualityView.swift in Sources */,
@@ -1032,23 +1004,15 @@
 				034D16E4294CF9A2005BE966 /* LinearGauge.swift in Sources */,
 				038AA93B29590FE80086EC1B /* ThermalView.swift in Sources */,
 				038C4DB2292AF61B00699753 /* WatchHomeView.swift in Sources */,
-				03BC962B2956637800AD89BE /* ScreenTimeData.swift in Sources */,
 				03BC95E929525F7600AD89BE /* Array+SafeSubscript.swift in Sources */,
 				03F21BE9292AE863001D4D8E /* ContentView.swift in Sources */,
 				03BC95EF29525FB600AD89BE /* CrookedText+Modifiers.swift in Sources */,
-				03BC96332956637800AD89BE /* StockData.swift in Sources */,
 				03D53E8F29900BEC0008B74D /* SessionDelegator.swift in Sources */,
-				03BC96272956637800AD89BE /* Data.swift in Sources */,
-				03BC96292956637800AD89BE /* GitHubData.swift in Sources */,
 				03D53EA3299075B90008B74D /* ConnectionProvider.swift in Sources */,
-				03BC96252956637800AD89BE /* WineData.swift in Sources */,
-				03BC962D2956637800AD89BE /* Point.swift in Sources */,
 				03BC95F229525FD200AD89BE /* SizeKey.swift in Sources */,
-				03BC96312956637800AD89BE /* Grid.swift in Sources */,
 				03BC95C42950D3B300AD89BE /* HeartAnimation.swift in Sources */,
 				03BC95EC29525F9000AD89BE /* IdentifiableCharacter.swift in Sources */,
 				03A9F611296CB24E00BC9100 /* AirSpec_iOS_Watch_Complication.intentdefinition in Sources */,
-				03BC961B295662E400AD89BE /* HealthData.swift in Sources */,
 				030FE313296719F000AC5E24 /* PopUpView.swift in Sources */,
 				03F21BE7292AE863001D4D8E /* AirSpec_iOSApp.swift in Sources */,
 				03D53EA0299075900008B74D /* ProgramObject.swift in Sources */,
