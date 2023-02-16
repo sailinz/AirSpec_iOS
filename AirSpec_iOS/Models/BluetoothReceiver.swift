@@ -21,7 +21,7 @@ enum BluetoothReceiverError: Error {
     case failedToReceiveCharacteristicUpdate
 }
 
-let AUTH_TOKEN = "ccdcd5080f5ff837c42f349ce56868955ad7909cb2f5dddb9639c8da3b7d4f9c"
+let AUTH_TOKEN = "4129a31152b56fccfb8b39cab3637706aa5e5f4ded601c45313cd4f7170fc702"
 
 /// A listener to subscribe to a Bluetooth LE peripheral and get characteristic updates the data to a TCP server.
 ///
