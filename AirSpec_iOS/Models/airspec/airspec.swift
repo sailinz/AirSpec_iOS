@@ -7,6 +7,7 @@ import FoundationNetworking
 public class Airspec {
     public static let DefaultEndpoint: URL = URL(string: "https://api.airspecs.resenv.org")!
 
+    
     public static func decode_packet(_ bytes: Data) throws -> SensorPacket {
         try SensorPacket(serializedData: bytes)
     }
@@ -16,16 +17,14 @@ public class Airspec {
             $0.sensorData = packets
             $0.epoch = NSDate().timeIntervalSince1970
         }
+        
+        let data = try contents.serializedData()
 
         var request = URLRequest(url: endpoint, cachePolicy: .reloadIgnoringLocalCacheData)
 
         request.httpMethod = "POST"
         request.setValue("application/protobuf", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(auth_token)", forHTTPHeaderField: "Authorization")
-
-        let data = try contents.serializedData()
-
-        print(data)
 
         /// the byte array can be used to regenerate the data: https://medium.com/theengineeringgecko/protocol-buffers-for-swift-eda7eb114d08
 //        let reconstructedData = try SensorPacket.init(serializedData: data) /// does not work because the contents also have the epoch

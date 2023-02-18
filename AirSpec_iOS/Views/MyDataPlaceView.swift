@@ -15,6 +15,10 @@ struct MyDataPlaceView: View {
     let pieRadius:CGFloat = 100
     let comfyColor:Color = .mint
     let uncomfyColor:Color = .pink
+    
+//    @StateObject var surveyData = SurveyDataViewModel()
+    @EnvironmentObject var surveyData: SurveyDataViewModel
+    
     var body: some View {
         LazyVGrid(columns: columns, spacing: 15) {
             VStack{

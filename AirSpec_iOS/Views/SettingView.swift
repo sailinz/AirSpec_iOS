@@ -63,13 +63,17 @@ struct SettingView: View {
                                 .font(.system(.subheadline))
                             TextField("Enter ID", text: $user_id, onCommit: {
                                 /// in production
+                                /// 
                                 toggleScanning()
                                 connectToAirSpec()
-//                                UserDefaults.standard.set($user_id, forKey: "user_id")
+   
+                                UserDefaults.standard.set(self.user_id, forKey: "user_id")
                                     
                                 })
                                 .multilineTextAlignment(.trailing)
                                 .font(.system(.subheadline))
+                            
+                                
                         }
                         
 //                        Divider()
@@ -129,6 +133,26 @@ struct SettingView: View {
                                 .buttonStyle(PlainButtonStyle())
                                 .tint(.pink)
                                 .alignmentGuide(.trailing) { _ in return -10 }
+                        
+                        }
+                        
+                        HStack() {
+                            Image(systemName: "externaldrive")
+                                .frame(width: 30, height: 20)
+                            Text("Core data")
+                                .font(.system(.subheadline))
+                            Button(action: {
+                                let dirPaths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
+                                let docsDir = dirPaths[0]
+                                print(docsDir)
+                            }) {
+                                Text("Print")
+                                .font(.system(.subheadline) .weight(.semibold))
+                                .foregroundColor(.white)
+                            }
+                            .padding(.all,5)
+                            .background(.gray.opacity(0.5))
+                            .clipShape(Capsule())
                         
                         }
                         

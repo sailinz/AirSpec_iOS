@@ -22,11 +22,16 @@
 		0380B8EC299C73D000D070FF /* SurveyDataViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0380B8EB299C73D000D070FF /* SurveyDataViewModel.swift */; };
 		0380B8EF299C794F00D070FF /* SurveyDataContainer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0380B8ED299C794F00D070FF /* SurveyDataContainer.xcdatamodeld */; };
 		0380B8F2299C7B5700D070FF /* TempDataContainer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0380B8F0299C7B5700D070FF /* TempDataContainer.xcdatamodeld */; };
-		0380B8F5299C7BBC00D070FF /* RawData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0380B8F3299C7BBC00D070FF /* RawData.xcdatamodeld */; };
-		0380B8F8299C7C0900D070FF /* MetaData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0380B8F6299C7C0900D070FF /* MetaData.xcdatamodeld */; };
+		0380B8F5299C7BBC00D070FF /* RawDataContainer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0380B8F3299C7BBC00D070FF /* RawDataContainer.xcdatamodeld */; };
+		0380B8F8299C7C0900D070FF /* MetaDataContainer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0380B8F6299C7C0900D070FF /* MetaDataContainer.xcdatamodeld */; };
 		0380B904299D4A6800D070FF /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0380B8FD299D4A6800D070FF /* Data.swift */; };
 		0380B909299D791F00D070FF /* Grid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0380B907299D791F00D070FF /* Grid.swift */; };
 		0380B90A299D791F00D070FF /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0380B908299D791F00D070FF /* Point.swift */; };
+		0380B911299EBEB400D070FF /* TempDataViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0380B910299EBEB400D070FF /* TempDataViewModel.swift */; };
+		0380B913299EBED500D070FF /* RawDataViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0380B912299EBED500D070FF /* RawDataViewModel.swift */; };
+		0380B915299EBEE600D070FF /* MetaDataViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0380B914299EBEE500D070FF /* MetaDataViewModel.swift */; };
+		0380B918299FD64D00D070FF /* LongTermDataContainer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0380B916299FD64C00D070FF /* LongTermDataContainer.xcdatamodeld */; };
+		0380B91A299FE31700D070FF /* BackgroundTasks.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0380B919299FE31600D070FF /* BackgroundTasks.framework */; };
 		038AA9152957ED870086EC1B /* NetworkConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03931B9D2943BAB90093515D /* NetworkConstants.swift */; };
 		038AA923295802B50086EC1B /* InfluxDBSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 038AA922295802B50086EC1B /* InfluxDBSwift */; };
 		038AA925295802B50086EC1B /* InfluxDBSwiftApis in Frameworks */ = {isa = PBXBuildFile; productRef = 038AA924295802B50086EC1B /* InfluxDBSwiftApis */; };
@@ -211,6 +216,11 @@
 		0380B8FD299D4A6800D070FF /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		0380B907299D791F00D070FF /* Grid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Grid.swift; sourceTree = "<group>"; };
 		0380B908299D791F00D070FF /* Point.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Point.swift; sourceTree = "<group>"; };
+		0380B910299EBEB400D070FF /* TempDataViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TempDataViewModel.swift; sourceTree = "<group>"; };
+		0380B912299EBED500D070FF /* RawDataViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawDataViewModel.swift; sourceTree = "<group>"; };
+		0380B914299EBEE500D070FF /* MetaDataViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetaDataViewModel.swift; sourceTree = "<group>"; };
+		0380B917299FD64C00D070FF /* LongTermDataContainer.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LongTermDataContainer.xcdatamodel; sourceTree = "<group>"; };
+		0380B919299FE31600D070FF /* BackgroundTasks.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = BackgroundTasks.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.1.sdk/System/Library/Frameworks/BackgroundTasks.framework; sourceTree = DEVELOPER_DIR; };
 		038AA93A29590FE80086EC1B /* ThermalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThermalView.swift; sourceTree = "<group>"; };
 		038AA93C295915DF0086EC1B /* VisualView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualView.swift; sourceTree = "<group>"; };
 		038AA93E295915ED0086EC1B /* AirQualityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirQualityView.swift; sourceTree = "<group>"; };
@@ -311,6 +321,7 @@
 				038AA9302958058C0086EC1B /* InfluxDBSwiftApis in Frameworks */,
 				0380B8E9299C733500D070FF /* CoreData.framework in Frameworks */,
 				03D53E9D29904C5E0008B74D /* WatchConnectivity.framework in Frameworks */,
+				0380B91A299FE31700D070FF /* BackgroundTasks.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -375,6 +386,9 @@
 			isa = PBXGroup;
 			children = (
 				0380B8EB299C73D000D070FF /* SurveyDataViewModel.swift */,
+				0380B910299EBEB400D070FF /* TempDataViewModel.swift */,
+				0380B912299EBED500D070FF /* RawDataViewModel.swift */,
+				0380B914299EBEE500D070FF /* MetaDataViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -436,8 +450,9 @@
 				038C4DBE292AFD9D00699753 /* GlassesData.swift */,
 				0380B8ED299C794F00D070FF /* SurveyDataContainer.xcdatamodeld */,
 				0380B8F0299C7B5700D070FF /* TempDataContainer.xcdatamodeld */,
-				0380B8F3299C7BBC00D070FF /* RawData.xcdatamodeld */,
-				0380B8F6299C7C0900D070FF /* MetaData.xcdatamodeld */,
+				0380B916299FD64C00D070FF /* LongTermDataContainer.xcdatamodeld */,
+				0380B8F3299C7BBC00D070FF /* RawDataContainer.xcdatamodeld */,
+				0380B8F6299C7C0900D070FF /* MetaDataContainer.xcdatamodeld */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -456,6 +471,7 @@
 		03BC95C82951075F00AD89BE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0380B919299FE31600D070FF /* BackgroundTasks.framework */,
 				0380B8E8299C733400D070FF /* CoreData.framework */,
 				03D53E9929904C340008B74D /* WatchConnectivity.framework */,
 				03D53E9C29904C5D0008B74D /* WatchConnectivity.framework */,
@@ -932,8 +948,10 @@
 				038C4DB7292AFCBE00699753 /* HomeView.swift in Sources */,
 				03931B9E2943BAB90093515D /* NetworkConstants.swift in Sources */,
 				03BC960429550EA300AD89BE /* PieChartView.swift in Sources */,
+				0380B918299FD64D00D070FF /* LongTermDataContainer.xcdatamodeld in Sources */,
 				03D53E8A298D5E8F0008B74D /* airspec.swift in Sources */,
 				03D53EA529907EBE0008B74D /* ProgramViewModel.swift in Sources */,
+				0380B911299EBEB400D070FF /* TempDataViewModel.swift in Sources */,
 				038AA944295932A60086EC1B /* AcousticsView.swift in Sources */,
 				03D53E8E29900BEC0008B74D /* SessionDelegator.swift in Sources */,
 				034D16E9294D22A0005BE966 /* SensorIconConstants.swift in Sources */,
@@ -941,10 +959,12 @@
 				03AF9927297BA71A00C465C5 /* BlurView.swift in Sources */,
 				03BC96402956669800AD89BE /* ChartStrideBy.swift in Sources */,
 				038C4DC1292B090E00699753 /* ExtensionDelegate.swift in Sources */,
+				0380B915299EBEE600D070FF /* MetaDataViewModel.swift in Sources */,
 				038C4DB9292AFCF700699753 /* SettingView.swift in Sources */,
 				03BC96142956106700AD89BE /* MyDataTimeView.swift in Sources */,
 				03BC961229560E4600AD89BE /* MyDataPlaceView.swift in Sources */,
 				03BC96012954ADCA00AD89BE /* RRRangeSliderSwiftUI.swift in Sources */,
+				0380B913299EBED500D070FF /* RawDataViewModel.swift in Sources */,
 				0380B904299D4A6800D070FF /* Data.swift in Sources */,
 				03D53EA9299093EA0008B74D /* SensorData.swift in Sources */,
 				0380B8EF299C794F00D070FF /* SurveyDataContainer.xcdatamodeld in Sources */,
@@ -956,10 +976,10 @@
 				03BC95C32950D3B300AD89BE /* HeartAnimation.swift in Sources */,
 				034D16E3294CF9A2005BE966 /* LinearGauge.swift in Sources */,
 				038AA9432959328C0086EC1B /* VisualView.swift in Sources */,
-				0380B8F5299C7BBC00D070FF /* RawData.xcdatamodeld in Sources */,
+				0380B8F5299C7BBC00D070FF /* RawDataContainer.xcdatamodeld in Sources */,
 				038C4DBF292AFD9D00699753 /* GlassesData.swift in Sources */,
 				03BC963D2956668B00AD89BE /* InterpolationMethod.swift in Sources */,
-				0380B8F8299C7C0900D070FF /* MetaData.xcdatamodeld in Sources */,
+				0380B8F8299C7C0900D070FF /* MetaDataContainer.xcdatamodeld in Sources */,
 				03D53E9F299071980008B74D /* ProgramObject.swift in Sources */,
 				03BC95EB29525F9000AD89BE /* IdentifiableCharacter.swift in Sources */,
 				03D53E8B298D5E8F0008B74D /* svc.pb.swift in Sources */,
@@ -1766,23 +1786,33 @@
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};
-		0380B8F3299C7BBC00D070FF /* RawData.xcdatamodeld */ = {
+		0380B8F3299C7BBC00D070FF /* RawDataContainer.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
 				0380B8F4299C7BBC00D070FF /* RawData.xcdatamodel */,
 			);
 			currentVersion = 0380B8F4299C7BBC00D070FF /* RawData.xcdatamodel */;
-			path = RawData.xcdatamodeld;
+			path = RawDataContainer.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};
-		0380B8F6299C7C0900D070FF /* MetaData.xcdatamodeld */ = {
+		0380B8F6299C7C0900D070FF /* MetaDataContainer.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
 				0380B8F7299C7C0900D070FF /* MetaData.xcdatamodel */,
 			);
 			currentVersion = 0380B8F7299C7C0900D070FF /* MetaData.xcdatamodel */;
-			path = MetaData.xcdatamodeld;
+			path = MetaDataContainer.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+		0380B916299FD64C00D070FF /* LongTermDataContainer.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				0380B917299FD64C00D070FF /* LongTermDataContainer.xcdatamodel */,
+			);
+			currentVersion = 0380B917299FD64C00D070FF /* LongTermDataContainer.xcdatamodel */;
+			path = LongTermDataContainer.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

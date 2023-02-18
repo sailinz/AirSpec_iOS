@@ -50,7 +50,9 @@ struct SurveyQuestionView: View {
     
     @Binding var showSurvey: Bool
     
-    
+    let userID = UserDefaults.standard.double(forKey: "user_id")
+//    @StateObject var surveyData = SurveyDataViewModel()
+    @EnvironmentObject var surveyData: SurveyDataViewModel
     
     var body: some View {
         VStack {
@@ -60,9 +62,11 @@ struct SurveyQuestionView: View {
                 .foregroundColor(.primary)
                 .padding()
             
+//            Text("userID: \(userID)")
 //            Text("current question: \(currentQuestion)")
 //            Text("next question: \(nextQuestion)")
 //            Text("current answer: \(currentAnswer)")
+//            Text("current answer: \(currentAnswers.description)")
 //            Text("foresee next question: \(currentQuestionItem.nextQuestion[0])")
             
             ForEach(Array(currentQuestionItem.options.enumerated()), id: \.offset) { (index, option) in
@@ -72,6 +76,9 @@ struct SurveyQuestionView: View {
                     // button action here
                     if(!currentQuestionItem.multiChoice){
                         self.currentAnswer = index
+                        
+                        /// save to coredata
+                        surveyData.addSurveyData(timestamp: Int32(Date().timeIntervalSince1970), question: Int16(self.nextQuestion), choice: self.currentAnswer.description, userid: Int16(userID))
                         
                         if(currentQuestionItem.nextQuestion[0] == 999){
                             showSurvey.toggle()
@@ -109,7 +116,9 @@ struct SurveyQuestionView: View {
             if(currentQuestionItem.multiChoice){
                 Button(action: {
                     // button action here
-
+                    /// save to coredata
+                    surveyData.addSurveyData(timestamp: Int32(Date().timeIntervalSince1970), question: Int16(self.nextQuestion), choice: self.currentAnswers.description, userid: Int16(userID))
+                    
                     self.currentQuestion = currentQuestionItem.currentQuestion
                     self.nextQuestion = currentQuestionItem.nextQuestion[currentAnswer]
                     self.currentAnswer = 999 /// reset

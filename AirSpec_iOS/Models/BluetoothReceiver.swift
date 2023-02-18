@@ -56,15 +56,16 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     @Published var cogIntensity = 3 /// must scale to a int
 
     /// -- watchConnectivity
-//    @Published var prog : ProgramObject
-//    let viewModel = ProgramViewModel(connectivityProvider: ConnectionProvider())
-//    let connect = ConnectionProvider()
     @Published var dataToWatch = SensorData()
-//    @Published var temperatureData = TemperatureData()
-//    @Published var co2Data = CO2Data()
-//    @Published var vocIndexData = VOCIndexData()
+    
+    var rawDataViewModel: RawDataViewModel
+    private var timer: DispatchSourceTimer?
+    let updateFrequence = 30 /// seconds
+    let batchSize = 50
+    private var reconstructedData:[SensorPacket] = []
 
     init(service: CBUUID, characteristic: CBUUID) {
+        self.rawDataViewModel = .init()
         super.init()
         self.serviceUUID = service
         self.TXcharacteristicUUID = characteristic
@@ -135,6 +136,15 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         connectedPeripheral = peripheral
         knownDisconnectedPeripheral = nil
         peripheral.discoverServices([BluetoothConstants.airspecServiceUUID])
+        
+        timer = DispatchSource.makeTimerSource()
+        timer?.schedule(deadline: .now(), repeating: .seconds(updateFrequence))
+        timer?.setEventHandler {
+            /// does not work
+//            self.uploadToServer()
+            
+        }
+        timer?.resume()
     }
 
     /// If the app wakes up to handle a background refresh task, the system calls this method if
@@ -148,6 +158,10 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
         delegate?.didCompleteDisconnection(from: peripheral, mustDisconnect: self.mustDisconnect)
         self.mustDisconnect = false
+        
+        /// stop data stream to the server
+        timer?.cancel()
+        timer = nil
     }
 
     // MARK: CBPeripheralDelegate
@@ -246,90 +260,106 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //                print(packet)
 
                 switch packet.payload{
-                case .some(.sgpPacket(_)):
-//                    print(packet.sgpPacket)
-                    for sensorPayload in packet.sgpPacket.payload {
-                        if(sensorPayload.vocIndexValue != nil && sensorPayload.noxIndexValue != nil){
-                            self.airQualityData[0] = Double(sensorPayload.vocIndexValue) /// voc index
-                            dataToWatch.updateValue(sensorValue: self.airQualityData[0], sensorName: "vocIndexData")
-                            self.airQualityData[1] = Double(sensorPayload.noxIndexValue) /// nox index
-                            dataToWatch.updateValue(sensorValue: self.airQualityData[1], sensorName: "noxIndexData")
+                    case .some(.sgpPacket(_)):
+    //                    print(packet.sgpPacket)
+                        for sensorPayload in packet.sgpPacket.payload {
+                            if(sensorPayload.vocIndexValue != nil && sensorPayload.noxIndexValue != nil){
+                                self.airQualityData[0] = Double(sensorPayload.vocIndexValue) /// voc index
+                                dataToWatch.updateValue(sensorValue: self.airQualityData[0], sensorName: "vocIndexData")
+                                self.airQualityData[1] = Double(sensorPayload.noxIndexValue) /// nox index
+                                dataToWatch.updateValue(sensorValue: self.airQualityData[1], sensorName: "noxIndexData")
+                            }
                         }
+
+                    case .some(.bmePacket(_)):
+                        for sensorPayload in packet.bmePacket.payload {
+                            if(sensorPayload.sensorID == BME680_signal_id.co2Eq){
+                                self.airQualityData[2] = Double(sensorPayload.signal) /// CO2
+                                dataToWatch.updateValue(sensorValue: self.airQualityData[2], sensorName: "co2Data")
+                            }else if(sensorPayload.sensorID == BME680_signal_id.iaq){
+                                self.airQualityData[3] = Double(sensorPayload.signal) /// IAQ
+                                dataToWatch.updateValue(sensorValue: self.airQualityData[3], sensorName: "iaqData")
+                            }
+                        }
+
+                    case .some(.luxPacket(_)):
+    //                    print("lux packet")
+    //                    print(packet.luxPacket)
+                        for sensorPayload in packet.luxPacket.payload {
+                            if(sensorPayload.lux != nil){
+                                self.visualData[0] = Double(sensorPayload.lux) /// lux
+                                dataToWatch.updateValue(sensorValue: self.visualData[0], sensorName: "luxData")
+                            }
+                        }
+                    case .some(.shtPacket(_)):
+                        for sensorPayload in packet.shtPacket.payload {
+                            if(sensorPayload.temperature != nil && sensorPayload.humidity != nil){
+                                self.thermalData[0] = Double(sensorPayload.temperature) /// temperature
+                                dataToWatch.updateValue(sensorValue: self.thermalData[0], sensorName: "temperatureData")
+                                print(sensorPayload.humidity)
+                                self.thermalData[1] = Double(sensorPayload.humidity) /// humidity
+                                dataToWatch.updateValue(sensorValue: self.thermalData[1], sensorName: "humidityData")
+                            }
+                        }
+                    case .some(.specPacket(_)):
+                        print("spec packet")
+                    case .some(.thermPacket(_)):
+                        var thermNoseTip: Double = 0
+                        var thermNoseBridge: Double = 0
+                        var thermTempleFront: Double = 0
+                        var thermTempleMiddle: Double = 0
+                        var thermTempleRear: Double = 0
+
+                        for sensorPayload in packet.thermPacket.payload {
+                            if(sensorPayload.descriptor == Thermopile_location.tipOfNose){
+                                thermNoseTip = Double(sensorPayload.objectTemp)
+                            }else if(sensorPayload.descriptor == Thermopile_location.noseBridge){
+                                thermNoseBridge = Double(sensorPayload.objectTemp)
+                            }else if(sensorPayload.descriptor == Thermopile_location.frontTemple){
+                                thermTempleFront = Double(sensorPayload.objectTemp)
+                            }else if(sensorPayload.descriptor == Thermopile_location.midTemple){
+                                thermTempleMiddle = Double(sensorPayload.objectTemp)
+                            }else if(sensorPayload.descriptor == Thermopile_location.rearTemple){
+                                thermTempleRear = Double(sensorPayload.objectTemp)
+                            }else{
+
+                            }
+                        }
+
+                        /// estimate cog load:  - (temple - face)  (high cog load: low temp -- https://neurosciencenews.com/stress-nasal-temperature-8579/)
+                    do{
+                        
+//                        cogIntensity = try Int( 10 - (((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2) - 3) * 10 + 3)
+
+    //                    print("cogload est: \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
+//                        dataToWatch.updateValue(sensorValue: Double(cogIntensity), sensorName: "cogLoadData")
+    //                    print(cogIntensity)
+                    }catch{
+                        print("error parsing thermopile value")
                     }
 
-                case .some(.bmePacket(_)):
-                    for sensorPayload in packet.bmePacket.payload {
-                        if(sensorPayload.sensorID == BME680_signal_id.co2Eq){
-                            self.airQualityData[2] = Double(sensorPayload.signal) /// CO2
-                            dataToWatch.updateValue(sensorValue: self.airQualityData[2], sensorName: "co2Data")
-                        }else if(sensorPayload.sensorID == BME680_signal_id.iaq){
-                            self.airQualityData[3] = Double(sensorPayload.signal) /// IAQ
-                            dataToWatch.updateValue(sensorValue: self.airQualityData[3], sensorName: "iaqData")
-                        }
-                    }
 
-                case .some(.luxPacket(_)):
-//                    print("lux packet")
-//                    print(packet.luxPacket)
-                    for sensorPayload in packet.luxPacket.payload {
-                        if(sensorPayload.lux != nil){
-                            self.visualData[0] = Double(sensorPayload.lux) /// lux
-                            dataToWatch.updateValue(sensorValue: self.visualData[0], sensorName: "luxData")
-                        }
-                    }
-                case .some(.shtPacket(_)):
-                    for sensorPayload in packet.shtPacket.payload {
-                        if(sensorPayload.temperature != nil && sensorPayload.humidity != nil){
-                            self.thermalData[0] = Double(sensorPayload.temperature) /// temperature
-                            dataToWatch.updateValue(sensorValue: self.thermalData[0], sensorName: "temperatureData")
-                            print(sensorPayload.humidity)
-                            self.thermalData[1] = Double(sensorPayload.humidity) /// humidity
-                            dataToWatch.updateValue(sensorValue: self.thermalData[1], sensorName: "humidityData")
-                        }
-                    }
-                case .some(.specPacket(_)):
-                    print("spec packet")
-                case .some(.thermPacket(_)):
-                    var thermNoseTip: Double = 0
-                    var thermNoseBridge: Double = 0
-                    var thermTempleFront: Double = 0
-                    var thermTempleMiddle: Double = 0
-                    var thermTempleRear: Double = 0
-
-                    for sensorPayload in packet.thermPacket.payload {
-                        if(sensorPayload.descriptor == Thermopile_location.tipOfNose){
-                            thermNoseTip = Double(sensorPayload.objectTemp)
-                        }else if(sensorPayload.descriptor == Thermopile_location.noseBridge){
-                            thermNoseBridge = Double(sensorPayload.objectTemp)
-                        }else if(sensorPayload.descriptor == Thermopile_location.frontTemple){
-                            thermTempleFront = Double(sensorPayload.objectTemp)
-                        }else if(sensorPayload.descriptor == Thermopile_location.midTemple){
-                            thermTempleMiddle = Double(sensorPayload.objectTemp)
-                        }else if(sensorPayload.descriptor == Thermopile_location.rearTemple){
-                            thermTempleRear = Double(sensorPayload.objectTemp)
-                        }else{
-
-                        }
-                    }
-
-                    /// estimate cog load:  - (temple - face)  (high cog load: low temp -- https://neurosciencenews.com/stress-nasal-temperature-8579/)
-                    cogIntensity = Int( 10 - (((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2) - 3) * 10 + 3)
-
-                    print("cogload est: \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
-                    dataToWatch.updateValue(sensorValue: Double(cogIntensity), sensorName: "cogLoadData")
-                    print(cogIntensity)
-
-                case .some(.imuPacket(_)):
-                    break
-                case .some(.micPacket(_)):
-                    print("mic packet")
-                case .some(.blinkPacket(_)):
-                    break
-                case .none:
-                    print("unknown type")
+                    case .some(.imuPacket(_)):
+                        break
+                    case .some(.micPacket(_)):
+                        print("mic packet")
+                    case .some(.blinkPacket(_)):
+                        break
+//                        print("blink packet")
+                    case .some(.surveyPacket(_)):
+                        break
+                    case .some(.metaDataPacket(_)):
+                        break
+                    case .none:
+                        print("unknown type")
 
                 }
-
+                
+                /// this works!
+                let data = try packet.serializedData()
+                rawDataViewModel.addRawData(record: data)
+                reconstructedData.append(packet)
+                
                 try Airspec.send_packets(packets: [packet], auth_token: AUTH_TOKEN)
 
             } catch {
@@ -338,24 +368,84 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
         }
     }
+    
+    func uploadToServer() {
+        DispatchQueue.global().async {
+            DispatchQueue.main.sync {
+                // https://stackoverflow.com/questions/42772907/what-does-main-sync-in-global-async-mean
+                
+                if self.reconstructedData.count >= self.batchSize{
+                    do{
+                        try Airspec.send_packets(packets: self.reconstructedData, auth_token: AUTH_TOKEN)
+                        self.reconstructedData = []
+                    }catch{
+                        print("fail to upload to the server")
+                    }
+                }
+                    
+//                if(self.rawDataViewModel.savedEntities.count != 0){
+//                    do{
+//                        let rawRecordsBatchNo = Int(floor(Double(self.rawDataViewModel.savedEntities.count/self.batchSize)))
+//
+//                        for batchIndex in 0...rawRecordsBatchNo{
+//                            var reconstructedData:[SensorPacket] = []
+//                            for recordIndex in 0...self.batchSize{
+//                                for recordIndex in batchIndex...(batchIndex+self.batchSize - 1) {
+//                                    let reconstructedDataRecord = try SensorPacket.init(serializedData: self.rawDataViewModel.savedEntities[recordIndex].record!)
+//                                    reconstructedData.append(reconstructedDataRecord)
+//                                }
+//                                try Airspec.send_packets(packets: reconstructedData, auth_token: AUTH_TOKEN)
+//
+//                                /// delete records
+//                                self.rawDataViewModel.deleteRawData(batchSize: self.batchSize)
+//                            }
+//                        }
+////                        print(totalRawRecords)
+//
+////                        for i in stride(from: 0, to: totalRawRecords, by: self.batchSize) {
+////
+////                            /// upload batch records to the server
+////                            var reconstructedData:[SensorPacket] = []
+////                            for j in i...(i+self.batchSize - 1) {
+////                                let reconstructedDataRecord = try SensorPacket.init(serializedData: self.rawDataViewModel.savedEntities[j].record!)
+////                                reconstructedData.append(reconstructedDataRecord)
+////                            }
+////                            try Airspec.send_packets(packets: reconstructedData, auth_token: AUTH_TOKEN)
+////
+////                            /// delete those records locally
+////
+////                        }
+//
+//
+////
+//
+//                    }catch{
+//                        print("cannot upload the data to the server")
+//                    }
+//                }else{
+//                    print("raw data database is empty")
+//                }
+            }
+        }
+    }
 
 
 
     func testLight(){
 
         /// dfu
-        var dfu = AirSpecConfigPacket()
-        dfu.header.timestampUnix = UInt32(Date().timeIntervalSince1970)
-        dfu.dfuMode.enable = true
-
-        do {
-            let cmd = try dfu.serializedData()
-            connectedPeripheral?.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
-            print(cmd)
-        } catch {
-            //handle error
-            print("fail to send LED notification")
-        }
+//        var dfu = AirSpecConfigPacket()
+//        dfu.header.timestampUnix = UInt32(Date().timeIntervalSince1970)
+//        dfu.dfuMode.enable = true
+//
+//        do {
+//            let cmd = try dfu.serializedData()
+//            connectedPeripheral?.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
+//            print(cmd)
+//        } catch {
+//            //handle error
+//            print("fail to send LED notification")
+//        }
 
 
         /// single LED
@@ -401,31 +491,32 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
 
         /// blue green transition
-//        var blueGreenTransition = AirSpecConfigPacket()
-//        blueGreenTransition.header.timestampUnix = UInt32(Date().timeIntervalSince1970)
-//
-//        blueGreenTransition.blueGreenTransition.enable = true
-//        blueGreenTransition.blueGreenTransition.blueMinIntensity = 0
-//        blueGreenTransition.blueGreenTransition.blueMaxIntensity = 255
-//        blueGreenTransition.blueGreenTransition.greenMaxIntensity = 255
-//        blueGreenTransition.blueGreenTransition.stepSize = 2
-//        blueGreenTransition.blueGreenTransition.stepDurationMs = 100
-//        blueGreenTransition.blueGreenTransition.greenHoldLengthSeconds = 5
-//        blueGreenTransition.blueGreenTransition.transitionDelaySeconds = 5
-//
-//        blueGreenTransition.payload = .blueGreenTransition(blueGreenTransition.blueGreenTransition)
-//
-//        do {
-//            let cmd = try blueGreenTransition.serializedData()
-//            connectedPeripheral?.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
-//            print(cmd)
-//        } catch {
-//            //handle error
-//            print("fail to send LED notification")
-//        }
+        var blueGreenTransition = AirSpecConfigPacket()
+        blueGreenTransition.header.timestampUnix = UInt32(Date().timeIntervalSince1970)
+
+        blueGreenTransition.blueGreenTransition.enable = true
+        blueGreenTransition.blueGreenTransition.blueMinIntensity = 0
+        blueGreenTransition.blueGreenTransition.blueMaxIntensity = 255
+        blueGreenTransition.blueGreenTransition.greenMaxIntensity = 255
+        blueGreenTransition.blueGreenTransition.stepSize = 2
+        blueGreenTransition.blueGreenTransition.stepDurationMs = 100
+        blueGreenTransition.blueGreenTransition.greenHoldLengthSeconds = 5
+        blueGreenTransition.blueGreenTransition.transitionDelaySeconds = 5
+
+        blueGreenTransition.payload = .blueGreenTransition(blueGreenTransition.blueGreenTransition)
+
+        do {
+            let cmd = try blueGreenTransition.serializedData()
+            connectedPeripheral?.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
+            print(cmd)
+        } catch {
+            //handle error
+            print("fail to send LED notification")
+        }
 
     }
 
+    /// older version without the protobuf
 //    func testLight(){
 //        /// https://stackoverflow.com/questions/57985152/how-to-write-a-value-to-characteristc-for-ble-device-in-ios-swift
 //        /// Bytes are read from right to left, like german language

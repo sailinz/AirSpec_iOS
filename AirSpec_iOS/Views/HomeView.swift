@@ -41,7 +41,7 @@ struct HomeView: View {
     
     let skinTempDataName = ["thermopile_nose_bridge","thermopile_nose_tip","thermopile_temple_back","thermopile_temple_front","thermopile_temple_middle"]
     @State private var skinTempData = Array(repeating: -1.0, count: 5)
-    var user_id:String = "9067133"
+//    var user_id:String = "9067133"
 
     @State private var thermalDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorThermal.count)
     @State private var airQualityDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorAirQuality.count)

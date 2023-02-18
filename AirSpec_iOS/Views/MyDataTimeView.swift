@@ -33,8 +33,11 @@ struct MyDataTimeView: View {
     @State private var selectedElement: temp?
 
     @State var flags = Array(repeating: false, count: 8)
-    @State var user_id:String = "9067133"
-
+    @State var user_id: String = ""
+    
+//    @StateObject var surveyData = SurveyDataViewModel()
+    @EnvironmentObject var surveyData: SurveyDataViewModel
+    
     private let columns = [
         GridItem(.flexible()),
         GridItem(.flexible()),
@@ -66,8 +69,7 @@ struct MyDataTimeView: View {
             }.padding()
         }
     }
-
-
+    
 
     private var chartComfort: some View {
         Chart {

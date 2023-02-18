@@ -8,25 +8,25 @@
 import Foundation
 import CoreData
 
-class SurveyDataViewModel: ObservableObject{
+class TempDataViewModel: ObservableObject{
     let container: NSPersistentContainer
-    @Published var savedEntities: [SurveyDataEntity] = []
+    @Published var savedEntities: [TempDataEntity] = []
     
     init(){
         // load core data
-        container = NSPersistentContainer(name: "SurveyDataContainer")
+        container = NSPersistentContainer(name: "TempDataContainer")
         container.loadPersistentStores{(description, error) in
             if let error = error{
                 print("ERROR LOADING CORE DATA. \(error)")
             }else {
-                print("Successfully loaded core data for SurveyDataContainer!")
+                print("Successfully loaded core data for TempDataContainer!")
             }
         }
-        fetchSurveyData()
+        fetchTempData()
     }
     
-    func fetchSurveyData(){
-        let request = NSFetchRequest<SurveyDataEntity>(entityName: "SurveyDataEntity")
+    func fetchTempData(){
+        let request = NSFetchRequest<TempDataEntity>(entityName: "TempDataEntity")
         
         do{
             savedEntities = try container.viewContext.fetch(request)
@@ -36,13 +36,12 @@ class SurveyDataViewModel: ObservableObject{
         
     }
     
-    func addSurveyData(timestamp: Int32, question: Int16, choice: String, userid: Int16){
-        let newSurveyData = SurveyDataEntity(context: container.viewContext)
+    func addTempData(timestamp: Int32, sensor: String, value: Float){
+        let newTempData = TempDataEntity(context: container.viewContext)
         
-        newSurveyData.timestamp = timestamp
-        newSurveyData.question = question
-        newSurveyData.choice = choice
-        newSurveyData.userid = userid
+        newTempData.timestamp = timestamp
+        newTempData.sensor = sensor
+        newTempData.value = value
         
         saveData()
     }
@@ -50,8 +49,8 @@ class SurveyDataViewModel: ObservableObject{
     func saveData() {
         do{
             try container.viewContext.save()
-            fetchSurveyData()
-            print("Saved survey data to core data")
+            fetchTempData()
+            print("Saved temporary data to core data")
         }catch{
             print("Error saving. \(error)")
         }
@@ -59,3 +58,4 @@ class SurveyDataViewModel: ObservableObject{
     
 }
      
+

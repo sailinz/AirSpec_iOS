@@ -7,32 +7,46 @@
 
 import SwiftUI
 import UserNotifications
+import BackgroundTasks
 
 @main
 struct AirSpec_iOSApp: App {
-//    @UIApplicationDelegateAdaptor private var appDelegate: AppDelegate
+//    @Environment(\.scenePhase) private var scenePhase
     static let name: String = "AirSpec Bluetooth"
+    @StateObject var surveyData = SurveyDataViewModel()
+    @StateObject var tempData = TempDataViewModel()
+    @StateObject var metaData = MetaDataViewModel()
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(surveyData)
+                .environmentObject(tempData)
+                .environmentObject(metaData)
         }
+//        .onChange(of: scenePhase) { newPhase in
+//            switch newPhase {
+//            case .background: scheduleAppRefresh()
+//            default: break
+//            }
+//        }
+//        .backgroundTask(.urlSession("RawDataUpload")) {
+//            print("intend to upload data")
+//        }
     }
+    
+    /// does not work
+//    func scheduleAppRefresh() {
+//        let request = BGProcessingTaskRequest(identifier: "RawDataUpload")
+//        request.earliestBeginDate = Date(timeIntervalSinceNow: 10) // Schedule the task to start 15 minutes from now
+//        do {
+//            try BGTaskScheduler.shared.submit(request)
+//            print("scheduleAppRefresh scheduled")
+//        } catch {
+//            print("Could not schedule app refresh: \(error.localizedDescription)")
+//        }
+//    }
+    
 }
 
 
-//class AppDelegate: NSObject, UIApplicationDelegate {
-//    
-//    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-//            // This method is called whenever a push notification is received by the device
-//
-//            // Trigger the function that you want to run when the push notification is received
-//            handlePushNotification(userInfo)
-//        }
-//    
-//    func handlePushNotification(_ userInfo: [AnyHashable: Any]) {
-//            // This is the function that will be triggered when a push notification is received
-//            // You can use the userInfo dictionary to access the data included in the push notification payload
-//        }
-//
-//
-//}

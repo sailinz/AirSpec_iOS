@@ -14,6 +14,11 @@ struct SelfLoggingView: View {
     @State private var comments: String = ""
     @State var surveyButton: Bool = false
     
+    let userID = UserDefaults.standard.double(forKey: "user_id")
+//    @StateObject var surveyData = SurveyDataViewModel()
+    @EnvironmentObject var surveyData: SurveyDataViewModel
+    
+    
     var body: some View {
         
         ZStack(alignment: Alignment(horizontal: .trailing, vertical: .top)){
@@ -32,9 +37,7 @@ struct SelfLoggingView: View {
                                 .frame(height: 20)
                             HStack{
                                 Button(action:{
-            //                        withAnimation{
-            //                            /// log into datavase
-            //                        }
+                                    surveyData.addSurveyData(timestamp: Int32(Date().timeIntervalSince1970), question: -2, choice: "not comfy", userid: Int16(userID))
                                 }){
                                     ZStack{
                                         VStack{
@@ -59,9 +62,7 @@ struct SelfLoggingView: View {
                                     .frame(width: 20)
                                 
                                 Button(action:{
-            //                        withAnimation{
-            //                            /// log into datavase
-            //                        }
+                                    surveyData.addSurveyData(timestamp: Int32(Date().timeIntervalSince1970), question: -2, choice: "comfy", userid: Int16(userID))
                                 }){
                                     ZStack{
                                         VStack{
@@ -130,6 +131,7 @@ struct SelfLoggingView: View {
                             
                             Button(action:{
                                             ///submit data
+                                        surveyData.addSurveyData(timestamp: Int32(Date().timeIntervalSince1970), question: -1, choice: self.comments, userid: Int16(userID))
                                             withAnimation{
                                                 show.toggle()
                                             }
