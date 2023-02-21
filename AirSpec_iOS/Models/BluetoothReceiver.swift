@@ -141,7 +141,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         timer?.schedule(deadline: .now(), repeating: .seconds(updateFrequence))
         timer?.setEventHandler {
             /// does not work
-//            self.uploadToServer()
+            self.uploadToServer()
             
         }
         timer?.resume()
@@ -360,7 +360,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 rawDataViewModel.addRawData(record: data)
                 reconstructedData.append(packet)
                 
-                try Airspec.send_packets(packets: [packet], auth_token: AUTH_TOKEN)
+//                try Airspec.send_packets(packets: [packet], auth_token: AUTH_TOKEN)
 
             } catch {
                 logger.error("packet decode/send problems: \(error).")
@@ -374,57 +374,57 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             DispatchQueue.main.sync {
                 // https://stackoverflow.com/questions/42772907/what-does-main-sync-in-global-async-mean
                 
-                if self.reconstructedData.count >= self.batchSize{
-                    do{
-                        try Airspec.send_packets(packets: self.reconstructedData, auth_token: AUTH_TOKEN)
-                        self.reconstructedData = []
-                    }catch{
-                        print("fail to upload to the server")
-                    }
-                }
-                    
-//                if(self.rawDataViewModel.savedEntities.count != 0){
-//                    do{
-//                        let rawRecordsBatchNo = Int(floor(Double(self.rawDataViewModel.savedEntities.count/self.batchSize)))
-//
-//                        for batchIndex in 0...rawRecordsBatchNo{
-//                            var reconstructedData:[SensorPacket] = []
-//                            for recordIndex in 0...self.batchSize{
-//                                for recordIndex in batchIndex...(batchIndex+self.batchSize - 1) {
-//                                    let reconstructedDataRecord = try SensorPacket.init(serializedData: self.rawDataViewModel.savedEntities[recordIndex].record!)
-//                                    reconstructedData.append(reconstructedDataRecord)
-//                                }
-//                                try Airspec.send_packets(packets: reconstructedData, auth_token: AUTH_TOKEN)
-//
-//                                /// delete records
-//                                self.rawDataViewModel.deleteRawData(batchSize: self.batchSize)
-//                            }
-//                        }
-////                        print(totalRawRecords)
-//
-////                        for i in stride(from: 0, to: totalRawRecords, by: self.batchSize) {
-////
-////                            /// upload batch records to the server
-////                            var reconstructedData:[SensorPacket] = []
-////                            for j in i...(i+self.batchSize - 1) {
-////                                let reconstructedDataRecord = try SensorPacket.init(serializedData: self.rawDataViewModel.savedEntities[j].record!)
-////                                reconstructedData.append(reconstructedDataRecord)
-////                            }
-////                            try Airspec.send_packets(packets: reconstructedData, auth_token: AUTH_TOKEN)
-////
-////                            /// delete those records locally
-////
-////                        }
-//
-//
-////
-//
-//                    }catch{
-//                        print("cannot upload the data to the server")
-//                    }
-//                }else{
-//                    print("raw data database is empty")
+                
+//                do{
+//                    try Airspec.send_packets(packets: self.reconstructedData, auth_token: AUTH_TOKEN)
+//                    self.reconstructedData = []
+//                }catch{
+//                    print("fail to upload to the server")
 //                }
+
+                    
+                if(self.rawDataViewModel.savedEntities.count != 0){
+                    do{
+                        let rawRecordsBatchNo = Int(floor(Double(self.rawDataViewModel.savedEntities.count/self.batchSize)))
+
+                        for batchIndex in 0...rawRecordsBatchNo{
+                            var reconstructedData:[SensorPacket] = []
+                            for recordIndex in 0...self.batchSize{
+                                for recordIndex in batchIndex...(batchIndex+self.batchSize - 1) {
+                                    let reconstructedDataRecord = try SensorPacket.init(serializedData: self.rawDataViewModel.savedEntities[recordIndex].record!)
+                                    reconstructedData.append(reconstructedDataRecord)
+                                }
+                                try Airspec.send_packets(packets: reconstructedData, auth_token: AUTH_TOKEN)
+
+                                /// delete records
+                                self.rawDataViewModel.deleteRawData(batchSize: self.batchSize)
+                            }
+                        }
+//                        print(totalRawRecords)
+
+//                        for i in stride(from: 0, to: totalRawRecords, by: self.batchSize) {
+//
+//                            /// upload batch records to the server
+//                            var reconstructedData:[SensorPacket] = []
+//                            for j in i...(i+self.batchSize - 1) {
+//                                let reconstructedDataRecord = try SensorPacket.init(serializedData: self.rawDataViewModel.savedEntities[j].record!)
+//                                reconstructedData.append(reconstructedDataRecord)
+//                            }
+//                            try Airspec.send_packets(packets: reconstructedData, auth_token: AUTH_TOKEN)
+//
+//                            /// delete those records locally
+//
+//                        }
+
+
+//
+
+                    }catch{
+                        print("cannot upload the data to the server")
+                    }
+                }else{
+                    print("raw data database is empty")
+                }
             }
         }
     }
