@@ -4,6 +4,11 @@ import Foundation
 import FoundationNetworking
 #endif
 
+public enum AirspecError : Error {
+    case notHTTP
+    case status(Int)
+}
+
 public class Airspec {
     public static let DefaultEndpoint: URL = URL(string: "https://api.airspecs.resenv.org")!
 
@@ -12,7 +17,7 @@ public class Airspec {
         try SensorPacket(serializedData: bytes)
     }
 
-    public static func send_packets(packets: [SensorPacket], auth_token: String, endpoint: URL = Airspec.DefaultEndpoint) throws {
+    public static func send_packets(packets: [SensorPacket], auth_token: String, endpoint: URL = Airspec.DefaultEndpoint, _ onComplete: @escaping (_ e: Error?) -> Void) throws {
         let contents = SubmitPackets.with {
             $0.sensorData = packets
             $0.epoch = NSDate().timeIntervalSince1970
@@ -31,7 +36,7 @@ public class Airspec {
 //        print(reconstructedData)
 
         let session = URLSession(configuration: URLSessionConfiguration.ephemeral)
-
+        
         // unfortunately can't test because non-darwin platforms only have uploadTask. hacked it to async
         // with `withCheckedThrowingContinuation` but this also didn't work (possibly because I was in
         // XCTest).
@@ -40,22 +45,23 @@ public class Airspec {
             from: data
         ) { (_, response, error) in
             if let error = error {
-                print("error sending data: \(error)")
+                onComplete(error)
                 return
             }
 
             guard let httpResponse = response as? HTTPURLResponse else {
-                print("error: reqeust was not over http")
+                onComplete(AirspecError.notHTTP)
                 return
             }
 
             switch httpResponse.statusCode {
             case 200..<300:
                 print("sent ok")
+                onComplete(nil)
                 break
 
             default:
-                print("error: bad http status \(httpResponse.statusCode)")
+                onComplete(AirspecError.status(httpResponse.statusCode))
             }
         }
 

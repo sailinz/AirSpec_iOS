@@ -145,6 +145,13 @@ struct SettingView: View {
                                 let dirPaths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
                                 let docsDir = dirPaths[0]
                                 print(docsDir)
+                                do {
+                                    let count = try RawDataViewModel.count()
+                                    
+                                    print("\(count) items in datastore")
+                                } catch {
+                                    print("error fetching data: \(error)")
+                                }
                             }) {
                                 Text("Print")
                                 .font(.system(.subheadline) .weight(.semibold))

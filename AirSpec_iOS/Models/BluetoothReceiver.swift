@@ -7,6 +7,7 @@ A class for connecting to a Bluetooth peripheral and reading its characteristic 
 
 import CoreBluetooth
 import os.log
+import CoreData
 
 protocol BluetoothReceiverDelegate: AnyObject {
     func didReceiveData(_ message: Data) -> Int
@@ -58,14 +59,12 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     /// -- watchConnectivity
     @Published var dataToWatch = SensorData()
     
-    var rawDataViewModel: RawDataViewModel
     private var timer: DispatchSourceTimer?
-    let updateFrequence = 30 /// seconds
+    let updateFrequence = 10 /// seconds
     let batchSize = 50
     private var reconstructedData:[SensorPacket] = []
 
     init(service: CBUUID, characteristic: CBUUID) {
-        self.rawDataViewModel = .init()
         super.init()
         self.serviceUUID = service
         self.TXcharacteristicUUID = characteristic
@@ -357,7 +356,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 
                 /// this works!
                 let data = try packet.serializedData()
-                rawDataViewModel.addRawData(record: data)
+                try RawDataViewModel.addRawData(record: data)
+                
                 reconstructedData.append(packet)
                 
 //                try Airspec.send_packets(packets: [packet], auth_token: AUTH_TOKEN)
@@ -374,56 +374,34 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             DispatchQueue.main.sync {
                 // https://stackoverflow.com/questions/42772907/what-does-main-sync-in-global-async-mean
                 
+                let sem = DispatchSemaphore(value: 0)
                 
-//                do{
-//                    try Airspec.send_packets(packets: self.reconstructedData, auth_token: AUTH_TOKEN)
-//                    self.reconstructedData = []
-//                }catch{
-//                    print("fail to upload to the server")
-//                }
-
-                    
-                if(self.rawDataViewModel.savedEntities.count != 0){
-                    do{
-                        let rawRecordsBatchNo = Int(floor(Double(self.rawDataViewModel.savedEntities.count/self.batchSize)))
-
-                        for batchIndex in 0...rawRecordsBatchNo{
-                            var reconstructedData:[SensorPacket] = []
-                            for recordIndex in 0...self.batchSize{
-                                for recordIndex in batchIndex...(batchIndex+self.batchSize - 1) {
-                                    let reconstructedDataRecord = try SensorPacket.init(serializedData: self.rawDataViewModel.savedEntities[recordIndex].record!)
-                                    reconstructedData.append(reconstructedDataRecord)
-                                }
-                                try Airspec.send_packets(packets: reconstructedData, auth_token: AUTH_TOKEN)
-
-                                /// delete records
-                                self.rawDataViewModel.deleteRawData(batchSize: self.batchSize)
-                            }
+                while true {
+                    do {
+                        let (data, onComplete) = try RawDataViewModel.fetchData()
+                        if data.isEmpty {
+                            print("sent all packets")
+                            try onComplete()
+                            return
                         }
-//                        print(totalRawRecords)
+                        
+                        var err: Error?
+                        
+                        try Airspec.send_packets(packets: data, auth_token: AUTH_TOKEN) { error in
+                            err = error
+                            sem.signal()
+                        }
+                        
+                        sem.wait()
 
-//                        for i in stride(from: 0, to: totalRawRecords, by: self.batchSize) {
-//
-//                            /// upload batch records to the server
-//                            var reconstructedData:[SensorPacket] = []
-//                            for j in i...(i+self.batchSize - 1) {
-//                                let reconstructedDataRecord = try SensorPacket.init(serializedData: self.rawDataViewModel.savedEntities[j].record!)
-//                                reconstructedData.append(reconstructedDataRecord)
-//                            }
-//                            try Airspec.send_packets(packets: reconstructedData, auth_token: AUTH_TOKEN)
-//
-//                            /// delete those records locally
-//
-//                        }
-
-
-//
-
-                    }catch{
-                        print("cannot upload the data to the server")
+                        if let err = err {
+                            throw err
+                        } else {
+                            try onComplete()
+                        }
+                    } catch {
+                        print("cannot upload the data to the server: \(error)")
                     }
-                }else{
-                    print("raw data database is empty")
                 }
             }
         }

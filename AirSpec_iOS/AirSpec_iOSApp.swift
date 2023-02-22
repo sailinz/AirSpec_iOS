@@ -16,6 +16,10 @@ struct AirSpec_iOSApp: App {
     @StateObject var surveyData = SurveyDataViewModel()
     @StateObject var tempData = TempDataViewModel()
     @StateObject var metaData = MetaDataViewModel()
+    
+    init() {
+        RawDataViewModel.init_container()
+    }
 
     var body: some Scene {
         WindowGroup {
