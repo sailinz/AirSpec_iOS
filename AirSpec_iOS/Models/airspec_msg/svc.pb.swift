@@ -27,16 +27,44 @@ public struct SubmitPackets {
 
   public var sensorData: [SensorPacket] = []
 
-  public var epoch: Double = 0
+  public var meta: SubmitPackets.Meta {
+    get {return _meta ?? SubmitPackets.Meta()}
+    set {_meta = newValue}
+  }
+  /// Returns true if `meta` has been explicitly set.
+  public var hasMeta: Bool {return self._meta != nil}
+  /// Clears the value of `meta`. Subsequent reads from it will return its default value.
+  public mutating func clearMeta() {self._meta = nil}
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public init() {}
-}
+  public struct Meta {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
 
-#if swift(>=5.5) && canImport(_Concurrency)
-extension SubmitPackets: @unchecked Sendable {}
-#endif  // swift(>=5.5) && canImport(_Concurrency)
+    public var epoch: Double = 0
+
+    public var phoneUid: UInt32 {
+      get {return _phoneUid ?? 0}
+      set {_phoneUid = newValue}
+    }
+    /// Returns true if `phoneUid` has been explicitly set.
+    public var hasPhoneUid: Bool {return self._phoneUid != nil}
+    /// Clears the value of `phoneUid`. Subsequent reads from it will return its default value.
+    public mutating func clearPhoneUid() {self._phoneUid = nil}
+
+    public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    public init() {}
+
+    fileprivate var _phoneUid: UInt32? = nil
+  }
+
+  public init() {}
+
+  fileprivate var _meta: SubmitPackets.Meta? = nil
+}
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
@@ -44,17 +72,14 @@ extension SubmitPackets: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementa
   public static let protoMessageName: String = "SubmitPackets"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "sensor_data"),
-    2: .same(proto: "epoch"),
+    3: .same(proto: "meta"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.sensorData) }()
-      case 2: try { try decoder.decodeSingularDoubleField(value: &self.epoch) }()
+      case 1: try decoder.decodeRepeatedMessageField(value: &self.sensorData)
+      case 3: try decoder.decodeSingularMessageField(value: &self._meta)
       default: break
       }
     }
@@ -64,15 +89,50 @@ extension SubmitPackets: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementa
     if !self.sensorData.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.sensorData, fieldNumber: 1)
     }
-    if self.epoch != 0 {
-      try visitor.visitSingularDoubleField(value: self.epoch, fieldNumber: 2)
+    if let v = self._meta {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: SubmitPackets, rhs: SubmitPackets) -> Bool {
     if lhs.sensorData != rhs.sensorData {return false}
+    if lhs._meta != rhs._meta {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SubmitPackets.Meta: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = SubmitPackets.protoMessageName + ".Meta"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "epoch"),
+    2: .standard(proto: "phone_uid"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularDoubleField(value: &self.epoch)
+      case 2: try decoder.decodeSingularUInt32Field(value: &self._phoneUid)
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.epoch != 0 {
+      try visitor.visitSingularDoubleField(value: self.epoch, fieldNumber: 1)
+    }
+    if let v = self._phoneUid {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: SubmitPackets.Meta, rhs: SubmitPackets.Meta) -> Bool {
     if lhs.epoch != rhs.epoch {return false}
+    if lhs._phoneUid != rhs._phoneUid {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
