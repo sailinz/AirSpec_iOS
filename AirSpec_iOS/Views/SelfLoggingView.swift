@@ -16,7 +16,7 @@ struct SelfLoggingView: View {
     
     let userID = UserDefaults.standard.double(forKey: "user_id")
 //    @StateObject var surveyData = SurveyDataViewModel()
-    @EnvironmentObject var surveyData: SurveyDataViewModel
+//    @EnvironmentObject var surveyData: SurveyDataViewModel
     
     
     var body: some View {
@@ -37,7 +37,7 @@ struct SelfLoggingView: View {
                                 .frame(height: 20)
                             HStack{
                                 Button(action:{
-                                    surveyData.addSurveyData(timestamp: Int32(Date().timeIntervalSince1970), question: -2, choice: "not comfy", userid: Int16(userID))
+//                                    surveyData.addSurveyData(timestamp: Int32(Date().timeIntervalSince1970), question: -2, choice: "not comfy", userid: Int16(userID))
                                 }){
                                     ZStack{
                                         VStack{
@@ -62,7 +62,7 @@ struct SelfLoggingView: View {
                                     .frame(width: 20)
                                 
                                 Button(action:{
-                                    surveyData.addSurveyData(timestamp: Int32(Date().timeIntervalSince1970), question: -2, choice: "comfy", userid: Int16(userID))
+//                                    surveyData.addSurveyData(timestamp: Int32(Date().timeIntervalSince1970), question: -2, choice: "comfy", userid: Int16(userID))
                                 }){
                                     ZStack{
                                         VStack{
@@ -131,7 +131,7 @@ struct SelfLoggingView: View {
                             
                             Button(action:{
                                             ///submit data
-                                        surveyData.addSurveyData(timestamp: Int32(Date().timeIntervalSince1970), question: -1, choice: self.comments, userid: Int16(userID))
+//                                        surveyData.addSurveyData(timestamp: Int32(Date().timeIntervalSince1970), question: -1, choice: self.comments, userid: Int16(userID))
                                             withAnimation{
                                                 show.toggle()
                                             }

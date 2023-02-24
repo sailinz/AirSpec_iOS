@@ -11,10 +11,13 @@ import InfluxDBSwift
 import Foundation
 
 
-private let sensorSettingList = [SensorIconConstants.sensorThermal[0],SensorIconConstants.sensorThermal[1], SensorIconConstants.sensorAirQuality[0],SensorIconConstants.sensorAirQuality[1],SensorIconConstants.sensorAirQuality[2],SensorIconConstants.sensorAirQuality[3],SensorIconConstants.sensorVisual[0], SensorIconConstants.sensorAcoustics[0]]
+private let sensorSettingList = [SensorIconConstants.sensorThermal[0],SensorIconConstants.sensorThermal[1],
+                                 SensorIconConstants.sensorAirQuality[0],SensorIconConstants.sensorAirQuality[1],
+                                 SensorIconConstants.sensorAirQuality[2],SensorIconConstants.sensorAirQuality[3],
+                                 SensorIconConstants.sensorVisual[0], SensorIconConstants.sensorAcoustics[0]]
 
 struct MyDataTimeView: View {
-
+  
 
     /// comfort
     @State var comfortDataIn = comfortData.today
@@ -34,9 +37,6 @@ struct MyDataTimeView: View {
 
     @State var flags = Array(repeating: false, count: 8)
     @State var user_id: String = ""
-    
-//    @StateObject var surveyData = SurveyDataViewModel()
-    @EnvironmentObject var surveyData: SurveyDataViewModel
     
     private let columns = [
         GridItem(.flexible()),
@@ -223,7 +223,7 @@ struct ToggleItem: View {
 //    var lastTag: Int
     var label: String = ""
 
-    let influxClient = try InfluxDBClient(url: NetworkConstants.url, token: NetworkConstants.token)
+//    let influxClient = try InfluxDBClient(url: NetworkConstants.url, token: NetworkConstants.token)
 
 //    mutating func updateLastTag() {
 //        self.lastTag = self.tag
@@ -239,64 +239,62 @@ struct ToggleItem: View {
 
 
         if(self.storage[self.tag]){
-            print(self.tag)
-//            startQueries(i:self.tag)
+//            print(self.tag)
+            startQueries(i:self.tag)
 
         }
         return Toggle(label, isOn: isOn)
                 .toggleStyle(CheckToggleStyle(checkTogglekImage: checkTogglekImage, checkToggleText: checkToggleText))
     }
 
-//    func startQueries(i:Int) {
-//
-//        /// environmental sensing
+    func startQueries(i:Int) {
+
+        /// environmental sensing
 //        var tempData: [(minutes: Date, values: Double)] = []
-//        var query = """
-//                    """
-//        if(i == 6){ ///lux has no type
-//            query = """
-//                            from(bucket: "\(NetworkConstants.bucket)")
-//                            |> range(start: -1h)
-//                            |> filter(fn: (r) => r["_measurement"] == "\(sensorSettingList[i].measurement)")
-//                            |> filter(fn: (r) => r["_field"] == "signal")
-//                            |> filter(fn: (r) => r["id"] == "\(user_id)")
-//                            |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)
-//                    """
-//        }else{
-//            query = """
-//                            from(bucket: "\(NetworkConstants.bucket)")
-//                            |> range(start: -30m)
-//                            |> filter(fn: (r) => r["_measurement"] == "\(sensorSettingList[i].measurement)")
-//                            |> filter(fn: (r) => r["_field"] == "signal")
-//                            |> filter(fn: (r) => r["id"] == "\(user_id)")
-//                            |> filter(fn: (r) => r["\(sensorSettingList[i].identifier)"] == "\(sensorSettingList[i].type)")
-//                            |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)
-//                    """
-//        }
-//
-//        influxClient.queryAPI.query(query: query, org: NetworkConstants.org) {response, error in
-//            // Error response
-//            if let error = error {
-//                print("Error:\n\n\(error)")
-//            }
-//
-//            // Success response
-//            if let response = response {
-//
-//                print("\nSuccess response...\n")
-//                do {
-//                    try response.forEach { record in
-//                        if let result = convertToData(dateString: "\(record.values["_time"]!)", valuesString: "\(record.values["_value"]!)") {
-//                            tempData.append(result)
-//                        }
-//                    }
-//                    self.data = tempData
-//                } catch {
-//                    print("Error:\n\n\(error)")
-//                }
-//            }
-//        }
-//    }
+    
+        
+        
+        do {
+            let (longTermData, onComplete) = try LongTermDataViewModel.fetchData()
+            if longTermData.isEmpty {
+                print("no long term data")
+                try onComplete()
+                return
+            }
+            
+            var err: Error?
+
+            
+            let selectedSensorData = longTermData.filter { $0.1 == sensorSettingList[i].name}
+            
+            print(sensorSettingList[i].name)
+            print(selectedSensorData)
+            
+            let convertedSensorData = selectedSensorData.compactMap { tuple -> (Date, Double)? in
+                let timestamp = tuple.0
+                let date = Date(timeIntervalSince1970: TimeInterval(timestamp))
+                let dateString = "\(date)"
+                let valuesString = "\(tuple.2)"
+                return convertToData(dateString: dateString, valuesString: valuesString)
+            }
+
+            if convertedSensorData.isEmpty {
+                print("No matching tuples found")
+            } else {
+                DispatchQueue.main.async { self.data = convertedSensorData }
+                
+            }
+            
+            if let err = err {
+                throw err
+            } else {
+                try onComplete()
+            }
+        } catch {
+            print("no long term data: \(error)")
+        }
+        
+    }
 
 }
 

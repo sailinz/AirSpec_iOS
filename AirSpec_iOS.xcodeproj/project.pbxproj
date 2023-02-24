@@ -29,7 +29,6 @@
 		0380B90A299D791F00D070FF /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0380B908299D791F00D070FF /* Point.swift */; };
 		0380B911299EBEB400D070FF /* TempDataViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0380B910299EBEB400D070FF /* TempDataViewModel.swift */; };
 		0380B913299EBED500D070FF /* RawDataViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0380B912299EBED500D070FF /* RawDataViewModel.swift */; };
-		0380B915299EBEE600D070FF /* MetaDataViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0380B914299EBEE500D070FF /* MetaDataViewModel.swift */; };
 		0380B918299FD64D00D070FF /* LongTermDataContainer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0380B916299FD64C00D070FF /* LongTermDataContainer.xcdatamodeld */; };
 		0380B91A299FE31700D070FF /* BackgroundTasks.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0380B919299FE31600D070FF /* BackgroundTasks.framework */; };
 		038AA9152957ED870086EC1B /* NetworkConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03931B9D2943BAB90093515D /* NetworkConstants.swift */; };
@@ -59,6 +58,7 @@
 		03931B9C2943B9930093515D /* NIOPosix in Frameworks */ = {isa = PBXBuildFile; productRef = 03931B9B2943B9930093515D /* NIOPosix */; };
 		03931B9E2943BAB90093515D /* NetworkConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03931B9D2943BAB90093515D /* NetworkConstants.swift */; };
 		03931BA02943BDB90093515D /* NIO_TCP_Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03931B9F2943BDB90093515D /* NIO_TCP_Client.swift */; };
+		03A0221229A840CA006C17A8 /* LongTermDataViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A0221129A840CA006C17A8 /* LongTermDataViewModel.swift */; };
 		03A9F606296CB24A00BC9100 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03A9F605296CB24A00BC9100 /* WidgetKit.framework */; };
 		03A9F608296CB24A00BC9100 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03A9F607296CB24A00BC9100 /* SwiftUI.framework */; };
 		03A9F60B296CB24A00BC9100 /* AirSpec_iOS_Watch_Complication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9F60A296CB24A00BC9100 /* AirSpec_iOS_Watch_Complication.swift */; };
@@ -218,7 +218,6 @@
 		0380B908299D791F00D070FF /* Point.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Point.swift; sourceTree = "<group>"; };
 		0380B910299EBEB400D070FF /* TempDataViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TempDataViewModel.swift; sourceTree = "<group>"; };
 		0380B912299EBED500D070FF /* RawDataViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawDataViewModel.swift; sourceTree = "<group>"; };
-		0380B914299EBEE500D070FF /* MetaDataViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetaDataViewModel.swift; sourceTree = "<group>"; };
 		0380B917299FD64C00D070FF /* LongTermDataContainer.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LongTermDataContainer.xcdatamodel; sourceTree = "<group>"; };
 		0380B919299FE31600D070FF /* BackgroundTasks.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = BackgroundTasks.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.1.sdk/System/Library/Frameworks/BackgroundTasks.framework; sourceTree = DEVELOPER_DIR; };
 		038AA93A29590FE80086EC1B /* ThermalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThermalView.swift; sourceTree = "<group>"; };
@@ -235,6 +234,7 @@
 		038C4DC2292B09BC00699753 /* AirSpec-iOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "AirSpec-iOS-Info.plist"; sourceTree = SOURCE_ROOT; };
 		03931B9D2943BAB90093515D /* NetworkConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkConstants.swift; sourceTree = "<group>"; };
 		03931B9F2943BDB90093515D /* NIO_TCP_Client.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NIO_TCP_Client.swift; sourceTree = "<group>"; };
+		03A0221129A840CA006C17A8 /* LongTermDataViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongTermDataViewModel.swift; sourceTree = "<group>"; };
 		03A9F604296CB24A00BC9100 /* AirSpec_iOS Watch ComplicationExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "AirSpec_iOS Watch ComplicationExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		03A9F605296CB24A00BC9100 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		03A9F607296CB24A00BC9100 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -388,7 +388,7 @@
 				0380B8EB299C73D000D070FF /* SurveyDataViewModel.swift */,
 				0380B910299EBEB400D070FF /* TempDataViewModel.swift */,
 				0380B912299EBED500D070FF /* RawDataViewModel.swift */,
-				0380B914299EBEE500D070FF /* MetaDataViewModel.swift */,
+				03A0221129A840CA006C17A8 /* LongTermDataViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -959,7 +959,6 @@
 				03AF9927297BA71A00C465C5 /* BlurView.swift in Sources */,
 				03BC96402956669800AD89BE /* ChartStrideBy.swift in Sources */,
 				038C4DC1292B090E00699753 /* ExtensionDelegate.swift in Sources */,
-				0380B915299EBEE600D070FF /* MetaDataViewModel.swift in Sources */,
 				038C4DB9292AFCF700699753 /* SettingView.swift in Sources */,
 				03BC96142956106700AD89BE /* MyDataTimeView.swift in Sources */,
 				03BC961229560E4600AD89BE /* MyDataPlaceView.swift in Sources */,
@@ -982,6 +981,7 @@
 				0380B8F8299C7C0900D070FF /* MetaDataContainer.xcdatamodeld in Sources */,
 				03D53E9F299071980008B74D /* ProgramObject.swift in Sources */,
 				03BC95EB29525F9000AD89BE /* IdentifiableCharacter.swift in Sources */,
+				03A0221229A840CA006C17A8 /* LongTermDataViewModel.swift in Sources */,
 				03D53E8B298D5E8F0008B74D /* svc.pb.swift in Sources */,
 				03FE132329760247001EC500 /* SelfLoggingView.swift in Sources */,
 				032FEAD92981C2D100A2819F /* SurveyQuestionView.swift in Sources */,

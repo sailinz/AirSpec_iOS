@@ -2,60 +2,137 @@
 //  File.swift
 //  AirSpec_iOS
 //
-//  Created by ZHONG Sailin on 14.02.23.
-//
+//  Created by  ZHONG Sailin, Nathan PERRY on 14.02.23.
 
 import Foundation
 import CoreData
 
-class SurveyDataViewModel: ObservableObject{
-    let container: NSPersistentContainer
-    @Published var savedEntities: [SurveyDataEntity] = []
+class SurveyDataViewModel {
+    static let container: NSPersistentContainer = NSPersistentContainer(name: "SurveyDataContainer")
+    static let MAX_UNSENT_COUNT = 4096 * 3
     
-    init(){
-        // load core data
-        container = NSPersistentContainer(name: "SurveyDataContainer")
-        container.loadPersistentStores{(description, error) in
-            if let error = error{
-                print("ERROR LOADING CORE DATA. \(error)")
-            }else {
-                print("Successfully loaded core data for SurveyDataContainer!")
+    static let q = DispatchQueue(label: "init_surveydata")
+    static var has_init = false
+    
+    static func init_container() {
+        q.sync {
+            if has_init {
+                return
+            }
+            
+            // load core data
+            var err: Error?
+            
+            container.loadPersistentStores{(description, error) in
+                if let error = error {
+                    err = error
+                }
+            }
+            
+            if let error = err {
+                print("initializing container")
+            } else {
+                has_init = true
             }
         }
-        fetchSurveyData()
     }
     
-    func fetchSurveyData(){
+    static func count() throws -> Int {
         let request = NSFetchRequest<SurveyDataEntity>(entityName: "SurveyDataEntity")
+
+        let ctx = container.viewContext
+        var ret: Int?
+        var err: Error?
         
-        do{
-            savedEntities = try container.viewContext.fetch(request)
-        }catch let error{
-            print("Error fetching. \(error)")
+        ctx.performAndWait {
+            do {
+                ret = try ctx.count(for: request)
+            } catch {
+                err = error
+            }
         }
         
+        if let e = err {
+            throw e
+        }
+        
+        return ret!
     }
     
-    func addSurveyData(timestamp: Int32, question: Int16, choice: String, userid: Int16){
-        let newSurveyData = SurveyDataEntity(context: container.viewContext)
+    static func fetchData() throws -> ([(Int32, Int16, String)], () throws -> Void) {
+        let request = NSFetchRequest<SurveyDataEntity>(entityName: "SurveyDataEntity")
+                
+        let ctx = container.viewContext
+        var ret: [(Int32, Int16, String)] = []
+        var err: Error?
+        var ids: [NSManagedObjectID] = []
         
+        ctx.performAndWait {
+            do {
+                let elems = try ctx.fetch(request)
+                
+                ret = try elems.map { ent in
+                    ids.append(ent.objectID)
+                    return try (ent.timestamp, ent.question, ent.choice!)
+                }
+
+                try ctx.save()
+            } catch {
+                err = error
+            }
+        }
+        
+        if let e = err {
+            throw e
+        }
+        
+        return (ret, {
+            
+            if ids.isEmpty {
+                return
+            }
+
+        })
+    }
+    
+    
+    static func addSurveyData(timestamp: Int32, question: Int16, choice: String) throws {
+        let newSurveyData = SurveyDataEntity(context: container.viewContext)
         newSurveyData.timestamp = timestamp
         newSurveyData.question = question
         newSurveyData.choice = choice
-        newSurveyData.userid = userid
         
-        saveData()
-    }
-    
-    func saveData() {
-        do{
-            try container.viewContext.save()
-            fetchSurveyData()
-            print("Saved survey data to core data")
-        }catch{
-            print("Error saving. \(error)")
+        
+        let ctx = container.viewContext
+        var err: Error?
+
+        let request = NSFetchRequest<SurveyDataEntity>(entityName: "SurveyDataEntity")
+
+        ctx.performAndWait {
+            do {
+                let count = try ctx.count(for: request)
+                
+                if count >= MAX_UNSENT_COUNT {
+                    let delete_old = NSFetchRequest<NSFetchRequestResult>(entityName: "SurveyDataEntity")
+                    delete_old.fetchLimit = 100
+                    
+                    let del_req = NSBatchDeleteRequest(fetchRequest: delete_old)
+                    try ctx.execute(del_req)
+                }
+                
+                ctx.insert(newSurveyData)
+                try ctx.save()
+            } catch {
+                err = error
+            }
+        }
+        
+        if let e = err {
+            throw e
         }
     }
-    
 }
      
+
+
+

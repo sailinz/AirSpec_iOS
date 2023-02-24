@@ -2,7 +2,7 @@
 //  File.swift
 //  AirSpec_iOS
 //
-//  Created by ZHONG Sailin on 14.02.23.
+//  Created by ZHONG Sailin and Nathan PERRY on 14.02.23.
 //
 
 import Foundation

@@ -13,20 +13,22 @@ import BackgroundTasks
 struct AirSpec_iOSApp: App {
 //    @Environment(\.scenePhase) private var scenePhase
     static let name: String = "AirSpec Bluetooth"
-    @StateObject var surveyData = SurveyDataViewModel()
-    @StateObject var tempData = TempDataViewModel()
-    @StateObject var metaData = MetaDataViewModel()
+//    @StateObject var surveyData = SurveyDataViewModel()
+//    @StateObject var tempData = TempDataViewModel()
+//    @StateObject var metaData = MetaDataViewModel()
     
     init() {
         RawDataViewModel.init_container()
+        TempDataViewModel.init_container()
+        LongTermDataViewModel.init_container()
     }
 
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(surveyData)
-                .environmentObject(tempData)
-                .environmentObject(metaData)
+//                .environmentObject(surveyData)
+//                .environmentObject(tempData)
+//                .environmentObject(metaData)
         }
 //        .onChange(of: scenePhase) { newPhase in
 //            switch newPhase {

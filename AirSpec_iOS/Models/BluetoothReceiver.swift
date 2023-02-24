@@ -1,9 +1,8 @@
-/*
-See LICENSE folder for this sample’s licensing information.
-
-Abstract:
-A class for connecting to a Bluetooth peripheral and reading its characteristic values.
-*/
+//
+//  File.swift
+//  AirSpec_iOS
+//
+//  Created by ZHONG Sailin and Nathan PERRY on 14.02.23.
 
 import CoreBluetooth
 import os.log
@@ -39,7 +38,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     private var serviceUUID: CBUUID!
     private var TXcharacteristicUUID: CBUUID!
     var sendCharacteristic: CBCharacteristic!
-    let GLASSNAME =  "AirSpec"///"CAPTIVATE"
+    let GLASSNAME =  "AirSpec_01ad7855"///"CAPTIVATE" 01ad6d72  _01ad6d72
     @Published private(set) var connectedPeripheral: CBPeripheral? = nil
     private(set) var knownDisconnectedPeripheral: CBPeripheral? = nil
     @Published private(set) var isScanning: Bool = false
@@ -60,7 +59,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     @Published var dataToWatch = SensorData()
     
     private var timer: DispatchSourceTimer?
-    let updateFrequence = 10 /// seconds
+    let updateFrequence = 30 /// seconds
     let batchSize = 50
     private var reconstructedData:[SensorPacket] = []
 
@@ -139,8 +138,9 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         timer = DispatchSource.makeTimerSource()
         timer?.schedule(deadline: .now(), repeating: .seconds(updateFrequence))
         timer?.setEventHandler {
-            /// does not work
+            
             self.uploadToServer()
+            self.storeLongTermData()
             
         }
         timer?.resume()
@@ -260,17 +260,21 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
                 switch packet.payload{
                     case .some(.sgpPacket(_)):
-    //                    print(packet.sgpPacket)
+//                        print(packet.sgpPacket)
                         for sensorPayload in packet.sgpPacket.payload {
                             if(sensorPayload.vocIndexValue != nil && sensorPayload.noxIndexValue != nil){
                                 self.airQualityData[0] = Double(sensorPayload.vocIndexValue) /// voc index
                                 dataToWatch.updateValue(sensorValue: self.airQualityData[0], sensorName: "vocIndexData")
                                 self.airQualityData[1] = Double(sensorPayload.noxIndexValue) /// nox index
                                 dataToWatch.updateValue(sensorValue: self.airQualityData[1], sensorName: "noxIndexData")
+                                
+                                try TempDataViewModel.addTempData(timestamp: Int32(Date().timeIntervalSince1970), sensor: SensorIconConstants.sensorAirQuality[0].name, value: Float(self.airQualityData[0]))
+                                try TempDataViewModel.addTempData(timestamp: sensorPayload.timestampUnixx), sensor: SensorIconConstants.sensorAirQuality[1].name, value: Float(self.airQualityData[1]))
                             }
                         }
 
                     case .some(.bmePacket(_)):
+//                    print(packet.bmePacket)
                         for sensorPayload in packet.bmePacket.payload {
                             if(sensorPayload.sensorID == BME680_signal_id.co2Eq){
                                 self.airQualityData[2] = Double(sensorPayload.signal) /// CO2
@@ -278,16 +282,21 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                             }else if(sensorPayload.sensorID == BME680_signal_id.iaq){
                                 self.airQualityData[3] = Double(sensorPayload.signal) /// IAQ
                                 dataToWatch.updateValue(sensorValue: self.airQualityData[3], sensorName: "iaqData")
+                                
+                                try TempDataViewModel.addTempData(timestamp: Int32(Date().timeIntervalSince1970), sensor: SensorIconConstants.sensorAirQuality[2].name, value: Float(self.airQualityData[2]))
+                                try TempDataViewModel.addTempData(timestamp: Int32(Date().timeIntervalSince1970), sensor: SensorIconConstants.sensorAirQuality[3].name, value: Float(self.airQualityData[3]))
                             }
                         }
 
                     case .some(.luxPacket(_)):
     //                    print("lux packet")
-    //                    print(packet.luxPacket)
+//                        print(packet.luxPacket)
                         for sensorPayload in packet.luxPacket.payload {
                             if(sensorPayload.lux != nil){
                                 self.visualData[0] = Double(sensorPayload.lux) /// lux
                                 dataToWatch.updateValue(sensorValue: self.visualData[0], sensorName: "luxData")
+                                
+                                try TempDataViewModel.addTempData(timestamp: Int32(Date().timeIntervalSince1970), sensor: SensorIconConstants.sensorVisual[0].name, value: Float(self.visualData[0]))
                             }
                         }
                     case .some(.shtPacket(_)):
@@ -298,11 +307,16 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                                 print(sensorPayload.humidity)
                                 self.thermalData[1] = Double(sensorPayload.humidity) /// humidity
                                 dataToWatch.updateValue(sensorValue: self.thermalData[1], sensorName: "humidityData")
+                                
+                                try TempDataViewModel.addTempData(timestamp: Int32(Date().timeIntervalSince1970), sensor: SensorIconConstants.sensorThermal[0].name, value: Float(self.thermalData[0]))
+                                try TempDataViewModel.addTempData(timestamp: Int32(Date().timeIntervalSince1970), sensor: SensorIconConstants.sensorThermal[1].name, value: Float(self.thermalData[1]))
                             }
                         }
                     case .some(.specPacket(_)):
                         print("spec packet")
                     case .some(.thermPacket(_)):
+                    
+//                        print("thermPacket")
                         var thermNoseTip: Double = 0
                         var thermNoseBridge: Double = 0
                         var thermTempleFront: Double = 0
@@ -327,24 +341,26 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
                         /// estimate cog load:  - (temple - face)  (high cog load: low temp -- https://neurosciencenews.com/stress-nasal-temperature-8579/)
                     do{
-                        
+                        /// has error on nil
 //                        cogIntensity = try Int( 10 - (((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2) - 3) * 10 + 3)
 
-    //                    print("cogload est: \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
+//                        print("cogload est: \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
 //                        dataToWatch.updateValue(sensorValue: Double(cogIntensity), sensorName: "cogLoadData")
-    //                    print(cogIntensity)
+//                        print(cogIntensity)
                     }catch{
                         print("error parsing thermopile value")
                     }
 
 
                     case .some(.imuPacket(_)):
+//                        print("imu packet")
                         break
                     case .some(.micPacket(_)):
                         print("mic packet")
+//                        try TempDataViewModel.addTempData(timestamp: Int32(Date().timeIntervalSince1970), sensor: SensorIconConstants.sensorAcoustics[0].name, value: Float(self.acoutsticsData[0]))
                     case .some(.blinkPacket(_)):
-                        break
 //                        print("blink packet")
+                        break
                     case .some(.surveyPacket(_)):
                         break
                     case .some(.metaDataPacket(_)):
@@ -375,7 +391,6 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 // https://stackoverflow.com/questions/42772907/what-does-main-sync-in-global-async-mean
                 
                 let sem = DispatchSemaphore(value: 0)
-                
                 while true {
                     do {
                         let (data, onComplete) = try RawDataViewModel.fetchData()
@@ -403,10 +418,76 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                         print("cannot upload the data to the server: \(error)")
                     }
                 }
+                
+                /// storeLongTermData
+                
+                
+                
+                
             }
         }
     }
 
+    /// storeLongTermData
+    func storeLongTermData() {
+                
+        while true {
+            do {
+                let (data, onComplete) = try TempDataViewModel.fetchData()
+                if data.isEmpty {
+                    print("no new data")
+                    try onComplete()
+                    return
+                }
+                
+                var err: Error?
+
+                /// calculate means
+                var sumDict: [String: (Double, Int, Int)] = [:]
+//                var sumDict: [String: (Double, Double, Int)] = [:]
+                /// Iterate through the array and update the sum and count for each group
+                data.forEach { item in
+                    let key = item.1 /// sensor name
+                    let value1 = item.2 /// sensor reading
+                    let value2 = Float(item.0) /// timestamp
+                    if let (sum1, sum2, count) = sumDict[key] {
+//                        sumDict[key] = (sum1 + value1, sum2 + value2, count + 1)
+                        sumDict[key] = (sum1 + value1, value2, count + 1)
+                    } else {
+                        sumDict[key] = (value1, value2, 1)
+                    }
+                }
+
+                /// Calculate the mean for each group
+                let means = sumDict.mapValues { (sum1, sum2, count) in
+//                    (sum1 / Float(count), sum2 / Float(count))
+                    (sum1 / Float(count), sum2)
+                }
+
+                print(means)
+                ///  means format ["iaq": (61.812943, 1.6771994e+09), "co2": (592.4955, 1.6771994e+09), "noxIndex": (1.0, 1.6771994e+09), "humidity": (17.783474, 1.6771994e+09), "temperature": (27.817734, 1.6771994e+09), "lux": (58.24, 1.677199e+09), "vocIndex": (104.5, 1.6771994e+09)]
+                
+                for (sensor, (mean1, mean2)) in means {
+                    let timestamp = Int32(mean2)
+                    let value = mean1
+                    // Call your function here with the timestamp, sensor, and value
+                    try LongTermDataViewModel.addLongTermData(timestamp: timestamp, sensor: sensor, value: value)
+                }
+                print("long term data length:")
+                print(try LongTermDataViewModel.count())
+                
+
+                if let err = err {
+                    throw err
+                } else {
+                    try onComplete()
+                }
+            } catch {
+                print("cannot push data to the Long Term Data Container: \(error)")
+            }
+        }
+
+    }
 
 
     func testLight(){

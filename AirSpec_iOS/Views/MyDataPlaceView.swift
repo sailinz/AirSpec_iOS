@@ -17,7 +17,7 @@ struct MyDataPlaceView: View {
     let uncomfyColor:Color = .pink
     
 //    @StateObject var surveyData = SurveyDataViewModel()
-    @EnvironmentObject var surveyData: SurveyDataViewModel
+//    @EnvironmentObject var surveyData: SurveyDataViewModel
     
     var body: some View {
         LazyVGrid(columns: columns, spacing: 15) {

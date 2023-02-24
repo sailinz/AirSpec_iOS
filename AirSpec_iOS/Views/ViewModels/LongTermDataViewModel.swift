@@ -7,11 +7,11 @@
 import Foundation
 import CoreData
 
-class TempDataViewModel {
-    static let container: NSPersistentContainer = NSPersistentContainer(name: "TempDataContainer")
+class LongTermDataViewModel {
+    static let container: NSPersistentContainer = NSPersistentContainer(name: "LongTermDataContainer")
     static let MAX_UNSENT_COUNT = 4096
     
-    static let q = DispatchQueue(label: "init_TempData")
+    static let q = DispatchQueue(label: "init_LongTermData")
     static var has_init = false
     
     static func init_container() {
@@ -38,7 +38,7 @@ class TempDataViewModel {
     }
     
     static func count() throws -> Int {
-        let request = NSFetchRequest<TempDataEntity>(entityName: "TempDataEntity")
+        let request = NSFetchRequest<LongTermDataEntity>(entityName: "LongTermDataEntity")
 
         let ctx = container.viewContext
         var ret: Int?
@@ -59,9 +59,11 @@ class TempDataViewModel {
         return ret!
     }
     
-    static func fetchData(_ n: Int = 10) throws -> ([(Int32, String, Float)], () throws -> Void) {
-        let request = NSFetchRequest<TempDataEntity>(entityName: "TempDataEntity")
-                
+    static func fetchData(_ n: Int = 100) throws -> ([(Int32, String, Float)], () throws -> Void) {
+        let request = NSFetchRequest<LongTermDataEntity>(entityName: "LongTermDataEntity")
+        request.fetchLimit = n
+        
+        
         let ctx = container.viewContext
         var ret: [(Int32, String, Float)] = []
         var err: Error?
@@ -93,16 +95,16 @@ class TempDataViewModel {
             }
             
             var err: Error?
-            let del_req = NSBatchDeleteRequest(objectIDs: ids)
-
-            ctx.performAndWait {
-                do {
-                    try ctx.execute(del_req)
-                    try ctx.save()
-                } catch {
-                    err = error
-                }
-            }
+//            let del_req = NSBatchDeleteRequest(objectIDs: ids)
+//
+//            ctx.performAndWait {
+//                do {
+//                    try ctx.execute(del_req)
+//                    try ctx.save()
+//                } catch {
+//                    err = error
+//                }
+//            }
 
             if let e = err {
                 throw e
@@ -112,30 +114,30 @@ class TempDataViewModel {
     }
     
     
-    static func addTempData(timestamp: Int32, sensor: String, value: Float) throws {
-        let newTempData = TempDataEntity(context: container.viewContext)
-        newTempData.timestamp = timestamp
-        newTempData.sensor = sensor
-        newTempData.value = value
+    static func addLongTermData(timestamp: Int32, sensor: String, value: Float) throws {
+        let newLongTermData = LongTermDataEntity(context: container.viewContext)
+        newLongTermData.timestamp = timestamp
+        newLongTermData.sensor = sensor
+        newLongTermData.value = value
         
         let ctx = container.viewContext
         var err: Error?
 
-        let request = NSFetchRequest<TempDataEntity>(entityName: "TempDataEntity")
+        let request = NSFetchRequest<LongTermDataEntity>(entityName: "LongTermDataEntity")
 
         ctx.performAndWait {
             do {
                 let count = try ctx.count(for: request)
                 
                 if count >= MAX_UNSENT_COUNT {
-                    let delete_old = NSFetchRequest<NSFetchRequestResult>(entityName: "TempDataEntity")
+                    let delete_old = NSFetchRequest<NSFetchRequestResult>(entityName: "LongTermDataEntity")
                     delete_old.fetchLimit = 100
                     
                     let del_req = NSBatchDeleteRequest(fetchRequest: delete_old)
                     try ctx.execute(del_req)
                 }
                 
-                ctx.insert(newTempData)
+                ctx.insert(newLongTermData)
                 try ctx.save()
             } catch {
                 err = error
@@ -148,6 +150,7 @@ class TempDataViewModel {
     }
 }
      
+
 
 
 

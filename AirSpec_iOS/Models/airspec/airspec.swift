@@ -1,3 +1,9 @@
+//
+//  File.swift
+//  AirSpec_iOS
+//
+//  Created by Nathan PERRY on 14.02.23.
+
 import Foundation
 
 #if canImport(FoundationNetworking)
