@@ -59,11 +59,11 @@ class TempDataViewModel {
         return ret!
     }
     
-    static func fetchData(_ n: Int = 10) throws -> ([(Int32, String, Float)], () throws -> Void) {
+    static func fetchData(_ n: Int = 10) throws -> ([(Date, String, Float)], () throws -> Void) {
         let request = NSFetchRequest<TempDataEntity>(entityName: "TempDataEntity")
                 
         let ctx = container.viewContext
-        var ret: [(Int32, String, Float)] = []
+        var ret: [(Date, String, Float)] = []
         var err: Error?
         var ids: [NSManagedObjectID] = []
         
@@ -73,7 +73,7 @@ class TempDataViewModel {
                 
                 ret = try elems.map { ent in
                     ids.append(ent.objectID)
-                    return try (ent.timestamp, ent.sensor!, ent.value)
+                    return try (ent.timestamp!, ent.sensor!, ent.value)
                 }
 
                 try ctx.save()
@@ -112,7 +112,7 @@ class TempDataViewModel {
     }
     
     
-    static func addTempData(timestamp: Int32, sensor: String, value: Float) throws {
+    static func addTempData(timestamp: Date, sensor: String, value: Float) throws {
         let newTempData = TempDataEntity(context: container.viewContext)
         newTempData.timestamp = timestamp
         newTempData.sensor = sensor

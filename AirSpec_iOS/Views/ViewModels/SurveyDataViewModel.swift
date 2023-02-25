@@ -59,11 +59,11 @@ class SurveyDataViewModel {
         return ret!
     }
     
-    static func fetchData() throws -> ([(Int32, Int16, String)], () throws -> Void) {
+    static func fetchData() throws -> ([(Date, Int16, String)], () throws -> Void) {
         let request = NSFetchRequest<SurveyDataEntity>(entityName: "SurveyDataEntity")
                 
         let ctx = container.viewContext
-        var ret: [(Int32, Int16, String)] = []
+        var ret: [(Date, Int16, String)] = []
         var err: Error?
         var ids: [NSManagedObjectID] = []
         
@@ -73,7 +73,7 @@ class SurveyDataViewModel {
                 
                 ret = try elems.map { ent in
                     ids.append(ent.objectID)
-                    return try (ent.timestamp, ent.question, ent.choice!)
+                    return try (ent.timestamp!, ent.question, ent.choice!)
                 }
 
                 try ctx.save()
@@ -96,7 +96,7 @@ class SurveyDataViewModel {
     }
     
     
-    static func addSurveyData(timestamp: Int32, question: Int16, choice: String) throws {
+    static func addSurveyData(timestamp: Date, question: Int16, choice: String) throws {
         let newSurveyData = SurveyDataEntity(context: container.viewContext)
         newSurveyData.timestamp = timestamp
         newSurveyData.question = question

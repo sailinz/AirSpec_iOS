@@ -23,7 +23,7 @@ import SwiftUI
 
 struct MyDataView: View {
 
-    @State private var showMyDataTimeView = false
+    @State private var showMyDataTimeView = true
     
 //    @State private var feedbackButton = false
     

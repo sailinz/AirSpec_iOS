@@ -268,8 +268,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                                 self.airQualityData[1] = Double(sensorPayload.noxIndexValue) /// nox index
                                 dataToWatch.updateValue(sensorValue: self.airQualityData[1], sensorName: "noxIndexData")
                                 
-                                try TempDataViewModel.addTempData(timestamp: Int32(Date().timeIntervalSince1970), sensor: SensorIconConstants.sensorAirQuality[0].name, value: Float(self.airQualityData[0]))
-                                try TempDataViewModel.addTempData(timestamp: sensorPayload.timestampUnixx), sensor: SensorIconConstants.sensorAirQuality[1].name, value: Float(self.airQualityData[1]))
+                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[0].name, value: Float(self.airQualityData[0]))
+                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[1].name, value: Float(self.airQualityData[1]))
                             }
                         }
 
@@ -283,8 +283,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                                 self.airQualityData[3] = Double(sensorPayload.signal) /// IAQ
                                 dataToWatch.updateValue(sensorValue: self.airQualityData[3], sensorName: "iaqData")
                                 
-                                try TempDataViewModel.addTempData(timestamp: Int32(Date().timeIntervalSince1970), sensor: SensorIconConstants.sensorAirQuality[2].name, value: Float(self.airQualityData[2]))
-                                try TempDataViewModel.addTempData(timestamp: Int32(Date().timeIntervalSince1970), sensor: SensorIconConstants.sensorAirQuality[3].name, value: Float(self.airQualityData[3]))
+                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[2].name, value: Float(self.airQualityData[2]))
+                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[3].name, value: Float(self.airQualityData[3]))
                             }
                         }
 
@@ -296,7 +296,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                                 self.visualData[0] = Double(sensorPayload.lux) /// lux
                                 dataToWatch.updateValue(sensorValue: self.visualData[0], sensorName: "luxData")
                                 
-                                try TempDataViewModel.addTempData(timestamp: Int32(Date().timeIntervalSince1970), sensor: SensorIconConstants.sensorVisual[0].name, value: Float(self.visualData[0]))
+                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[0].name, value: Float(self.visualData[0]))
                             }
                         }
                     case .some(.shtPacket(_)):
@@ -308,8 +308,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                                 self.thermalData[1] = Double(sensorPayload.humidity) /// humidity
                                 dataToWatch.updateValue(sensorValue: self.thermalData[1], sensorName: "humidityData")
                                 
-                                try TempDataViewModel.addTempData(timestamp: Int32(Date().timeIntervalSince1970), sensor: SensorIconConstants.sensorThermal[0].name, value: Float(self.thermalData[0]))
-                                try TempDataViewModel.addTempData(timestamp: Int32(Date().timeIntervalSince1970), sensor: SensorIconConstants.sensorThermal[1].name, value: Float(self.thermalData[1]))
+                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorThermal[0].name, value: Float(self.thermalData[0]))
+                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorThermal[1].name, value: Float(self.thermalData[1]))
                             }
                         }
                     case .some(.specPacket(_)):
@@ -442,16 +442,14 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 
                 var err: Error?
 
-                /// calculate means
-                var sumDict: [String: (Double, Int, Int)] = [:]
-//                var sumDict: [String: (Double, Double, Int)] = [:]
+                /// calculate means (timestamp: Date, sensor: String, value: Float)
+                var sumDict: [String: (Float, Date, Int)] = [:]
                 /// Iterate through the array and update the sum and count for each group
                 data.forEach { item in
                     let key = item.1 /// sensor name
-                    let value1 = item.2 /// sensor reading
-                    let value2 = Float(item.0) /// timestamp
+                    let value1 = item.2 /// sensor value
+                    let value2 = item.0 /// timestamp
                     if let (sum1, sum2, count) = sumDict[key] {
-//                        sumDict[key] = (sum1 + value1, sum2 + value2, count + 1)
                         sumDict[key] = (sum1 + value1, value2, count + 1)
                     } else {
                         sumDict[key] = (value1, value2, 1)
@@ -459,16 +457,15 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 }
 
                 /// Calculate the mean for each group
-                let means = sumDict.mapValues { (sum1, sum2, count) in
-//                    (sum1 / Float(count), sum2 / Float(count))
-                    (sum1 / Float(count), sum2)
+                let means = sumDict.mapValues { (sum1, datetime, count) in
+                    (sum1 / Float(count), datetime)
                 }
 
                 print(means)
                 ///  means format ["iaq": (61.812943, 1.6771994e+09), "co2": (592.4955, 1.6771994e+09), "noxIndex": (1.0, 1.6771994e+09), "humidity": (17.783474, 1.6771994e+09), "temperature": (27.817734, 1.6771994e+09), "lux": (58.24, 1.677199e+09), "vocIndex": (104.5, 1.6771994e+09)]
                 
-                for (sensor, (mean1, mean2)) in means {
-                    let timestamp = Int32(mean2)
+                for (sensor, (mean1, datetime)) in means {
+                    let timestamp = datetime
                     let value = mean1
                     // Call your function here with the timestamp, sensor, and value
                     try LongTermDataViewModel.addLongTermData(timestamp: timestamp, sensor: sensor, value: value)

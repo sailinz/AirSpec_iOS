@@ -59,13 +59,13 @@ class LongTermDataViewModel {
         return ret!
     }
     
-    static func fetchData(_ n: Int = 100) throws -> ([(Int32, String, Float)], () throws -> Void) {
+    static func fetchData(_ n: Int = 100) throws -> ([(Date, String, Float)], () throws -> Void) {
         let request = NSFetchRequest<LongTermDataEntity>(entityName: "LongTermDataEntity")
         request.fetchLimit = n
         
         
         let ctx = container.viewContext
-        var ret: [(Int32, String, Float)] = []
+        var ret: [(Date, String, Float)] = []
         var err: Error?
         var ids: [NSManagedObjectID] = []
         
@@ -75,10 +75,10 @@ class LongTermDataViewModel {
                 
                 ret = try elems.map { ent in
                     ids.append(ent.objectID)
-                    return try (ent.timestamp, ent.sensor!, ent.value)
+                    return try (ent.timestamp!, ent.sensor!, ent.value)
                 }
 
-                try ctx.save()
+//                try ctx.save()
             } catch {
                 err = error
             }
@@ -111,10 +111,10 @@ class LongTermDataViewModel {
             }
 
         })
-    }
+    } 
     
     
-    static func addLongTermData(timestamp: Int32, sensor: String, value: Float) throws {
+    static func addLongTermData(timestamp: Date, sensor: String, value: Float) throws {
         let newLongTermData = LongTermDataEntity(context: container.viewContext)
         newLongTermData.timestamp = timestamp
         newLongTermData.sensor = sensor

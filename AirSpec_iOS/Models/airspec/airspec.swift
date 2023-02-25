@@ -26,7 +26,8 @@ public class Airspec {
     public static func send_packets(packets: [SensorPacket], auth_token: String, endpoint: URL = Airspec.DefaultEndpoint, _ onComplete: @escaping (_ e: Error?) -> Void) throws {
         let contents = SubmitPackets.with {
             $0.sensorData = packets
-            $0.epoch = NSDate().timeIntervalSince1970
+//            $0.epoch = NSDate().timeIntervalSince1970
+            
         }
         
         let data = try contents.serializedData()

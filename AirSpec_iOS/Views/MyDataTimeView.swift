@@ -258,7 +258,7 @@ struct ToggleItem: View {
             let (longTermData, onComplete) = try LongTermDataViewModel.fetchData()
             if longTermData.isEmpty {
                 print("no long term data")
-                try onComplete()
+//                try onComplete()
                 return
             }
             
@@ -271,8 +271,7 @@ struct ToggleItem: View {
             print(selectedSensorData)
             
             let convertedSensorData = selectedSensorData.compactMap { tuple -> (Date, Double)? in
-                let timestamp = tuple.0
-                let date = Date(timeIntervalSince1970: TimeInterval(timestamp))
+                let date = tuple.0
                 let dateString = "\(date)"
                 let valuesString = "\(tuple.2)"
                 return convertToData(dateString: dateString, valuesString: valuesString)
