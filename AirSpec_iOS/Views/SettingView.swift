@@ -85,16 +85,18 @@ struct SettingView: View {
                                 .font(.system(.subheadline))
                             
                             if let peripheral = receiver.connectedPeripheral {
-                                if(peripheral.name!.contains("STM32WB") || peripheral.name!.contains("$user_id") || peripheral.name!.contains(receiver.GLASSNAME)){
-                                    Text("Connected")
-                                        .frame(maxWidth: .infinity, alignment: .trailing)
-                                        .foregroundColor(Color.gray)
-                                        .font(.system(.subheadline))
-                                }else{
-                                    Text("Disconnected")
-                                        .frame(maxWidth: .infinity, alignment: .trailing)
-                                        .foregroundColor(Color.gray)
-                                        .font(.system(.subheadline))
+                                if(receiver.GLASSNAME != ""){
+                                    if(peripheral.name!.contains(receiver.GLASSNAME)){
+                                        Text("Connected")
+                                            .frame(maxWidth: .infinity, alignment: .trailing)
+                                            .foregroundColor(Color.gray)
+                                            .font(.system(.subheadline))
+                                    }else{
+                                        Text("Disconnected")
+                                            .frame(maxWidth: .infinity, alignment: .trailing)
+                                            .foregroundColor(Color.gray)
+                                            .font(.system(.subheadline))
+                                    }
                                 }
                             }else{
                                 Text("Disconnected")
@@ -142,13 +144,15 @@ struct SettingView: View {
                             Text("Core data")
                                 .font(.system(.subheadline))
                             Button(action: {
-                                let dirPaths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
-                                let docsDir = dirPaths[0]
-                                print(docsDir)
+//                                let dirPaths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
+//                                let docsDir = dirPaths[0]
+//                                print(docsDir)
                                 do {
-                                    let count = try RawDataViewModel.count()
+                                    let countRaw = try RawDataViewModel.count()
+                                    let countSurvey = try SurveyDataViewModel.count()
                                     
-                                    print("\(count) items in datastore")
+                                    print("\(countRaw) items in raw data datastore")
+                                    print("\(countSurvey) items in survey data datastore")
                                 } catch {
                                     print("error fetching data: \(error)")
                                 }
@@ -411,6 +415,11 @@ struct SettingView: View {
         }
         
         .onAppear{
+            
+            if UserDefaults.standard.string(forKey: user_id) != ""{
+                self.user_id = UserDefaults.standard.string(forKey: "user_id") ?? ""
+            }
+            
             if UserDefaults.standard.float(forKey: "minValueTemp") == 0 {
                 UserDefaults.standard.set(SensorIconConstants.sensorThermal[0].color1Position, forKey: "minValueTemp")
                 self.minValueTemp = UserDefaults.standard.float(forKey: "minValueTemp") * sliderWidth
@@ -474,9 +483,12 @@ struct SettingView: View {
     func connectToAirSpec(){
         if !Array(receiver.discoveredPeripherals).isEmpty{
             for peripheral in Array(receiver.discoveredPeripherals){
-                if(peripheral.name!.contains("STM32WB") || peripheral.name!.contains("$user_id") || peripheral.name!.contains(receiver.GLASSNAME)){
-                    receiver.connect(to: peripheral)
+                if(receiver.GLASSNAME != ""){
+                    if(peripheral.name!.contains(receiver.GLASSNAME)){
+                        receiver.connect(to: peripheral)
+                    }
                 }
+                
             }
         }
         

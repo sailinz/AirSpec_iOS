@@ -25,12 +25,12 @@ struct ThermalView: View {
     
 //    @State private var thermalData = Array(repeating: -1.0, count: SensorIconConstants.sensorThermal.count)
     @State private var thermalDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorThermal.count)
-    var user_id:String = "9067133"
+//    var user_id:String = "9067133"
 
 //    let updateFrequence = 10 /// seconds
     
     /// -- watch connectivity
-    @StateObject var dataReceivedWatch = SensorData()
+    @StateObject var dataReceivedWatch = SensorData()  /// need to find more efficient ways to receive these data
     
     var body: some View {
         VStack (alignment: .leading) {

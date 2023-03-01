@@ -23,7 +23,7 @@ struct AirQualityView: View {
     
 //    @State private var AirQualityData = Array(repeating: -1.0, count: SensorIconConstants.sensorAirQuality.count)
     @State private var AirQualityDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorAirQuality.count)
-    var user_id:String = "9067133"
+//    var user_id:String = "9067133"
     
     @StateObject var dataReceivedWatch = SensorData()
     

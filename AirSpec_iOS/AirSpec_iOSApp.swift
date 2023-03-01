@@ -21,6 +21,7 @@ struct AirSpec_iOSApp: App {
         RawDataViewModel.init_container()
         TempDataViewModel.init_container()
         LongTermDataViewModel.init_container()
+        SurveyDataViewModel.init_container()
     }
 
     var body: some Scene {

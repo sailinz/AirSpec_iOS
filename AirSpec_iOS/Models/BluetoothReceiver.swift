@@ -7,6 +7,7 @@
 import CoreBluetooth
 import os.log
 import CoreData
+import CoreLocation
 
 protocol BluetoothReceiverDelegate: AnyObject {
     func didReceiveData(_ message: Data) -> Int
@@ -38,15 +39,15 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     private var serviceUUID: CBUUID!
     private var TXcharacteristicUUID: CBUUID!
     var sendCharacteristic: CBCharacteristic!
-    let GLASSNAME =  "AirSpec_01ad7855"///"CAPTIVATE" 01ad6d72  _01ad6d72
+//    let GLASSNAME =  "AirSpec_01ad7855"///"CAPTIVATE"      _01ad6d72
+    @Published var GLASSNAME =  ""///"CAPTIVATE"      _01ad6d72
     @Published private(set) var connectedPeripheral: CBPeripheral? = nil
     private(set) var knownDisconnectedPeripheral: CBPeripheral? = nil
     @Published private(set) var isScanning: Bool = false
     var scanToAlert = false
     var mustDisconnect = false
     @Published var discoveredPeripherals = Set<CBPeripheral>()
-    /// -- BLE connection variables end
-    ///
+
     /// -- realtime sensor data
     @Published var thermalData = Array(repeating: -1.0, count: SensorIconConstants.sensorThermal.count)
     @Published var airQualityData = Array(repeating: -1.0, count: SensorIconConstants.sensorAirQuality.count)
@@ -54,20 +55,35 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     @Published var acoutsticsData = Array(repeating: -1.0, count: SensorIconConstants.sensorAcoustics.count)
 
     @Published var cogIntensity = 3 /// must scale to a int
+    let cogLoadOffset: Double = 3
+    let cogLoadMultiFactor: Double = 5
 
     /// -- watchConnectivity
     @Published var dataToWatch = SensorData()
     
+    /// -- notification mechenism
+    /// maybe the sampling frequency is high enough that the location information is not needed
+//    let locationManager = CLLocationManager()
+//    var previousLocation: CLLocation?
+    var prevNotificationTime: Date = Date()
+    var randomNextNotificationGap: Int = 15
+    
+    
+    /// -- push to server
     private var timer: DispatchSourceTimer?
-    let updateFrequence = 30 /// seconds
+    let updateFrequence = 600 /// seconds
     let batchSize = 50
     private var reconstructedData:[SensorPacket] = []
 
+    
+    
     init(service: CBUUID, characteristic: CBUUID) {
+        
         super.init()
         self.serviceUUID = service
         self.TXcharacteristicUUID = characteristic
         self.centralManager = CBCentralManager(delegate: self, queue: nil)
+        
 //        connect.connect()
     }
 
@@ -118,9 +134,16 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi RSSI: NSNumber ) {
         let device = (advertisementData as NSDictionary).object(forKey: CBAdvertisementDataLocalNameKey) as? NSString
 
-        if device?.contains(GLASSNAME) == true {
-            discoveredPeripherals.insert(peripheral)
-            peripheral.delegate = self
+        let user_id = Int(UserDefaults.standard.string(forKey: "user_id") ?? "") ?? 0
+        if( user_id != 0){
+            if let device = device {
+                if device.isEqual(to: BluetoothConstants.glassesNames[user_id]) {
+                    discoveredPeripherals.insert(peripheral)
+                    peripheral.delegate = self
+                    GLASSNAME = BluetoothConstants.glassesNames[user_id]
+                }
+            }
+
         }
     }
 
@@ -134,6 +157,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         connectedPeripheral = peripheral
         knownDisconnectedPeripheral = nil
         peripheral.discoverServices([BluetoothConstants.airspecServiceUUID])
+        
         
         timer = DispatchSource.makeTimerSource()
         timer?.schedule(deadline: .now(), repeating: .seconds(updateFrequence))
@@ -227,7 +251,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 let thisCharacteristic = characteristic as CBCharacteristic
                 sendCharacteristic = thisCharacteristic
                 logger.info("found write characteristics")
-
+                
+                setBlue() /// set initial blue color and set timestamp to the
 
             }
 
@@ -260,6 +285,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
                 switch packet.payload{
                     case .some(.sgpPacket(_)):
+//                        print(Date())
 //                        print(packet.sgpPacket)
                         for sensorPayload in packet.sgpPacket.payload {
                             if(sensorPayload.vocIndexValue != nil && sensorPayload.noxIndexValue != nil){
@@ -339,18 +365,32 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                             }
                         }
 
-                        /// estimate cog load:  - (temple - face)  (high cog load: low temp -- https://neurosciencenews.com/stress-nasal-temperature-8579/)
-                    do{
-                        /// has error on nil
-//                        cogIntensity = try Int( 10 - (((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2) - 3) * 10 + 3)
-
-//                        print("cogload est: \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
-//                        dataToWatch.updateValue(sensorValue: Double(cogIntensity), sensorName: "cogLoadData")
-//                        print(cogIntensity)
-                    }catch{
+                    /// estimate cog load:  (temple - face)  (high cog load: low face temp -- https://neurosciencenews.com/stress-nasal-temperature-8579/)
+                    let thermalpileData = thermNoseTip * thermNoseBridge * thermTempleFront * thermTempleMiddle * thermTempleRear
+                    if (thermalpileData.isInfinite || thermalpileData.isNaN){
                         print("error parsing thermopile value")
+                        print(thermNoseTip)
+                        print(thermNoseBridge)
+                        print(thermTempleFront)
+                        print(thermTempleMiddle)
+                        print(thermTempleRear)
+                    }else{
+                        
+                        if(Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - 4) * cogLoadMultiFactor - cogLoadOffset) > 0){
+                           
+                            cogIntensity = Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - cogLoadOffset) * cogLoadMultiFactor  + 3)
+                            print("cogload baseline: \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
+                            print("cogload est: \(cogIntensity)")
+                            dataToWatch.updateValue(sensorValue: Double(cogIntensity), sensorName: "cogLoadData")
+                        }else{
+                            print("cogload baseline (neg): \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
+                            print("cogload est (neg): \(Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - cogLoadOffset) * cogLoadMultiFactor  + 3))")
+                        }
+                        
+                        
                     }
-
+                    
+                    
 
                     case .some(.imuPacket(_)):
 //                        print("imu packet")
@@ -384,6 +424,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
         }
     }
+    
+    
     
     func uploadToServer() {
         DispatchQueue.global().async {
@@ -419,13 +461,116 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     }
                 }
                 
-                /// storeLongTermData
-                
-                
-                
-                
             }
         }
+    }
+    
+    /// check if we shall trigger the LED notification
+    func triggerLEDNotification(tempData: [(Date, String, Float)], means: [String: (Float, Date)]){
+        var flagcoefficientVariation = false
+        var flagMean = false
+        var flagRandom = Double.random(in: 0...1) < 0.8 /// 80% chance of being true
+        
+        var meanTriggerSensor: String
+        var coeefficientVariationTriggerSensor: String
+        
+        let coefficientVariationBenchmark: Float = 1.0
+        
+        for (sensorName, (mean, _)) in means {
+            
+            /// Get the data for the current sensor
+            let stringData = tempData.filter { $0.1 == sensorName }.map { $0.2 }
+            
+            /// Calculate the variance of the sensor data
+            let variance = stringData.reduce(0, { $0 + pow($1 - mean, 2) }) / Float(stringData.count)
+            let coefficientVariation = sqrt(variance)/mean
+            
+            
+            print(coefficientVariation)
+            
+            /// Check if the variance of the temperature data is above the benchmark
+            if coefficientVariation >= coefficientVariationBenchmark {
+                /// Trigger LED notification for high variance
+                print("Variance for \(sensorName) is above benchmark (\(coefficientVariationBenchmark)): \(coefficientVariation)")
+                flagMean = true
+                break
+            }
+            
+            /// Check if the mean sensor value is above the benchmark
+            if sensorName == SensorIconConstants.sensorThermal[0].name{
+                if Double(mean) < UserDefaults.standard.double(forKey: "minValueTemp"){
+                    flagMean = true
+                    print("flagMean sensor \(sensorName) and value \(coefficientVariation)")
+                    break
+                }
+                
+                if Double(mean) > UserDefaults.standard.double(forKey: "maxValueTemp"){
+                    flagMean = true
+                    print("flagMean sensor \(sensorName) and value \(coefficientVariation)")
+                    break
+                }
+            }else if sensorName == SensorIconConstants.sensorThermal[1].name{
+                if Double(mean) < UserDefaults.standard.double(forKey: "minValueHum"){
+                    flagMean = true
+                    print("flagMean sensor \(sensorName) and value \(coefficientVariation)")
+                    break
+                }
+                
+                if Double(mean) > UserDefaults.standard.double(forKey: "maxValueHum"){
+                    flagMean = true
+                    print("flagMean sensor \(sensorName) and value \(coefficientVariation)")
+                    break
+                }
+                
+            }else if sensorName == SensorIconConstants.sensorVisual[0].name{
+                if Double(mean) < UserDefaults.standard.double(forKey: "minValueLightIntensity"){
+                    flagMean = true
+                    print("flagMean sensor \(sensorName) and value \(coefficientVariation)")
+                    break
+                }
+                
+                if Double(mean) > UserDefaults.standard.double(forKey: "maxValueLightIntensity"){
+                    flagMean = true
+                    print("flagMean sensor \(sensorName) and value \(coefficientVariation)")
+                    break
+                }
+            }else if sensorName == SensorIconConstants.sensorAcoustics[0].name{
+                if Double(mean) < UserDefaults.standard.double(forKey: "minValueNoise"){
+                    flagMean = true
+                    print("flagMean sensor \(sensorName) and value \(coefficientVariation)")
+                    break
+                }
+                
+                if Double(mean) > UserDefaults.standard.double(forKey: "maxValueNoise"){
+                    flagMean = true
+                    print("flagMean sensor \(sensorName) and value \(coefficientVariation)")
+                    break
+                }
+            }else{
+                
+            }
+            
+            if( (flagcoefficientVariation || flagMean || flagRandom)){
+                let calendar = Calendar.current
+                let components = calendar.dateComponents([.minute], from: prevNotificationTime, to: Date())
+
+                if let minuteDifference = components.minute {
+                    if minuteDifference > randomNextNotificationGap {
+                        print("(led notification) notification gap: \(randomNextNotificationGap), minuteDifference: \(minuteDifference), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom)")
+                        testLight()
+                        randomNextNotificationGap = Int.random(in: 5...10)
+                    }else{
+                        print("(no notification)  notification gap: \(randomNextNotificationGap), minuteDifference: \(minuteDifference), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom)")
+                    }
+                }
+            }else{
+                print("(no notification)  notification gap: \(randomNextNotificationGap), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom)")
+            }
+            
+            
+            
+        }
+
     }
 
     /// storeLongTermData
@@ -473,6 +618,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 print("long term data length:")
                 print(try LongTermDataViewModel.count())
                 
+                triggerLEDNotification(tempData: data, means: means)
 
                 if let err = err {
                     throw err
@@ -482,6 +628,62 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             } catch {
                 print("cannot push data to the Long Term Data Container: \(error)")
             }
+        }
+
+    }
+    
+    
+    func blueGreenLight(){
+
+        /// blue green transition
+        var blueGreenTransition = AirSpecConfigPacket()
+        blueGreenTransition.header.timestampUnix = UInt32(Date().timeIntervalSince1970)
+
+        blueGreenTransition.blueGreenTransition.enable = true
+        blueGreenTransition.blueGreenTransition.blueMinIntensity = 20
+        blueGreenTransition.blueGreenTransition.blueMaxIntensity = 40
+        blueGreenTransition.blueGreenTransition.greenMaxIntensity = 40
+        blueGreenTransition.blueGreenTransition.stepSize = 2
+        blueGreenTransition.blueGreenTransition.stepDurationMs = 100
+        blueGreenTransition.blueGreenTransition.greenHoldLengthSeconds = 10
+        blueGreenTransition.blueGreenTransition.transitionDelaySeconds = 5
+
+        blueGreenTransition.payload = .blueGreenTransition(blueGreenTransition.blueGreenTransition)
+
+        do {
+            let cmd = try blueGreenTransition.serializedData()
+            connectedPeripheral?.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
+            print(cmd)
+        } catch {
+            //handle error
+            print("fail to send LED notification")
+        }
+
+    }
+    
+    func setBlue(){
+
+        /// single LED
+        var singleLED = AirSpecConfigPacket()
+        singleLED.header.timestampUnix = UInt32(Date().timeIntervalSince1970)
+
+        singleLED.ctrlIndivLed.left.eye.blue = 0
+        singleLED.ctrlIndivLed.left.eye.green = 0
+        singleLED.ctrlIndivLed.left.eye.red = 0
+
+        singleLED.ctrlIndivLed.right.eye.blue = 20
+        singleLED.ctrlIndivLed.right.eye.green = 0
+        singleLED.ctrlIndivLed.right.eye.red = 0
+
+        singleLED.payload = .ctrlIndivLed(singleLED.ctrlIndivLed)
+
+        do {
+            let cmd = try singleLED.serializedData()
+            connectedPeripheral?.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
+            print(cmd)
+        } catch {
+            //handle error
+            print("fail to send LED notification")
         }
 
     }

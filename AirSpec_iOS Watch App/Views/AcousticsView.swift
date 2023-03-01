@@ -21,7 +21,7 @@ struct AcousticsView: View {
     
     @State private var AcousticsData = Array(repeating: -1.0, count: SensorIconConstants.sensorAcoustics.count)
     @State private var AcousticsDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorAcoustics.count)
-    var user_id:String = "9067133"
+//    var user_id:String = "9067133"
 
     let updateFrequence = 10 /// seconds
     

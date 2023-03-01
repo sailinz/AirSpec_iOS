@@ -29,44 +29,62 @@ struct Flow: Codable {
 }
 
 let questionFlows = [
-    Flow(title: "Noise and privacy", questions:[
-        Question(
-            currentQuestion: 0,
-            title: "How are you feeling",
-            identifier: "overall-comfort",
-            options: [
-                "Comfy",
-                "Not comfy",
-            ],
-            icons: [
-                "mood-good",
-                "mood-bad",
-            ],
-            nextQuestion: [
-                4,
-                1
-            ],
-            multiChoice: false
-        ),
+    Flow(title: "Attention and comfort", questions:[
+//        Question(
+//            currentQuestion: 0,
+//            title: "How are you feeling",
+//            identifier: "overall-comfort",
+//            options: [
+//                "Comfy",
+//                "Not comfy",
+//            ],
+//            icons: [
+//                "mood-good",
+//                "mood-bad",
+//            ],
+//            nextQuestion: [
+//                4,
+//                1
+//            ],
+//            multiChoice: false
+//        ),
         Question(
             currentQuestion: 1,
-            title: "What do you feel uncomfortable with? (Allow multiple answers)",
+//            title: "What do you feel uncomfortable with? (Allow multiple answers)",
+//            identifier: "discomfort-kind",
+//            options: [
+//                "Thermal",
+//                "Air quality",
+//                "Lighting",
+//                "Noise",
+//                "Mood",
+//                "Others"
+//            ],
+//            icons: [
+//                "thermal-privacy",
+//                "air-quality-smelly",
+//                "light-bright",
+//                "noise-privacy",
+//                "happy",
+//                "other"
+//            ],
+            title: "Anything you'd like to change? (Allow multiple answers)",
             identifier: "discomfort-kind",
             options: [
                 "Thermal",
                 "Air quality",
                 "Lighting",
                 "Noise",
-                "Mood",
-                "Others"
+                "Others",
+                "None"
             ],
             icons: [
                 "thermal-privacy",
                 "air-quality-smelly",
                 "light-bright",
                 "noise-privacy",
-                "happy",
-                "other"
+                "other",
+                "none-1"
             ],
             nextQuestion: [
                 2,
@@ -86,13 +104,15 @@ let questionFlows = [
                   "Thermal",
                   "Air quality",
                   "Lighting",
-                  "Noise"
+                  "Noise",
+                  "None"
               ],
               icons: [
                   "thermal-privacy",
                   "air-quality-smelly",
                   "light-bright",
-                  "noise-privacy"
+                  "noise-privacy",
+                  "none-1"
               ],
               nextQuestion: [
                   4,
@@ -282,7 +302,70 @@ let questionFlows = [
                nextQuestion: [999],
                multiChoice: false
         
-        )
+        ),
+        Question(
+              currentQuestion: 11,
+              title: "Rate your state of focus just before this survey",
+              identifier: "activity-category",
+              options: [
+                  "-3 Distracted",
+                  "-2",
+                  "-1",
+                  "0",
+                  "1",
+                  "2",
+                  "3 Deeply"
+              ],
+              icons: [
+                  "mood-bad",
+                  "mood-bad",
+                  "mood-bad",
+                  "mood-neutral",
+                  "mood-good",
+                  "mood-good",
+                  "mood-good"
+              ],
+              nextQuestion: [
+                  12,
+                  12,
+                  12,
+                  12,
+                  12,
+                  12,
+                  12
+              ],
+              multiChoice: false
+        ),
+        Question(
+              currentQuestion: 12,
+              title: "How long do you think it's been since you last completed a survey?",
+              identifier: "activity-category",
+              options: [
+                  "0-10 min",
+                  "10-20 min",
+                  "20-30 min",
+                  "30-40 min",
+                  "40-50 min",
+                  "50-60 min",
+                  ">1 hour"
+              ],
+              icons: [
+                  "faster",
+                  "faster",
+                  "faster",
+                  "faster",
+                  "faster",
+                  "faster",
+                  "faster"
+              ],
+              nextQuestion: [
+                  1,
+                  1,
+                  1,
+                  1
+              ],
+              multiChoice: false
+        ),
     ])
 ]
 

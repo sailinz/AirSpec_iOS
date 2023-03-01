@@ -44,8 +44,8 @@ struct SurveyQuestionView: View {
 //    @State var voteLog = 0
     @State var currentAnswer = 999 /// single choice
     @State var currentAnswers = [Int]() /// multiple choices
-    @State var currentQuestion = 1
-    @State var nextQuestion = 1
+    @State var currentQuestion = 11
+    @State var nextQuestion = 11
 //    @State var backPressed: Bool = false
     
     @Binding var showSurvey: Bool
@@ -76,9 +76,13 @@ struct SurveyQuestionView: View {
                     // button action here
                     if(!currentQuestionItem.multiChoice){
                         self.currentAnswer = index
+                        do{
+                            /// save to coredata
+                            try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(nextQuestion), choice: "\(currentAnswer.description)")
+                        }catch{
+                            print("Error saving survey data: \(error.localizedDescription)")
+                        }
                         
-                        /// save to coredata
-//                        surveyData.addSurveyData(timestamp: Int32(Date().timeIntervalSince1970), question: Int16(self.nextQuestion), choice: self.currentAnswer.description, userid: Int16(userID))
                         
                         if(currentQuestionItem.nextQuestion[0] == 999){
                             showSurvey.toggle()
@@ -116,8 +120,14 @@ struct SurveyQuestionView: View {
             if(currentQuestionItem.multiChoice){
                 Button(action: {
                     // button action here
-                    /// save to coredata
-//                    surveyData.addSurveyData(timestamp: Int32(Date().timeIntervalSince1970), question: Int16(self.nextQuestion), choice: self.currentAnswers.description, userid: Int16(userID))
+                    do{
+                        /// save to coredata
+                        try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(nextQuestion), choice: "\(currentAnswers.description)")
+                    }catch{
+                        print("Error saving survey data: \(error.localizedDescription)")
+                    }
+                    
+                    
                     
                     self.currentQuestion = currentQuestionItem.currentQuestion
                     self.nextQuestion = currentQuestionItem.nextQuestion[currentAnswer]
@@ -137,70 +147,11 @@ struct SurveyQuestionView: View {
                 .clipShape(Capsule())
             }
             
-//            Spacer()
-//                .frame(height: 30)
-//            HStack{
-//                Button(action: {
-//                    if(nextQuestion != 0){
-//                        self.nextQuestion = self.currentQuestion
-//                    }
-//                }) {
-//                    HStack{
-//                        Text("Back")
-//                            .foregroundColor(.black.opacity(nextQuestion == 0 ? 0.2: 1))
-//                    }
-//                }
-//                .frame(width:85)
-//                .padding(.all,10)
-//                .background(.pink.opacity(0.2))
-//                .clipShape(Capsule())
-//
-//                Button(action: {
-//                    // button action here
-//
-//                    self.currentQuestion = currentQuestionItem.currentQuestion
-//                    self.nextQuestion = currentQuestionItem.nextQuestion[currentAnswer]
-//                    self.currentAnswer = 999 /// reset
-//
-//                }) {
-//                    HStack{
-//                        Text("Next")
-//                            .foregroundColor(.black)
-//                            .foregroundColor(.black.opacity(currentQuestionItem.nextQuestion[0] == 999 ? 0.2: 1))
-//                    }
-//                }
-//                .frame(width:85)
-//                .padding(.all,10)
-//                .background(.pink.opacity(0.2))
-//                .clipShape(Capsule())
-//            }
-                
-            
-        }
-        .onAppear{
-            
-            
-            /// get participant ID from user defaults
-            // ...
-            
-//            defineQuestions()
-            
-            
         }
         
 
     }
     
-//    func defineQuestions() {
-//        self.questions = questionFlows[0].questions
-//
-//        self.questions += [Question(
-//            title: "Thank you.",
-//            identifier: "end",
-//            options: ["Submit survey"],
-//            icons: ["submit"],
-//            nextQuestion: [999])]
-//    }
     
 }
 

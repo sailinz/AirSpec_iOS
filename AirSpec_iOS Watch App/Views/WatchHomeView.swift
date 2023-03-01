@@ -18,7 +18,7 @@ struct WatchHomeView: View {
 
 //    let skinTempDataName = ["thermopile_nose_bridge","thermopile_nose_tip","thermopile_temple_back","thermopile_temple_front","thermopile_temple_middle"]
 //    @State private var skinTempData = Array(repeating: -1.0, count: 5)
-    var user_id:String = "9067133"
+//    var user_id:String = "9067133"
     
 //    @State private var cogIntensity = 10 /// must scale to a int
     @StateObject var dataReceivedWatch = SensorData()
@@ -27,13 +27,13 @@ struct WatchHomeView: View {
         ZStack{
             ZStack{
                 HeartAnimation()
+//                Text("\(dataReceivedWatch.sensorValueNew[4][0])")
                 
     //            GeometryReader { geometry in
     //                Image("Asset 3" )
     //                    .scaleEffect(0.5)
     //                    .offset(x:geometry.size.width-40, y:geometry.size.height)
     //            }
-                
                 GeometryReader { geometry in
                     ForEach(0..<Int(dataReceivedWatch.sensorValueNew[4][0]), id: \.self) { index in /// cogIntensity
                         let seed = Bool.random()

@@ -21,7 +21,7 @@ struct VisualView: View {
     
 //    @State private var VisualData = Array(repeating: -1.0, count: SensorIconConstants.sensorVisual.count)
     @State private var VisualDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorVisual.count)
-    var user_id:String = "9067133"
+//    var user_id:String = "9067133"
     
     @StateObject var dataReceivedWatch = SensorData()
         

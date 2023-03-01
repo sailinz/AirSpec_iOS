@@ -59,7 +59,7 @@ class LongTermDataViewModel {
         return ret!
     }
     
-    static func fetchData(_ n: Int = 100) throws -> ([(Date, String, Float)], () throws -> Void) {
+    static func fetchData(_ n: Int = 1000) throws -> ([(Date, String, Float)], () throws -> Void) {
         let request = NSFetchRequest<LongTermDataEntity>(entityName: "LongTermDataEntity")
         request.fetchLimit = n
         
