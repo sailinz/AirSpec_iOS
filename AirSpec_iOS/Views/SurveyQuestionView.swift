@@ -80,9 +80,10 @@ struct SurveyQuestionView: View {
                             /// save to coredata
                             try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(nextQuestion), choice: "\(currentAnswer.description)")
                             var surveyData = appSurveyDataPacket()
+                            surveyData.payload = [appSurveyDataPayload()]
                             surveyData.payload[0].qIndex = Int32(nextQuestion)
                             surveyData.payload[0].qChoice = "\(currentAnswer.description)"
-                            
+                            surveyData.payload[0].timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
                             print(surveyData)
                             
                             do {
