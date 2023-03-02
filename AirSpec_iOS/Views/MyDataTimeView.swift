@@ -102,23 +102,23 @@ struct MyDataTimeView: View {
 
     private var chartEnv: some View {
         Chart(data, id: \.minutes) {
-//            BarMark(
-//                x: .value("Date", $0.minutes),
-//                y: .value("values", $0.values),
-//                width:5
-//            )
-//            .lineStyle(StrokeStyle(lineWidth: lineWidth))
-//            .foregroundStyle(chartColor.gradient)
-//            .cornerRadius(10)
-            LineMark(
+            BarMark(
                 x: .value("Date", $0.minutes),
-                y: .value("values", $0.values)
+                y: .value("values", $0.values),
+                width:1
             )
             .lineStyle(StrokeStyle(lineWidth: lineWidth))
             .foregroundStyle(chartColor.gradient)
-            .interpolationMethod(interpolationMethod.mode)
-            .symbol(Circle().strokeBorder(lineWidth: lineWidth))
-            .symbolSize(showSymbols ? 10 : 0)
+            .cornerRadius(5)
+//            LineMark(
+//                x: .value("Date", $0.minutes),
+//                y: .value("values", $0.values)
+//            )
+//            .lineStyle(StrokeStyle(lineWidth: lineWidth))
+//            .foregroundStyle(chartColor.gradient)
+//            .interpolationMethod(interpolationMethod.mode)
+//            .symbol(Circle().strokeBorder(lineWidth: lineWidth))
+//            .symbolSize(showSymbols ? 10 : 0)
         }
         .chartOverlay { proxy in
             GeometryReader { geo in
@@ -267,8 +267,8 @@ struct ToggleItem: View {
             
             let selectedSensorData = longTermData.filter { $0.1 == sensorSettingList[i].name}
             
-            print(sensorSettingList[i].name)
-            print(selectedSensorData)
+//            print(sensorSettingList[i].name)
+//            print(selectedSensorData)
             
             let convertedSensorData = selectedSensorData.compactMap { tuple -> (Date, Double)? in
                 let date = tuple.0

@@ -40,7 +40,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     private var TXcharacteristicUUID: CBUUID!
     var sendCharacteristic: CBCharacteristic!
 //    let GLASSNAME =  "AirSpec_01ad7855"///"CAPTIVATE"      _01ad6d72
-    @Published var GLASSNAME =  ""///"CAPTIVATE"      _01ad6d72
+    @Published var GLASSNAME =  ""
     @Published private(set) var connectedPeripheral: CBPeripheral? = nil
     private(set) var knownDisconnectedPeripheral: CBPeripheral? = nil
     @Published private(set) var isScanning: Bool = false
@@ -73,7 +73,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     private var timer: DispatchSourceTimer?
     let updateFrequence = 600 /// seconds
     let batchSize = 50
-    private var reconstructedData:[SensorPacket] = []
+//    private var reconstructedData:[SensorPacket] = [] /// for testing only
 
     
     
@@ -137,10 +137,9 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         let user_id = Int(UserDefaults.standard.string(forKey: "user_id") ?? "") ?? 0
         if( user_id != 0){
             if let device = device {
-                if device.isEqual(to: BluetoothConstants.glassesNames[user_id]) {
+                if device.contains(BluetoothConstants.glassesNames[user_id]) {
                     discoveredPeripherals.insert(peripheral)
                     peripheral.delegate = self
-                    GLASSNAME = BluetoothConstants.glassesNames[user_id]
                 }
             }
 
@@ -163,8 +162,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         timer?.schedule(deadline: .now(), repeating: .seconds(updateFrequence))
         timer?.setEventHandler {
             
-            self.uploadToServer()
-            self.storeLongTermData()
+//            self.uploadToServer()
+//            self.storeLongTermData()
             
         }
         timer?.resume()
@@ -397,6 +396,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                         break
                     case .some(.micPacket(_)):
                         print("mic packet")
+//                        print(packet)
 //                        try TempDataViewModel.addTempData(timestamp: Int32(Date().timeIntervalSince1970), sensor: SensorIconConstants.sensorAcoustics[0].name, value: Float(self.acoutsticsData[0]))
                     case .some(.blinkPacket(_)):
 //                        print("blink packet")
@@ -414,7 +414,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 let data = try packet.serializedData()
                 try RawDataViewModel.addRawData(record: data)
                 
-                reconstructedData.append(packet)
+//                reconstructedData.append(packet)
                 
 //                try Airspec.send_packets(packets: [packet], auth_token: AUTH_TOKEN)
 
@@ -637,16 +637,16 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
         /// blue green transition
         var blueGreenTransition = AirSpecConfigPacket()
-        blueGreenTransition.header.timestampUnix = UInt32(Date().timeIntervalSince1970)
+        blueGreenTransition.header.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
 
         blueGreenTransition.blueGreenTransition.enable = true
-        blueGreenTransition.blueGreenTransition.blueMinIntensity = 20
-        blueGreenTransition.blueGreenTransition.blueMaxIntensity = 40
-        blueGreenTransition.blueGreenTransition.greenMaxIntensity = 40
+        blueGreenTransition.blueGreenTransition.blueMinIntensity = 60
+        blueGreenTransition.blueGreenTransition.blueMaxIntensity = 60
+        blueGreenTransition.blueGreenTransition.greenMaxIntensity = 60
         blueGreenTransition.blueGreenTransition.stepSize = 2
         blueGreenTransition.blueGreenTransition.stepDurationMs = 100
         blueGreenTransition.blueGreenTransition.greenHoldLengthSeconds = 10
-        blueGreenTransition.blueGreenTransition.transitionDelaySeconds = 5
+        blueGreenTransition.blueGreenTransition.transitionDelaySeconds = 10
 
         blueGreenTransition.payload = .blueGreenTransition(blueGreenTransition.blueGreenTransition)
 
@@ -665,13 +665,13 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
         /// single LED
         var singleLED = AirSpecConfigPacket()
-        singleLED.header.timestampUnix = UInt32(Date().timeIntervalSince1970)
+        singleLED.header.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
 
-        singleLED.ctrlIndivLed.left.eye.blue = 0
+        singleLED.ctrlIndivLed.left.eye.blue = 60
         singleLED.ctrlIndivLed.left.eye.green = 0
         singleLED.ctrlIndivLed.left.eye.red = 0
 
-        singleLED.ctrlIndivLed.right.eye.blue = 20
+        singleLED.ctrlIndivLed.right.eye.blue = 60
         singleLED.ctrlIndivLed.right.eye.green = 0
         singleLED.ctrlIndivLed.right.eye.red = 0
 
@@ -750,7 +750,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
         /// blue green transition
         var blueGreenTransition = AirSpecConfigPacket()
-        blueGreenTransition.header.timestampUnix = UInt32(Date().timeIntervalSince1970)
+        blueGreenTransition.header.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
 
         blueGreenTransition.blueGreenTransition.enable = true
         blueGreenTransition.blueGreenTransition.blueMinIntensity = 0
@@ -850,4 +850,6 @@ extension Data {
         return map { String(format: "%02hhx", $0) }.joined()
     }
 }
+
+
 

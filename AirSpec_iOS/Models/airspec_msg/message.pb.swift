@@ -270,7 +270,7 @@ extension Sht45_precision: CaseIterable {
 
 #endif  // swift(>=4.2)
 
-///* Optional pre-heater configuration setting 
+///* Optional pre-heater configuration setting
 public enum Sht45_heater: SwiftProtobuf.Enum {
   public typealias RawValue = Int
   case sht4XNoHeater // = 0
@@ -383,7 +383,7 @@ extension Thermopile_location: CaseIterable {
 
 #endif  // swift(>=4.2)
 
-///* defined by Bosch 
+///* defined by Bosch
 public enum BME680_accuracy: SwiftProtobuf.Enum {
   public typealias RawValue = Int
   case unreliable // = 0
@@ -432,7 +432,7 @@ extension BME680_accuracy: CaseIterable {
 
 #endif  // swift(>=4.2)
 
-///* defined by Bosch 
+///* defined by Bosch
 public enum BME680_signal_id: SwiftProtobuf.Enum {
   public typealias RawValue = Int
   case undefined // = 0
@@ -521,7 +521,7 @@ extension BME680_signal_id: CaseIterable {
 
 #endif  // swift(>=4.2)
 
-///* defined in spectrometer (AS7341) datasheet 
+///* defined in spectrometer (AS7341) datasheet
 public enum Spec_gain: SwiftProtobuf.Enum {
   public typealias RawValue = Int
   case gain05X // = 0
@@ -598,7 +598,7 @@ extension Spec_gain: CaseIterable {
 
 #endif  // swift(>=4.2)
 
-///* defined in IMU (ICM20948) datasheet 
+///* defined in IMU (ICM20948) datasheet
 public enum IMU_gyro_cutoff: SwiftProtobuf.Enum {
   public typealias RawValue = Int
   case icm20XGyroFreq1966Hz // = 0
@@ -663,7 +663,7 @@ extension IMU_gyro_cutoff: CaseIterable {
 
 #endif  // swift(>=4.2)
 
-///* defined in IMU (ICM20948) datasheet 
+///* defined in IMU (ICM20948) datasheet
 public enum IMU_gyro_range: SwiftProtobuf.Enum {
   public typealias RawValue = Int
   case range250Dps // = 0
@@ -712,7 +712,7 @@ extension IMU_gyro_range: CaseIterable {
 
 #endif  // swift(>=4.2)
 
-///* defined in IMU (ICM20948) datasheet 
+///* defined in IMU (ICM20948) datasheet
 public enum IMU_accel_cutoff: SwiftProtobuf.Enum {
   public typealias RawValue = Int
   case undefinedAccelCutoff // = 0
@@ -777,7 +777,7 @@ extension IMU_accel_cutoff: CaseIterable {
 
 #endif  // swift(>=4.2)
 
-///* defined in IMU (ICM20948) datasheet 
+///* defined in IMU (ICM20948) datasheet
 public enum IMU_accel_range: SwiftProtobuf.Enum {
   public typealias RawValue = Int
   case range2G // = 0
@@ -826,7 +826,7 @@ extension IMU_accel_range: CaseIterable {
 
 #endif  // swift(>=4.2)
 
-///* defined in IMU (ICM20948) datasheet 
+///* defined in IMU (ICM20948) datasheet
 public enum IMU_mag_cutoff: SwiftProtobuf.Enum {
   public typealias RawValue = Int
   case undefinedMagCutoff // = 0
@@ -888,7 +888,7 @@ public struct SensorPacketHeader {
 
   public var msFromStart: UInt32 = 0
 
-  public var epoch: UInt32 = 0
+  public var epoch: UInt64 = 0
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -919,7 +919,7 @@ public struct LuxPacket {
 
     public var lux: UInt32 = 0
 
-    public var timestampUnix: UInt32 = 0
+    public var timestampUnix: UInt64 = 0
 
     public var timestampMsFromStart: UInt32 = 0
 
@@ -949,7 +949,7 @@ public struct SGPPacket {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    public var timestampUnix: UInt32 = 0
+    public var timestampUnix: UInt64 = 0
 
     public var timestampMsFromStart: UInt32 = 0
 
@@ -989,7 +989,7 @@ public struct BMEPacket {
 
     public var timestampSensor: UInt64 = 0
 
-    public var timestampUnix: UInt32 = 0
+    public var timestampUnix: UInt64 = 0
 
     public var timestampMsFromStart: UInt32 = 0
 
@@ -1030,7 +1030,7 @@ public struct BlinkBytePayload {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var sample: Data = SwiftProtobuf.Internal.emptyData
+  public var sample: Data = Data()
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -1042,7 +1042,7 @@ public struct BlinkHighResPayload {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var sample: Data = SwiftProtobuf.Internal.emptyData
+  public var sample: Data = Data()
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -1093,9 +1093,18 @@ public struct BlinkPacket {
 
   #if !swift(>=4.1)
     public static func ==(lhs: BlinkPacket.OneOf_Payload, rhs: BlinkPacket.OneOf_Payload) -> Bool {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch (lhs, rhs) {
-      case (.payloadByte(let l), .payloadByte(let r)): return l == r
-      case (.payloadHighRes(let l), .payloadHighRes(let r)): return l == r
+      case (.payloadByte, .payloadByte): return {
+        guard case .payloadByte(let l) = lhs, case .payloadByte(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.payloadHighRes, .payloadHighRes): return {
+        guard case .payloadHighRes(let l) = lhs, case .payloadHighRes(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
       default: return false
       }
     }
@@ -1129,7 +1138,7 @@ public struct SHTPacket {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    public var timestampUnix: UInt32 = 0
+    public var timestampUnix: UInt64 = 0
 
     public var timestampMsFromStart: UInt32 = 0
 
@@ -1195,7 +1204,7 @@ public struct SpecPacket {
 
     public var flicker: UInt32 = 0
 
-    public var timestampUnix: UInt32 = 0
+    public var timestampUnix: UInt64 = 0
 
     public var timestampMsFromStart: UInt32 = 0
 
@@ -1227,7 +1236,7 @@ public struct ThermPacket {
 
     public var descriptor: Thermopile_location = .tipOfNose
 
-    public var timestampUnix: UInt32 = 0
+    public var timestampUnix: UInt64 = 0
 
     public var timestampMsFromStart: UInt32 = 0
 
@@ -1338,7 +1347,7 @@ public struct IMUPacket {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    public var sample: Data = SwiftProtobuf.Internal.emptyData
+    public var sample: Data = Data()
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -1460,29 +1469,28 @@ public struct LightControlPacket {
   // methods supported on all messages.
 
   public var left: AirSpecColorPosition {
-    get {return _left ?? AirSpecColorPosition()}
-    set {_left = newValue}
+    get {return _storage._left ?? AirSpecColorPosition()}
+    set {_uniqueStorage()._left = newValue}
   }
   /// Returns true if `left` has been explicitly set.
-  public var hasLeft: Bool {return self._left != nil}
+  public var hasLeft: Bool {return _storage._left != nil}
   /// Clears the value of `left`. Subsequent reads from it will return its default value.
-  public mutating func clearLeft() {self._left = nil}
+  public mutating func clearLeft() {_uniqueStorage()._left = nil}
 
   public var right: AirSpecColorPosition {
-    get {return _right ?? AirSpecColorPosition()}
-    set {_right = newValue}
+    get {return _storage._right ?? AirSpecColorPosition()}
+    set {_uniqueStorage()._right = newValue}
   }
   /// Returns true if `right` has been explicitly set.
-  public var hasRight: Bool {return self._right != nil}
+  public var hasRight: Bool {return _storage._right != nil}
   /// Clears the value of `right`. Subsequent reads from it will return its default value.
-  public mutating func clearRight() {self._right = nil}
+  public mutating func clearRight() {_uniqueStorage()._right = nil}
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 
-  fileprivate var _left: AirSpecColorPosition? = nil
-  fileprivate var _right: AirSpecColorPosition? = nil
+  fileprivate var _storage = _StorageClass.defaultInstance
 }
 
 public struct SensorControl {
@@ -1702,99 +1710,91 @@ public struct SensorConfig {
   // methods supported on all messages.
 
   public var lux: LuxSensorConfig {
-    get {return _lux ?? LuxSensorConfig()}
-    set {_lux = newValue}
+    get {return _storage._lux ?? LuxSensorConfig()}
+    set {_uniqueStorage()._lux = newValue}
   }
   /// Returns true if `lux` has been explicitly set.
-  public var hasLux: Bool {return self._lux != nil}
+  public var hasLux: Bool {return _storage._lux != nil}
   /// Clears the value of `lux`. Subsequent reads from it will return its default value.
-  public mutating func clearLux() {self._lux = nil}
+  public mutating func clearLux() {_uniqueStorage()._lux = nil}
 
   public var sgp: SGP_Sensor_Config {
-    get {return _sgp ?? SGP_Sensor_Config()}
-    set {_sgp = newValue}
+    get {return _storage._sgp ?? SGP_Sensor_Config()}
+    set {_uniqueStorage()._sgp = newValue}
   }
   /// Returns true if `sgp` has been explicitly set.
-  public var hasSgp: Bool {return self._sgp != nil}
+  public var hasSgp: Bool {return _storage._sgp != nil}
   /// Clears the value of `sgp`. Subsequent reads from it will return its default value.
-  public mutating func clearSgp() {self._sgp = nil}
+  public mutating func clearSgp() {_uniqueStorage()._sgp = nil}
 
   public var bme: BME_Sensor_Config {
-    get {return _bme ?? BME_Sensor_Config()}
-    set {_bme = newValue}
+    get {return _storage._bme ?? BME_Sensor_Config()}
+    set {_uniqueStorage()._bme = newValue}
   }
   /// Returns true if `bme` has been explicitly set.
-  public var hasBme: Bool {return self._bme != nil}
+  public var hasBme: Bool {return _storage._bme != nil}
   /// Clears the value of `bme`. Subsequent reads from it will return its default value.
-  public mutating func clearBme() {self._bme = nil}
+  public mutating func clearBme() {_uniqueStorage()._bme = nil}
 
   public var color: ColorSensorConfig {
-    get {return _color ?? ColorSensorConfig()}
-    set {_color = newValue}
+    get {return _storage._color ?? ColorSensorConfig()}
+    set {_uniqueStorage()._color = newValue}
   }
   /// Returns true if `color` has been explicitly set.
-  public var hasColor: Bool {return self._color != nil}
+  public var hasColor: Bool {return _storage._color != nil}
   /// Clears the value of `color`. Subsequent reads from it will return its default value.
-  public mutating func clearColor() {self._color = nil}
+  public mutating func clearColor() {_uniqueStorage()._color = nil}
 
   public var thermopile: ThermopileSensorConfig {
-    get {return _thermopile ?? ThermopileSensorConfig()}
-    set {_thermopile = newValue}
+    get {return _storage._thermopile ?? ThermopileSensorConfig()}
+    set {_uniqueStorage()._thermopile = newValue}
   }
   /// Returns true if `thermopile` has been explicitly set.
-  public var hasThermopile: Bool {return self._thermopile != nil}
+  public var hasThermopile: Bool {return _storage._thermopile != nil}
   /// Clears the value of `thermopile`. Subsequent reads from it will return its default value.
-  public mutating func clearThermopile() {self._thermopile = nil}
+  public mutating func clearThermopile() {_uniqueStorage()._thermopile = nil}
 
   public var blink: BlinkSensorConfig {
-    get {return _blink ?? BlinkSensorConfig()}
-    set {_blink = newValue}
+    get {return _storage._blink ?? BlinkSensorConfig()}
+    set {_uniqueStorage()._blink = newValue}
   }
   /// Returns true if `blink` has been explicitly set.
-  public var hasBlink: Bool {return self._blink != nil}
+  public var hasBlink: Bool {return _storage._blink != nil}
   /// Clears the value of `blink`. Subsequent reads from it will return its default value.
-  public mutating func clearBlink() {self._blink = nil}
+  public mutating func clearBlink() {_uniqueStorage()._blink = nil}
 
   public var mic: MicSensorConfig {
-    get {return _mic ?? MicSensorConfig()}
-    set {_mic = newValue}
+    get {return _storage._mic ?? MicSensorConfig()}
+    set {_uniqueStorage()._mic = newValue}
   }
   /// Returns true if `mic` has been explicitly set.
-  public var hasMic: Bool {return self._mic != nil}
+  public var hasMic: Bool {return _storage._mic != nil}
   /// Clears the value of `mic`. Subsequent reads from it will return its default value.
-  public mutating func clearMic() {self._mic = nil}
+  public mutating func clearMic() {_uniqueStorage()._mic = nil}
 
   public var humidity: HumiditySensorConfig {
-    get {return _humidity ?? HumiditySensorConfig()}
-    set {_humidity = newValue}
+    get {return _storage._humidity ?? HumiditySensorConfig()}
+    set {_uniqueStorage()._humidity = newValue}
   }
   /// Returns true if `humidity` has been explicitly set.
-  public var hasHumidity: Bool {return self._humidity != nil}
+  public var hasHumidity: Bool {return _storage._humidity != nil}
   /// Clears the value of `humidity`. Subsequent reads from it will return its default value.
-  public mutating func clearHumidity() {self._humidity = nil}
+  public mutating func clearHumidity() {_uniqueStorage()._humidity = nil}
 
   public var imu: IMU_SensorConfig {
-    get {return _imu ?? IMU_SensorConfig()}
-    set {_imu = newValue}
+    get {return _storage._imu ?? IMU_SensorConfig()}
+    set {_uniqueStorage()._imu = newValue}
   }
   /// Returns true if `imu` has been explicitly set.
-  public var hasImu: Bool {return self._imu != nil}
+  public var hasImu: Bool {return _storage._imu != nil}
   /// Clears the value of `imu`. Subsequent reads from it will return its default value.
-  public mutating func clearImu() {self._imu = nil}
+  public mutating func clearImu() {_uniqueStorage()._imu = nil}
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 
-  fileprivate var _lux: LuxSensorConfig? = nil
-  fileprivate var _sgp: SGP_Sensor_Config? = nil
-  fileprivate var _bme: BME_Sensor_Config? = nil
-  fileprivate var _color: ColorSensorConfig? = nil
-  fileprivate var _thermopile: ThermopileSensorConfig? = nil
-  fileprivate var _blink: BlinkSensorConfig? = nil
-  fileprivate var _mic: MicSensorConfig? = nil
-  fileprivate var _humidity: HumiditySensorConfig? = nil
-  fileprivate var _imu: IMU_SensorConfig? = nil
+  fileprivate var _storage = _StorageClass.defaultInstance
 }
 
 public struct DFU_Mode {
@@ -1862,7 +1862,7 @@ public struct AirSpecConfigHeader {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var timestampUnix: UInt32 = 0
+  public var timestampUnix: UInt64 = 0
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -1945,13 +1945,34 @@ public struct AirSpecConfigPacket {
 
   #if !swift(>=4.1)
     public static func ==(lhs: AirSpecConfigPacket.OneOf_Payload, rhs: AirSpecConfigPacket.OneOf_Payload) -> Bool {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch (lhs, rhs) {
-      case (.ctrlIndivLed(let l), .ctrlIndivLed(let r)): return l == r
-      case (.sensorControl(let l), .sensorControl(let r)): return l == r
-      case (.sensorConfig(let l), .sensorConfig(let r)): return l == r
-      case (.dfuMode(let l), .dfuMode(let r)): return l == r
-      case (.blueGreenTransition(let l), .blueGreenTransition(let r)): return l == r
-      case (.redFlashTask(let l), .redFlashTask(let r)): return l == r
+      case (.ctrlIndivLed, .ctrlIndivLed): return {
+        guard case .ctrlIndivLed(let l) = lhs, case .ctrlIndivLed(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.sensorControl, .sensorControl): return {
+        guard case .sensorControl(let l) = lhs, case .sensorControl(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.sensorConfig, .sensorConfig): return {
+        guard case .sensorConfig(let l) = lhs, case .sensorConfig(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.dfuMode, .dfuMode): return {
+        guard case .dfuMode(let l) = lhs, case .dfuMode(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.blueGreenTransition, .blueGreenTransition): return {
+        guard case .blueGreenTransition(let l) = lhs, case .blueGreenTransition(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.redFlashTask, .redFlashTask): return {
+        guard case .redFlashTask(let l) = lhs, case .redFlashTask(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
       default: return false
       }
     }
@@ -2005,6 +2026,10 @@ public struct appSurveyDataPayload {
 
   public var qChoice: String = String()
 
+  public var qGroupIndex: UInt32 = 0
+
+  public var timestampUnix: UInt64 = 0
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -2028,6 +2053,8 @@ public struct appMetaDataPacket {
   // methods supported on all messages.
 
   public var payload: String = String()
+
+  public var timestampUnix: UInt64 = 0
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2155,18 +2182,54 @@ public struct SensorPacket {
 
   #if !swift(>=4.1)
     public static func ==(lhs: SensorPacket.OneOf_Payload, rhs: SensorPacket.OneOf_Payload) -> Bool {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch (lhs, rhs) {
-      case (.luxPacket(let l), .luxPacket(let r)): return l == r
-      case (.sgpPacket(let l), .sgpPacket(let r)): return l == r
-      case (.bmePacket(let l), .bmePacket(let r)): return l == r
-      case (.blinkPacket(let l), .blinkPacket(let r)): return l == r
-      case (.shtPacket(let l), .shtPacket(let r)): return l == r
-      case (.specPacket(let l), .specPacket(let r)): return l == r
-      case (.thermPacket(let l), .thermPacket(let r)): return l == r
-      case (.imuPacket(let l), .imuPacket(let r)): return l == r
-      case (.micPacket(let l), .micPacket(let r)): return l == r
-      case (.surveyPacket(let l), .surveyPacket(let r)): return l == r
-      case (.metaDataPacket(let l), .metaDataPacket(let r)): return l == r
+      case (.luxPacket, .luxPacket): return {
+        guard case .luxPacket(let l) = lhs, case .luxPacket(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.sgpPacket, .sgpPacket): return {
+        guard case .sgpPacket(let l) = lhs, case .sgpPacket(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.bmePacket, .bmePacket): return {
+        guard case .bmePacket(let l) = lhs, case .bmePacket(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.blinkPacket, .blinkPacket): return {
+        guard case .blinkPacket(let l) = lhs, case .blinkPacket(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.shtPacket, .shtPacket): return {
+        guard case .shtPacket(let l) = lhs, case .shtPacket(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.specPacket, .specPacket): return {
+        guard case .specPacket(let l) = lhs, case .specPacket(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.thermPacket, .thermPacket): return {
+        guard case .thermPacket(let l) = lhs, case .thermPacket(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.imuPacket, .imuPacket): return {
+        guard case .imuPacket(let l) = lhs, case .imuPacket(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.micPacket, .micPacket): return {
+        guard case .micPacket(let l) = lhs, case .micPacket(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.surveyPacket, .surveyPacket): return {
+        guard case .surveyPacket(let l) = lhs, case .surveyPacket(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.metaDataPacket, .metaDataPacket): return {
+        guard case .metaDataPacket(let l) = lhs, case .metaDataPacket(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
       default: return false
       }
     }
@@ -2177,6 +2240,73 @@ public struct SensorPacket {
 
   fileprivate var _header: SensorPacketHeader? = nil
 }
+
+#if swift(>=5.5) && canImport(_Concurrency)
+extension SensorPacketTypes: @unchecked Sendable {}
+extension Tsl2591Gain: @unchecked Sendable {}
+extension Tsl2591IntegrationTime: @unchecked Sendable {}
+extension Sht45_precision: @unchecked Sendable {}
+extension Sht45_heater: @unchecked Sendable {}
+extension Thermopile_location: @unchecked Sendable {}
+extension BME680_accuracy: @unchecked Sendable {}
+extension BME680_signal_id: @unchecked Sendable {}
+extension Spec_gain: @unchecked Sendable {}
+extension IMU_gyro_cutoff: @unchecked Sendable {}
+extension IMU_gyro_range: @unchecked Sendable {}
+extension IMU_accel_cutoff: @unchecked Sendable {}
+extension IMU_accel_range: @unchecked Sendable {}
+extension IMU_mag_cutoff: @unchecked Sendable {}
+extension SensorPacketHeader: @unchecked Sendable {}
+extension LuxPacket: @unchecked Sendable {}
+extension LuxPacket.Payload: @unchecked Sendable {}
+extension SGPPacket: @unchecked Sendable {}
+extension SGPPacket.Payload: @unchecked Sendable {}
+extension BMEPacket: @unchecked Sendable {}
+extension BMEPacket.Payload: @unchecked Sendable {}
+extension Blink_saturation_settings: @unchecked Sendable {}
+extension BlinkBytePayload: @unchecked Sendable {}
+extension BlinkHighResPayload: @unchecked Sendable {}
+extension BlinkPacket: @unchecked Sendable {}
+extension BlinkPacket.OneOf_Payload: @unchecked Sendable {}
+extension SHTPacket: @unchecked Sendable {}
+extension SHTPacket.Payload: @unchecked Sendable {}
+extension SpecPacket: @unchecked Sendable {}
+extension SpecPacket.Payload: @unchecked Sendable {}
+extension ThermPacket: @unchecked Sendable {}
+extension ThermPacket.Payload: @unchecked Sendable {}
+extension IMU_Accel_Settings: @unchecked Sendable {}
+extension IMU_Gyro_Settings: @unchecked Sendable {}
+extension IMUPacket: @unchecked Sendable {}
+extension IMUPacket.Payload: @unchecked Sendable {}
+extension MicPacket: @unchecked Sendable {}
+extension MicPacket.Payload: @unchecked Sendable {}
+extension AirSpecColors: @unchecked Sendable {}
+extension AirSpecColorPosition: @unchecked Sendable {}
+extension LightControlPacket: @unchecked Sendable {}
+extension SensorControl: @unchecked Sendable {}
+extension LuxSensorConfig: @unchecked Sendable {}
+extension SGP_Sensor_Config: @unchecked Sendable {}
+extension BME_Sensor_Config: @unchecked Sendable {}
+extension ColorSensorConfig: @unchecked Sendable {}
+extension ThermopileSensorConfig: @unchecked Sendable {}
+extension BlinkSensorConfig: @unchecked Sendable {}
+extension MicSensorConfig: @unchecked Sendable {}
+extension HumiditySensorConfig: @unchecked Sendable {}
+extension IMU_SensorConfig: @unchecked Sendable {}
+extension SensorConfig: @unchecked Sendable {}
+extension DFU_Mode: @unchecked Sendable {}
+extension BlueGreenTransition: @unchecked Sendable {}
+extension RedFlashTask: @unchecked Sendable {}
+extension AirSpecConfigHeader: @unchecked Sendable {}
+extension AirSpecConfigPacket: @unchecked Sendable {}
+extension AirSpecConfigPacket.OneOf_Payload: @unchecked Sendable {}
+extension systemState: @unchecked Sendable {}
+extension appSurveyDataPayload: @unchecked Sendable {}
+extension appSurveyDataPacket: @unchecked Sendable {}
+extension appMetaDataPacket: @unchecked Sendable {}
+extension SensorPacket: @unchecked Sendable {}
+extension SensorPacket.OneOf_Payload: @unchecked Sendable {}
+#endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
@@ -2356,10 +2486,13 @@ extension SensorPacketHeader: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.systemUid)
-      case 2: try decoder.decodeSingularUInt32Field(value: &self.msFromStart)
-      case 3: try decoder.decodeSingularUInt32Field(value: &self.epoch)
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.systemUid) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.msFromStart) }()
+      case 3: try { try decoder.decodeSingularUInt64Field(value: &self.epoch) }()
       default: break
       }
     }
@@ -2373,7 +2506,7 @@ extension SensorPacketHeader: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
       try visitor.visitSingularUInt32Field(value: self.msFromStart, fieldNumber: 2)
     }
     if self.epoch != 0 {
-      try visitor.visitSingularUInt32Field(value: self.epoch, fieldNumber: 3)
+      try visitor.visitSingularUInt64Field(value: self.epoch, fieldNumber: 3)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -2399,12 +2532,15 @@ extension LuxPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.packetIndex)
-      case 2: try decoder.decodeSingularUInt32Field(value: &self.samplePeriod)
-      case 3: try decoder.decodeSingularEnumField(value: &self.gain)
-      case 4: try decoder.decodeSingularEnumField(value: &self.integrationTime)
-      case 5: try decoder.decodeRepeatedMessageField(value: &self.payload)
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.packetIndex) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.samplePeriod) }()
+      case 3: try { try decoder.decodeSingularEnumField(value: &self.gain) }()
+      case 4: try { try decoder.decodeSingularEnumField(value: &self.integrationTime) }()
+      case 5: try { try decoder.decodeRepeatedMessageField(value: &self.payload) }()
       default: break
       }
     }
@@ -2450,10 +2586,13 @@ extension LuxPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.lux)
-      case 2: try decoder.decodeSingularUInt32Field(value: &self.timestampUnix)
-      case 3: try decoder.decodeSingularUInt32Field(value: &self.timestampMsFromStart)
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.lux) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.timestampMsFromStart) }()
       default: break
       }
     }
@@ -2464,7 +2603,7 @@ extension LuxPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       try visitor.visitSingularUInt32Field(value: self.lux, fieldNumber: 1)
     }
     if self.timestampUnix != 0 {
-      try visitor.visitSingularUInt32Field(value: self.timestampUnix, fieldNumber: 2)
+      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 2)
     }
     if self.timestampMsFromStart != 0 {
       try visitor.visitSingularUInt32Field(value: self.timestampMsFromStart, fieldNumber: 3)
@@ -2491,10 +2630,13 @@ extension SGPPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.packetIndex)
-      case 2: try decoder.decodeSingularUInt32Field(value: &self.samplePeriod)
-      case 3: try decoder.decodeRepeatedMessageField(value: &self.payload)
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.packetIndex) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.samplePeriod) }()
+      case 3: try { try decoder.decodeRepeatedMessageField(value: &self.payload) }()
       default: break
       }
     }
@@ -2535,13 +2677,16 @@ extension SGPPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.timestampUnix)
-      case 2: try decoder.decodeSingularUInt32Field(value: &self.timestampMsFromStart)
-      case 3: try decoder.decodeSingularUInt32Field(value: &self.srawVoc)
-      case 4: try decoder.decodeSingularUInt32Field(value: &self.srawNox)
-      case 5: try decoder.decodeSingularInt32Field(value: &self.vocIndexValue)
-      case 6: try decoder.decodeSingularInt32Field(value: &self.noxIndexValue)
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.timestampMsFromStart) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.srawVoc) }()
+      case 4: try { try decoder.decodeSingularUInt32Field(value: &self.srawNox) }()
+      case 5: try { try decoder.decodeSingularInt32Field(value: &self.vocIndexValue) }()
+      case 6: try { try decoder.decodeSingularInt32Field(value: &self.noxIndexValue) }()
       default: break
       }
     }
@@ -2549,7 +2694,7 @@ extension SGPPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if self.timestampUnix != 0 {
-      try visitor.visitSingularUInt32Field(value: self.timestampUnix, fieldNumber: 1)
+      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 1)
     }
     if self.timestampMsFromStart != 0 {
       try visitor.visitSingularUInt32Field(value: self.timestampMsFromStart, fieldNumber: 2)
@@ -2591,10 +2736,13 @@ extension BMEPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.packetIndex)
-      case 2: try decoder.decodeSingularUInt32Field(value: &self.samplePeriod)
-      case 3: try decoder.decodeRepeatedMessageField(value: &self.payload)
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.packetIndex) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.samplePeriod) }()
+      case 3: try { try decoder.decodeRepeatedMessageField(value: &self.payload) }()
       default: break
       }
     }
@@ -2636,14 +2784,17 @@ extension BMEPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularFixed64Field(value: &self.timestampSensor)
-      case 2: try decoder.decodeSingularUInt32Field(value: &self.timestampUnix)
-      case 3: try decoder.decodeSingularUInt32Field(value: &self.timestampMsFromStart)
-      case 4: try decoder.decodeSingularFloatField(value: &self.signal)
-      case 5: try decoder.decodeSingularUInt32Field(value: &self.signalDimensions)
-      case 6: try decoder.decodeSingularEnumField(value: &self.sensorID)
-      case 7: try decoder.decodeSingularEnumField(value: &self.accuracy)
+      case 1: try { try decoder.decodeSingularFixed64Field(value: &self.timestampSensor) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.timestampMsFromStart) }()
+      case 4: try { try decoder.decodeSingularFloatField(value: &self.signal) }()
+      case 5: try { try decoder.decodeSingularUInt32Field(value: &self.signalDimensions) }()
+      case 6: try { try decoder.decodeSingularEnumField(value: &self.sensorID) }()
+      case 7: try { try decoder.decodeSingularEnumField(value: &self.accuracy) }()
       default: break
       }
     }
@@ -2654,7 +2805,7 @@ extension BMEPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       try visitor.visitSingularFixed64Field(value: self.timestampSensor, fieldNumber: 1)
     }
     if self.timestampUnix != 0 {
-      try visitor.visitSingularUInt32Field(value: self.timestampUnix, fieldNumber: 2)
+      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 2)
     }
     if self.timestampMsFromStart != 0 {
       try visitor.visitSingularUInt32Field(value: self.timestampMsFromStart, fieldNumber: 3)
@@ -2697,10 +2848,13 @@ extension Blink_saturation_settings: SwiftProtobuf.Message, SwiftProtobuf._Messa
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularBoolField(value: &self.diodeTurnedOff)
-      case 2: try decoder.decodeSingularUInt32Field(value: &self.diodeSaturationLowerThresh)
-      case 3: try decoder.decodeSingularUInt32Field(value: &self.diodeSaturationUpperThresh)
+      case 1: try { try decoder.decodeSingularBoolField(value: &self.diodeTurnedOff) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.diodeSaturationLowerThresh) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.diodeSaturationUpperThresh) }()
       default: break
       }
     }
@@ -2736,8 +2890,11 @@ extension BlinkBytePayload: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularBytesField(value: &self.sample)
+      case 1: try { try decoder.decodeSingularBytesField(value: &self.sample) }()
       default: break
       }
     }
@@ -2765,8 +2922,11 @@ extension BlinkHighResPayload: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularBytesField(value: &self.sample)
+      case 1: try { try decoder.decodeSingularBytesField(value: &self.sample) }()
       default: break
       }
     }
@@ -2798,46 +2958,67 @@ extension BlinkPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementati
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.packetIndex)
-      case 2: try decoder.decodeSingularMessageField(value: &self._saturationSettings)
-      case 3: try decoder.decodeSingularUInt32Field(value: &self.sampleRate)
-      case 4:
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.packetIndex) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._saturationSettings) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.sampleRate) }()
+      case 4: try {
         var v: BlinkBytePayload?
+        var hadOneofValue = false
         if let current = self.payload {
-          try decoder.handleConflictingOneOf()
+          hadOneofValue = true
           if case .payloadByte(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.payload = .payloadByte(v)}
-      case 5:
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .payloadByte(v)
+        }
+      }()
+      case 5: try {
         var v: BlinkHighResPayload?
+        var hadOneofValue = false
         if let current = self.payload {
-          try decoder.handleConflictingOneOf()
+          hadOneofValue = true
           if case .payloadHighRes(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.payload = .payloadHighRes(v)}
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .payloadHighRes(v)
+        }
+      }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
     if self.packetIndex != 0 {
       try visitor.visitSingularUInt32Field(value: self.packetIndex, fieldNumber: 1)
     }
-    if let v = self._saturationSettings {
+    try { if let v = self._saturationSettings {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-    }
+    } }()
     if self.sampleRate != 0 {
       try visitor.visitSingularUInt32Field(value: self.sampleRate, fieldNumber: 3)
     }
     switch self.payload {
-    case .payloadByte(let v)?:
+    case .payloadByte?: try {
+      guard case .payloadByte(let v)? = self.payload else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
-    case .payloadHighRes(let v)?:
+    }()
+    case .payloadHighRes?: try {
+      guard case .payloadHighRes(let v)? = self.payload else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+    }()
     case nil: break
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -2865,12 +3046,15 @@ extension SHTPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.packetIndex)
-      case 2: try decoder.decodeSingularUInt32Field(value: &self.samplePeriod)
-      case 3: try decoder.decodeSingularEnumField(value: &self.precision)
-      case 4: try decoder.decodeSingularEnumField(value: &self.heater)
-      case 5: try decoder.decodeRepeatedMessageField(value: &self.payload)
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.packetIndex) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.samplePeriod) }()
+      case 3: try { try decoder.decodeSingularEnumField(value: &self.precision) }()
+      case 4: try { try decoder.decodeSingularEnumField(value: &self.heater) }()
+      case 5: try { try decoder.decodeRepeatedMessageField(value: &self.payload) }()
       default: break
       }
     }
@@ -2917,11 +3101,14 @@ extension SHTPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.timestampUnix)
-      case 2: try decoder.decodeSingularUInt32Field(value: &self.timestampMsFromStart)
-      case 3: try decoder.decodeSingularFloatField(value: &self.temperature)
-      case 4: try decoder.decodeSingularFloatField(value: &self.humidity)
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.timestampMsFromStart) }()
+      case 3: try { try decoder.decodeSingularFloatField(value: &self.temperature) }()
+      case 4: try { try decoder.decodeSingularFloatField(value: &self.humidity) }()
       default: break
       }
     }
@@ -2929,7 +3116,7 @@ extension SHTPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if self.timestampUnix != 0 {
-      try visitor.visitSingularUInt32Field(value: self.timestampUnix, fieldNumber: 1)
+      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 1)
     }
     if self.timestampMsFromStart != 0 {
       try visitor.visitSingularUInt32Field(value: self.timestampMsFromStart, fieldNumber: 2)
@@ -2966,13 +3153,16 @@ extension SpecPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementatio
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.packetIndex)
-      case 2: try decoder.decodeSingularUInt32Field(value: &self.samplePeriod)
-      case 3: try decoder.decodeSingularUInt32Field(value: &self.integrationTime)
-      case 4: try decoder.decodeSingularUInt32Field(value: &self.integrationStep)
-      case 5: try decoder.decodeSingularEnumField(value: &self.gain)
-      case 6: try decoder.decodeRepeatedMessageField(value: &self.payload)
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.packetIndex) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.samplePeriod) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.integrationTime) }()
+      case 4: try { try decoder.decodeSingularUInt32Field(value: &self.integrationStep) }()
+      case 5: try { try decoder.decodeSingularEnumField(value: &self.gain) }()
+      case 6: try { try decoder.decodeRepeatedMessageField(value: &self.payload) }()
       default: break
       }
     }
@@ -3034,22 +3224,25 @@ extension SpecPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.band415)
-      case 2: try decoder.decodeSingularUInt32Field(value: &self.band445)
-      case 3: try decoder.decodeSingularUInt32Field(value: &self.band480)
-      case 4: try decoder.decodeSingularUInt32Field(value: &self.band515)
-      case 5: try decoder.decodeSingularUInt32Field(value: &self.bandClear1)
-      case 6: try decoder.decodeSingularUInt32Field(value: &self.bandNir1)
-      case 7: try decoder.decodeSingularUInt32Field(value: &self.band555)
-      case 8: try decoder.decodeSingularUInt32Field(value: &self.band590)
-      case 9: try decoder.decodeSingularUInt32Field(value: &self.band630)
-      case 10: try decoder.decodeSingularUInt32Field(value: &self.band680)
-      case 11: try decoder.decodeSingularUInt32Field(value: &self.bandClear2)
-      case 12: try decoder.decodeSingularUInt32Field(value: &self.bandNir2)
-      case 13: try decoder.decodeSingularUInt32Field(value: &self.flicker)
-      case 14: try decoder.decodeSingularUInt32Field(value: &self.timestampUnix)
-      case 15: try decoder.decodeSingularUInt32Field(value: &self.timestampMsFromStart)
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.band415) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.band445) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.band480) }()
+      case 4: try { try decoder.decodeSingularUInt32Field(value: &self.band515) }()
+      case 5: try { try decoder.decodeSingularUInt32Field(value: &self.bandClear1) }()
+      case 6: try { try decoder.decodeSingularUInt32Field(value: &self.bandNir1) }()
+      case 7: try { try decoder.decodeSingularUInt32Field(value: &self.band555) }()
+      case 8: try { try decoder.decodeSingularUInt32Field(value: &self.band590) }()
+      case 9: try { try decoder.decodeSingularUInt32Field(value: &self.band630) }()
+      case 10: try { try decoder.decodeSingularUInt32Field(value: &self.band680) }()
+      case 11: try { try decoder.decodeSingularUInt32Field(value: &self.bandClear2) }()
+      case 12: try { try decoder.decodeSingularUInt32Field(value: &self.bandNir2) }()
+      case 13: try { try decoder.decodeSingularUInt32Field(value: &self.flicker) }()
+      case 14: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
+      case 15: try { try decoder.decodeSingularUInt32Field(value: &self.timestampMsFromStart) }()
       default: break
       }
     }
@@ -3096,7 +3289,7 @@ extension SpecPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
       try visitor.visitSingularUInt32Field(value: self.flicker, fieldNumber: 13)
     }
     if self.timestampUnix != 0 {
-      try visitor.visitSingularUInt32Field(value: self.timestampUnix, fieldNumber: 14)
+      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 14)
     }
     if self.timestampMsFromStart != 0 {
       try visitor.visitSingularUInt32Field(value: self.timestampMsFromStart, fieldNumber: 15)
@@ -3135,10 +3328,13 @@ extension ThermPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementati
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.packetIndex)
-      case 2: try decoder.decodeSingularUInt32Field(value: &self.samplePeriod)
-      case 3: try decoder.decodeRepeatedMessageField(value: &self.payload)
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.packetIndex) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.samplePeriod) }()
+      case 3: try { try decoder.decodeRepeatedMessageField(value: &self.payload) }()
       default: break
       }
     }
@@ -3180,14 +3376,17 @@ extension ThermPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularEnumField(value: &self.descriptor)
-      case 2: try decoder.decodeSingularUInt32Field(value: &self.timestampUnix)
-      case 3: try decoder.decodeSingularUInt32Field(value: &self.timestampMsFromStart)
-      case 4: try decoder.decodeSingularUInt32Field(value: &self.ambientRaw)
-      case 5: try decoder.decodeSingularUInt32Field(value: &self.objectRaw)
-      case 6: try decoder.decodeSingularFloatField(value: &self.ambientTemp)
-      case 7: try decoder.decodeSingularFloatField(value: &self.objectTemp)
+      case 1: try { try decoder.decodeSingularEnumField(value: &self.descriptor) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.timestampMsFromStart) }()
+      case 4: try { try decoder.decodeSingularUInt32Field(value: &self.ambientRaw) }()
+      case 5: try { try decoder.decodeSingularUInt32Field(value: &self.objectRaw) }()
+      case 6: try { try decoder.decodeSingularFloatField(value: &self.ambientTemp) }()
+      case 7: try { try decoder.decodeSingularFloatField(value: &self.objectTemp) }()
       default: break
       }
     }
@@ -3198,7 +3397,7 @@ extension ThermPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       try visitor.visitSingularEnumField(value: self.descriptor, fieldNumber: 1)
     }
     if self.timestampUnix != 0 {
-      try visitor.visitSingularUInt32Field(value: self.timestampUnix, fieldNumber: 2)
+      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 2)
     }
     if self.timestampMsFromStart != 0 {
       try visitor.visitSingularUInt32Field(value: self.timestampMsFromStart, fieldNumber: 3)
@@ -3241,19 +3440,26 @@ extension IMU_Accel_Settings: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularEnumField(value: &self._cutoff)
-      case 2: try decoder.decodeSingularEnumField(value: &self.range)
-      case 3: try decoder.decodeSingularUInt32Field(value: &self.sampleRateDivisor)
+      case 1: try { try decoder.decodeSingularEnumField(value: &self._cutoff) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self.range) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.sampleRateDivisor) }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._cutoff {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._cutoff {
       try visitor.visitSingularEnumField(value: v, fieldNumber: 1)
-    }
+    } }()
     if self.range != .range2G {
       try visitor.visitSingularEnumField(value: self.range, fieldNumber: 2)
     }
@@ -3282,19 +3488,26 @@ extension IMU_Gyro_Settings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularEnumField(value: &self._cutoff)
-      case 2: try decoder.decodeSingularEnumField(value: &self.range)
-      case 3: try decoder.decodeSingularUInt32Field(value: &self.sampleRateDivisor)
+      case 1: try { try decoder.decodeSingularEnumField(value: &self._cutoff) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self.range) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.sampleRateDivisor) }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._cutoff {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._cutoff {
       try visitor.visitSingularEnumField(value: v, fieldNumber: 1)
-    }
+    } }()
     if self.range != .range250Dps {
       try visitor.visitSingularEnumField(value: self.range, fieldNumber: 2)
     }
@@ -3324,29 +3537,36 @@ extension IMUPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.packetIndex)
-      case 2: try decoder.decodeSingularMessageField(value: &self._accelSettings)
-      case 3: try decoder.decodeSingularMessageField(value: &self._gyroSettings)
-      case 4: try decoder.decodeSingularMessageField(value: &self._payload)
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.packetIndex) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._accelSettings) }()
+      case 3: try { try decoder.decodeSingularMessageField(value: &self._gyroSettings) }()
+      case 4: try { try decoder.decodeSingularMessageField(value: &self._payload) }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
     if self.packetIndex != 0 {
       try visitor.visitSingularUInt32Field(value: self.packetIndex, fieldNumber: 1)
     }
-    if let v = self._accelSettings {
+    try { if let v = self._accelSettings {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-    }
-    if let v = self._gyroSettings {
+    } }()
+    try { if let v = self._gyroSettings {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
-    }
-    if let v = self._payload {
+    } }()
+    try { if let v = self._payload {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
-    }
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -3368,8 +3588,11 @@ extension IMUPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularBytesField(value: &self.sample)
+      case 1: try { try decoder.decodeSingularBytesField(value: &self.sample) }()
       default: break
       }
     }
@@ -3403,20 +3626,27 @@ extension MicPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.packetIndex)
-      case 2: try decoder.decodeSingularUInt32Field(value: &self.micSampleFreq)
-      case 3: try decoder.decodeSingularUInt32Field(value: &self.samplePeriod)
-      case 4: try decoder.decodeSingularUInt32Field(value: &self.samplesPerFft)
-      case 5: try decoder.decodeSingularFloatField(value: &self.startFrequency)
-      case 6: try decoder.decodeSingularFloatField(value: &self.frequencySpacing)
-      case 7: try decoder.decodeSingularMessageField(value: &self._payload)
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.packetIndex) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.micSampleFreq) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.samplePeriod) }()
+      case 4: try { try decoder.decodeSingularUInt32Field(value: &self.samplesPerFft) }()
+      case 5: try { try decoder.decodeSingularFloatField(value: &self.startFrequency) }()
+      case 6: try { try decoder.decodeSingularFloatField(value: &self.frequencySpacing) }()
+      case 7: try { try decoder.decodeSingularMessageField(value: &self._payload) }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
     if self.packetIndex != 0 {
       try visitor.visitSingularUInt32Field(value: self.packetIndex, fieldNumber: 1)
     }
@@ -3435,9 +3665,9 @@ extension MicPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
     if self.frequencySpacing != 0 {
       try visitor.visitSingularFloatField(value: self.frequencySpacing, fieldNumber: 6)
     }
-    if let v = self._payload {
+    try { if let v = self._payload {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
-    }
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -3462,8 +3692,11 @@ extension MicPacket.Payload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeRepeatedFloatField(value: &self.sample)
+      case 1: try { try decoder.decodeRepeatedFloatField(value: &self.sample) }()
       default: break
       }
     }
@@ -3493,10 +3726,13 @@ extension AirSpecColors: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementa
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.red)
-      case 2: try decoder.decodeSingularUInt32Field(value: &self.green)
-      case 3: try decoder.decodeSingularUInt32Field(value: &self.blue)
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.red) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.green) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.blue) }()
       default: break
       }
     }
@@ -3534,25 +3770,32 @@ extension AirSpecColorPosition: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularMessageField(value: &self._forward)
-      case 2: try decoder.decodeSingularMessageField(value: &self._eye)
-      case 3: try decoder.decodeSingularMessageField(value: &self._top)
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._forward) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._eye) }()
+      case 3: try { try decoder.decodeSingularMessageField(value: &self._top) }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._forward {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._forward {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-    }
-    if let v = self._eye {
+    } }()
+    try { if let v = self._eye {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-    }
-    if let v = self._top {
+    } }()
+    try { if let v = self._top {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
-    }
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -3572,29 +3815,70 @@ extension LightControlPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     2: .same(proto: "right"),
   ]
 
+  fileprivate class _StorageClass {
+    var _left: AirSpecColorPosition? = nil
+    var _right: AirSpecColorPosition? = nil
+
+    static let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _left = source._left
+      _right = source._right
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularMessageField(value: &self._left)
-      case 2: try decoder.decodeSingularMessageField(value: &self._right)
-      default: break
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 1: try { try decoder.decodeSingularMessageField(value: &_storage._left) }()
+        case 2: try { try decoder.decodeSingularMessageField(value: &_storage._right) }()
+        default: break
+        }
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._left {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-    }
-    if let v = self._right {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every if/case branch local when no optimizations
+      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+      // https://github.com/apple/swift-protobuf/issues/1182
+      try { if let v = _storage._left {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+      } }()
+      try { if let v = _storage._right {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: LightControlPacket, rhs: LightControlPacket) -> Bool {
-    if lhs._left != rhs._left {return false}
-    if lhs._right != rhs._right {return false}
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._left != rhs_storage._left {return false}
+        if _storage._right != rhs_storage._right {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -3620,20 +3904,23 @@ extension SensorControl: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementa
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularBoolField(value: &self.enableAll)
-      case 2: try decoder.decodeSingularBoolField(value: &self.spectrometer)
-      case 3: try decoder.decodeSingularBoolField(value: &self.bme688)
-      case 4: try decoder.decodeSingularBoolField(value: &self.imu)
-      case 5: try decoder.decodeSingularBoolField(value: &self.thermopiles)
-      case 6: try decoder.decodeSingularBoolField(value: &self.lux)
-      case 7: try decoder.decodeSingularBoolField(value: &self.mic)
-      case 8: try decoder.decodeSingularBoolField(value: &self.sht)
-      case 9: try decoder.decodeSingularBoolField(value: &self.sgp)
-      case 10: try decoder.decodeSingularBoolField(value: &self.blink)
-      case 11: try decoder.decodeSingularBoolField(value: &self.synchronizeWindows)
-      case 12: try decoder.decodeSingularUInt32Field(value: &self.windowSizeMs)
-      case 13: try decoder.decodeSingularUInt32Field(value: &self.windowPeriodMs)
+      case 1: try { try decoder.decodeSingularBoolField(value: &self.enableAll) }()
+      case 2: try { try decoder.decodeSingularBoolField(value: &self.spectrometer) }()
+      case 3: try { try decoder.decodeSingularBoolField(value: &self.bme688) }()
+      case 4: try { try decoder.decodeSingularBoolField(value: &self.imu) }()
+      case 5: try { try decoder.decodeSingularBoolField(value: &self.thermopiles) }()
+      case 6: try { try decoder.decodeSingularBoolField(value: &self.lux) }()
+      case 7: try { try decoder.decodeSingularBoolField(value: &self.mic) }()
+      case 8: try { try decoder.decodeSingularBoolField(value: &self.sht) }()
+      case 9: try { try decoder.decodeSingularBoolField(value: &self.sgp) }()
+      case 10: try { try decoder.decodeSingularBoolField(value: &self.blink) }()
+      case 11: try { try decoder.decodeSingularBoolField(value: &self.synchronizeWindows) }()
+      case 12: try { try decoder.decodeSingularUInt32Field(value: &self.windowSizeMs) }()
+      case 13: try { try decoder.decodeSingularUInt32Field(value: &self.windowPeriodMs) }()
       default: break
       }
     }
@@ -3711,10 +3998,13 @@ extension LuxSensorConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImplemen
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.samplePeriodMs)
-      case 2: try decoder.decodeSingularEnumField(value: &self.gain)
-      case 3: try decoder.decodeSingularEnumField(value: &self.integrationTime)
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.samplePeriodMs) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self.gain) }()
+      case 3: try { try decoder.decodeSingularEnumField(value: &self.integrationTime) }()
       default: break
       }
     }
@@ -3750,8 +4040,11 @@ extension SGP_Sensor_Config: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.samplePeriodMs)
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.samplePeriodMs) }()
       default: break
       }
     }
@@ -3779,8 +4072,11 @@ extension BME_Sensor_Config: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.samplePeriodMs)
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.samplePeriodMs) }()
       default: break
       }
     }
@@ -3811,11 +4107,14 @@ extension ColorSensorConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.samplePeriodMs)
-      case 2: try decoder.decodeSingularUInt32Field(value: &self.integrationTime)
-      case 3: try decoder.decodeSingularUInt32Field(value: &self.integrationStep)
-      case 4: try decoder.decodeSingularEnumField(value: &self.gain)
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.samplePeriodMs) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.integrationTime) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.integrationStep) }()
+      case 4: try { try decoder.decodeSingularEnumField(value: &self.gain) }()
       default: break
       }
     }
@@ -3860,13 +4159,16 @@ extension ThermopileSensorConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageI
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.samplePeriodMs)
-      case 2: try decoder.decodeSingularBoolField(value: &self.enableTopOfNose)
-      case 3: try decoder.decodeSingularBoolField(value: &self.enableNoseBridge)
-      case 4: try decoder.decodeSingularBoolField(value: &self.enableFrontTemple)
-      case 5: try decoder.decodeSingularBoolField(value: &self.enableMidTemple)
-      case 6: try decoder.decodeSingularBoolField(value: &self.enableRearTemple)
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.samplePeriodMs) }()
+      case 2: try { try decoder.decodeSingularBoolField(value: &self.enableTopOfNose) }()
+      case 3: try { try decoder.decodeSingularBoolField(value: &self.enableNoseBridge) }()
+      case 4: try { try decoder.decodeSingularBoolField(value: &self.enableFrontTemple) }()
+      case 5: try { try decoder.decodeSingularBoolField(value: &self.enableMidTemple) }()
+      case 6: try { try decoder.decodeSingularBoolField(value: &self.enableRearTemple) }()
       default: break
       }
     }
@@ -3921,15 +4223,18 @@ extension BlinkSensorConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.sampleFrequency)
-      case 2: try decoder.decodeSingularBoolField(value: &self.enableDaylightCompensation)
-      case 3: try decoder.decodeSingularUInt32Field(value: &self.daylightCompensationUpperThresh)
-      case 4: try decoder.decodeSingularUInt32Field(value: &self.daylightCompensationLowerThresh)
-      case 5: try decoder.decodeSingularUInt32Field(value: &self.enableWindowing)
-      case 6: try decoder.decodeSingularUInt32Field(value: &self.enableWindowingSync)
-      case 7: try decoder.decodeSingularUInt32Field(value: &self.windowSizeMs)
-      case 8: try decoder.decodeSingularUInt32Field(value: &self.windowPeriodMs)
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.sampleFrequency) }()
+      case 2: try { try decoder.decodeSingularBoolField(value: &self.enableDaylightCompensation) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.daylightCompensationUpperThresh) }()
+      case 4: try { try decoder.decodeSingularUInt32Field(value: &self.daylightCompensationLowerThresh) }()
+      case 5: try { try decoder.decodeSingularUInt32Field(value: &self.enableWindowing) }()
+      case 6: try { try decoder.decodeSingularUInt32Field(value: &self.enableWindowingSync) }()
+      case 7: try { try decoder.decodeSingularUInt32Field(value: &self.windowSizeMs) }()
+      case 8: try { try decoder.decodeSingularUInt32Field(value: &self.windowPeriodMs) }()
       default: break
       }
     }
@@ -3986,9 +4291,12 @@ extension MicSensorConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImplemen
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.samplePeriodMs)
-      case 2: try decoder.decodeSingularUInt32Field(value: &self.micSampleFreq)
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.samplePeriodMs) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.micSampleFreq) }()
       default: break
       }
     }
@@ -4022,10 +4330,13 @@ extension HumiditySensorConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.samplePeriodMs)
-      case 2: try decoder.decodeSingularEnumField(value: &self.precisionLevel)
-      case 3: try decoder.decodeSingularEnumField(value: &self.heaterSettings)
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.samplePeriodMs) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self.precisionLevel) }()
+      case 3: try { try decoder.decodeSingularEnumField(value: &self.heaterSettings) }()
       default: break
       }
     }
@@ -4066,25 +4377,32 @@ extension IMU_SensorConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularMessageField(value: &self._accelSettings)
-      case 2: try decoder.decodeSingularMessageField(value: &self._gyroSettings)
-      case 3: try decoder.decodeSingularUInt32Field(value: &self.enableWindowing)
-      case 4: try decoder.decodeSingularUInt32Field(value: &self.enableWindowingSync)
-      case 5: try decoder.decodeSingularUInt32Field(value: &self.windowSizeMs)
-      case 6: try decoder.decodeSingularUInt32Field(value: &self.windowPeriodMs)
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._accelSettings) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._gyroSettings) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.enableWindowing) }()
+      case 4: try { try decoder.decodeSingularUInt32Field(value: &self.enableWindowingSync) }()
+      case 5: try { try decoder.decodeSingularUInt32Field(value: &self.windowSizeMs) }()
+      case 6: try { try decoder.decodeSingularUInt32Field(value: &self.windowPeriodMs) }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._accelSettings {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._accelSettings {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-    }
-    if let v = self._gyroSettings {
+    } }()
+    try { if let v = self._gyroSettings {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-    }
+    } }()
     if self.enableWindowing != 0 {
       try visitor.visitSingularUInt32Field(value: self.enableWindowing, fieldNumber: 3)
     }
@@ -4126,64 +4444,119 @@ extension SensorConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
     9: .same(proto: "imu"),
   ]
 
+  fileprivate class _StorageClass {
+    var _lux: LuxSensorConfig? = nil
+    var _sgp: SGP_Sensor_Config? = nil
+    var _bme: BME_Sensor_Config? = nil
+    var _color: ColorSensorConfig? = nil
+    var _thermopile: ThermopileSensorConfig? = nil
+    var _blink: BlinkSensorConfig? = nil
+    var _mic: MicSensorConfig? = nil
+    var _humidity: HumiditySensorConfig? = nil
+    var _imu: IMU_SensorConfig? = nil
+
+    static let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _lux = source._lux
+      _sgp = source._sgp
+      _bme = source._bme
+      _color = source._color
+      _thermopile = source._thermopile
+      _blink = source._blink
+      _mic = source._mic
+      _humidity = source._humidity
+      _imu = source._imu
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularMessageField(value: &self._lux)
-      case 2: try decoder.decodeSingularMessageField(value: &self._sgp)
-      case 3: try decoder.decodeSingularMessageField(value: &self._bme)
-      case 4: try decoder.decodeSingularMessageField(value: &self._color)
-      case 5: try decoder.decodeSingularMessageField(value: &self._thermopile)
-      case 6: try decoder.decodeSingularMessageField(value: &self._blink)
-      case 7: try decoder.decodeSingularMessageField(value: &self._mic)
-      case 8: try decoder.decodeSingularMessageField(value: &self._humidity)
-      case 9: try decoder.decodeSingularMessageField(value: &self._imu)
-      default: break
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 1: try { try decoder.decodeSingularMessageField(value: &_storage._lux) }()
+        case 2: try { try decoder.decodeSingularMessageField(value: &_storage._sgp) }()
+        case 3: try { try decoder.decodeSingularMessageField(value: &_storage._bme) }()
+        case 4: try { try decoder.decodeSingularMessageField(value: &_storage._color) }()
+        case 5: try { try decoder.decodeSingularMessageField(value: &_storage._thermopile) }()
+        case 6: try { try decoder.decodeSingularMessageField(value: &_storage._blink) }()
+        case 7: try { try decoder.decodeSingularMessageField(value: &_storage._mic) }()
+        case 8: try { try decoder.decodeSingularMessageField(value: &_storage._humidity) }()
+        case 9: try { try decoder.decodeSingularMessageField(value: &_storage._imu) }()
+        default: break
+        }
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._lux {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-    }
-    if let v = self._sgp {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-    }
-    if let v = self._bme {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
-    }
-    if let v = self._color {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
-    }
-    if let v = self._thermopile {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
-    }
-    if let v = self._blink {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
-    }
-    if let v = self._mic {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
-    }
-    if let v = self._humidity {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
-    }
-    if let v = self._imu {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every if/case branch local when no optimizations
+      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+      // https://github.com/apple/swift-protobuf/issues/1182
+      try { if let v = _storage._lux {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+      } }()
+      try { if let v = _storage._sgp {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+      } }()
+      try { if let v = _storage._bme {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+      } }()
+      try { if let v = _storage._color {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+      } }()
+      try { if let v = _storage._thermopile {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+      } }()
+      try { if let v = _storage._blink {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
+      } }()
+      try { if let v = _storage._mic {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
+      } }()
+      try { if let v = _storage._humidity {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
+      } }()
+      try { if let v = _storage._imu {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: SensorConfig, rhs: SensorConfig) -> Bool {
-    if lhs._lux != rhs._lux {return false}
-    if lhs._sgp != rhs._sgp {return false}
-    if lhs._bme != rhs._bme {return false}
-    if lhs._color != rhs._color {return false}
-    if lhs._thermopile != rhs._thermopile {return false}
-    if lhs._blink != rhs._blink {return false}
-    if lhs._mic != rhs._mic {return false}
-    if lhs._humidity != rhs._humidity {return false}
-    if lhs._imu != rhs._imu {return false}
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._lux != rhs_storage._lux {return false}
+        if _storage._sgp != rhs_storage._sgp {return false}
+        if _storage._bme != rhs_storage._bme {return false}
+        if _storage._color != rhs_storage._color {return false}
+        if _storage._thermopile != rhs_storage._thermopile {return false}
+        if _storage._blink != rhs_storage._blink {return false}
+        if _storage._mic != rhs_storage._mic {return false}
+        if _storage._humidity != rhs_storage._humidity {return false}
+        if _storage._imu != rhs_storage._imu {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -4197,8 +4570,11 @@ extension DFU_Mode: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationB
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularBoolField(value: &self.enable)
+      case 1: try { try decoder.decodeSingularBoolField(value: &self.enable) }()
       default: break
       }
     }
@@ -4233,15 +4609,18 @@ extension BlueGreenTransition: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularBoolField(value: &self.enable)
-      case 2: try decoder.decodeSingularUInt32Field(value: &self.blueMinIntensity)
-      case 3: try decoder.decodeSingularUInt32Field(value: &self.blueMaxIntensity)
-      case 4: try decoder.decodeSingularUInt32Field(value: &self.greenMaxIntensity)
-      case 5: try decoder.decodeSingularUInt32Field(value: &self.stepSize)
-      case 6: try decoder.decodeSingularUInt32Field(value: &self.stepDurationMs)
-      case 7: try decoder.decodeSingularUInt32Field(value: &self.greenHoldLengthSeconds)
-      case 8: try decoder.decodeSingularUInt32Field(value: &self.transitionDelaySeconds)
+      case 1: try { try decoder.decodeSingularBoolField(value: &self.enable) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.blueMinIntensity) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.blueMaxIntensity) }()
+      case 4: try { try decoder.decodeSingularUInt32Field(value: &self.greenMaxIntensity) }()
+      case 5: try { try decoder.decodeSingularUInt32Field(value: &self.stepSize) }()
+      case 6: try { try decoder.decodeSingularUInt32Field(value: &self.stepDurationMs) }()
+      case 7: try { try decoder.decodeSingularUInt32Field(value: &self.greenHoldLengthSeconds) }()
+      case 8: try { try decoder.decodeSingularUInt32Field(value: &self.transitionDelaySeconds) }()
       default: break
       }
     }
@@ -4302,13 +4681,16 @@ extension RedFlashTask: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularBoolField(value: &self.enable)
-      case 2: try decoder.decodeSingularUInt32Field(value: &self.redMaxIntensity)
-      case 3: try decoder.decodeSingularUInt32Field(value: &self.redMinIntensity)
-      case 4: try decoder.decodeSingularUInt32Field(value: &self.frequency)
-      case 5: try decoder.decodeSingularUInt32Field(value: &self.durationMs)
-      case 6: try decoder.decodeSingularUInt32Field(value: &self.enableSpeaker)
+      case 1: try { try decoder.decodeSingularBoolField(value: &self.enable) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.redMaxIntensity) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.redMinIntensity) }()
+      case 4: try { try decoder.decodeSingularUInt32Field(value: &self.frequency) }()
+      case 5: try { try decoder.decodeSingularUInt32Field(value: &self.durationMs) }()
+      case 6: try { try decoder.decodeSingularUInt32Field(value: &self.enableSpeaker) }()
       default: break
       }
     }
@@ -4356,8 +4738,11 @@ extension AirSpecConfigHeader: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.timestampUnix)
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
       default: break
       }
     }
@@ -4365,7 +4750,7 @@ extension AirSpecConfigHeader: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if self.timestampUnix != 0 {
-      try visitor.visitSingularUInt32Field(value: self.timestampUnix, fieldNumber: 1)
+      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -4391,78 +4776,127 @@ extension AirSpecConfigPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularMessageField(value: &self._header)
-      case 2:
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._header) }()
+      case 2: try {
         var v: LightControlPacket?
+        var hadOneofValue = false
         if let current = self.payload {
-          try decoder.handleConflictingOneOf()
+          hadOneofValue = true
           if case .ctrlIndivLed(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.payload = .ctrlIndivLed(v)}
-      case 3:
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .ctrlIndivLed(v)
+        }
+      }()
+      case 3: try {
         var v: SensorControl?
+        var hadOneofValue = false
         if let current = self.payload {
-          try decoder.handleConflictingOneOf()
+          hadOneofValue = true
           if case .sensorControl(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.payload = .sensorControl(v)}
-      case 4:
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .sensorControl(v)
+        }
+      }()
+      case 4: try {
         var v: SensorConfig?
+        var hadOneofValue = false
         if let current = self.payload {
-          try decoder.handleConflictingOneOf()
+          hadOneofValue = true
           if case .sensorConfig(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.payload = .sensorConfig(v)}
-      case 5:
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .sensorConfig(v)
+        }
+      }()
+      case 5: try {
         var v: DFU_Mode?
+        var hadOneofValue = false
         if let current = self.payload {
-          try decoder.handleConflictingOneOf()
+          hadOneofValue = true
           if case .dfuMode(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.payload = .dfuMode(v)}
-      case 6:
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .dfuMode(v)
+        }
+      }()
+      case 6: try {
         var v: BlueGreenTransition?
+        var hadOneofValue = false
         if let current = self.payload {
-          try decoder.handleConflictingOneOf()
+          hadOneofValue = true
           if case .blueGreenTransition(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.payload = .blueGreenTransition(v)}
-      case 7:
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .blueGreenTransition(v)
+        }
+      }()
+      case 7: try {
         var v: RedFlashTask?
+        var hadOneofValue = false
         if let current = self.payload {
-          try decoder.handleConflictingOneOf()
+          hadOneofValue = true
           if case .redFlashTask(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.payload = .redFlashTask(v)}
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .redFlashTask(v)
+        }
+      }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._header {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._header {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-    }
+    } }()
     switch self.payload {
-    case .ctrlIndivLed(let v)?:
+    case .ctrlIndivLed?: try {
+      guard case .ctrlIndivLed(let v)? = self.payload else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-    case .sensorControl(let v)?:
+    }()
+    case .sensorControl?: try {
+      guard case .sensorControl(let v)? = self.payload else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
-    case .sensorConfig(let v)?:
+    }()
+    case .sensorConfig?: try {
+      guard case .sensorConfig(let v)? = self.payload else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
-    case .dfuMode(let v)?:
+    }()
+    case .dfuMode?: try {
+      guard case .dfuMode(let v)? = self.payload else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
-    case .blueGreenTransition(let v)?:
+    }()
+    case .blueGreenTransition?: try {
+      guard case .blueGreenTransition(let v)? = self.payload else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
-    case .redFlashTask(let v)?:
+    }()
+    case .redFlashTask?: try {
+      guard case .redFlashTask(let v)? = self.payload else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
+    }()
     case nil: break
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -4486,25 +4920,32 @@ extension systemState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementati
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.firmwareVersion)
-      case 2: try decoder.decodeSingularMessageField(value: &self._control)
-      case 3: try decoder.decodeSingularMessageField(value: &self._config)
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.firmwareVersion) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._control) }()
+      case 3: try { try decoder.decodeSingularMessageField(value: &self._config) }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
     if self.firmwareVersion != 0 {
       try visitor.visitSingularUInt32Field(value: self.firmwareVersion, fieldNumber: 1)
     }
-    if let v = self._control {
+    try { if let v = self._control {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-    }
-    if let v = self._config {
+    } }()
+    try { if let v = self._config {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
-    }
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -4522,13 +4963,20 @@ extension appSurveyDataPayload: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "q_index"),
     2: .standard(proto: "q_choice"),
+    3: .standard(proto: "q_group_index"),
+    4: .standard(proto: "timestamp_unix"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularInt32Field(value: &self.qIndex)
-      case 2: try decoder.decodeSingularStringField(value: &self.qChoice)
+      case 1: try { try decoder.decodeSingularInt32Field(value: &self.qIndex) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.qChoice) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.qGroupIndex) }()
+      case 4: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
       default: break
       }
     }
@@ -4541,12 +4989,20 @@ extension appSurveyDataPayload: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
     if !self.qChoice.isEmpty {
       try visitor.visitSingularStringField(value: self.qChoice, fieldNumber: 2)
     }
+    if self.qGroupIndex != 0 {
+      try visitor.visitSingularUInt32Field(value: self.qGroupIndex, fieldNumber: 3)
+    }
+    if self.timestampUnix != 0 {
+      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 4)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: appSurveyDataPayload, rhs: appSurveyDataPayload) -> Bool {
     if lhs.qIndex != rhs.qIndex {return false}
     if lhs.qChoice != rhs.qChoice {return false}
+    if lhs.qGroupIndex != rhs.qGroupIndex {return false}
+    if lhs.timestampUnix != rhs.timestampUnix {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -4560,8 +5016,11 @@ extension appSurveyDataPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeRepeatedMessageField(value: &self.payload)
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.payload) }()
       default: break
       }
     }
@@ -4585,12 +5044,17 @@ extension appMetaDataPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
   public static let protoMessageName: String = "appMetaDataPacket"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "payload"),
+    2: .standard(proto: "timestamp_unix"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self.payload)
+      case 1: try { try decoder.decodeSingularStringField(value: &self.payload) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self.timestampUnix) }()
       default: break
       }
     }
@@ -4600,11 +5064,15 @@ extension appMetaDataPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
     if !self.payload.isEmpty {
       try visitor.visitSingularStringField(value: self.payload, fieldNumber: 1)
     }
+    if self.timestampUnix != 0 {
+      try visitor.visitSingularUInt64Field(value: self.timestampUnix, fieldNumber: 2)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: appMetaDataPacket, rhs: appMetaDataPacket) -> Bool {
     if lhs.payload != rhs.payload {return false}
+    if lhs.timestampUnix != rhs.timestampUnix {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -4629,128 +5097,212 @@ extension SensorPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularMessageField(value: &self._header)
-      case 2:
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._header) }()
+      case 2: try {
         var v: LuxPacket?
+        var hadOneofValue = false
         if let current = self.payload {
-          try decoder.handleConflictingOneOf()
+          hadOneofValue = true
           if case .luxPacket(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.payload = .luxPacket(v)}
-      case 3:
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .luxPacket(v)
+        }
+      }()
+      case 3: try {
         var v: SGPPacket?
+        var hadOneofValue = false
         if let current = self.payload {
-          try decoder.handleConflictingOneOf()
+          hadOneofValue = true
           if case .sgpPacket(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.payload = .sgpPacket(v)}
-      case 4:
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .sgpPacket(v)
+        }
+      }()
+      case 4: try {
         var v: BMEPacket?
+        var hadOneofValue = false
         if let current = self.payload {
-          try decoder.handleConflictingOneOf()
+          hadOneofValue = true
           if case .bmePacket(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.payload = .bmePacket(v)}
-      case 5:
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .bmePacket(v)
+        }
+      }()
+      case 5: try {
         var v: BlinkPacket?
+        var hadOneofValue = false
         if let current = self.payload {
-          try decoder.handleConflictingOneOf()
+          hadOneofValue = true
           if case .blinkPacket(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.payload = .blinkPacket(v)}
-      case 6:
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .blinkPacket(v)
+        }
+      }()
+      case 6: try {
         var v: SHTPacket?
+        var hadOneofValue = false
         if let current = self.payload {
-          try decoder.handleConflictingOneOf()
+          hadOneofValue = true
           if case .shtPacket(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.payload = .shtPacket(v)}
-      case 7:
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .shtPacket(v)
+        }
+      }()
+      case 7: try {
         var v: SpecPacket?
+        var hadOneofValue = false
         if let current = self.payload {
-          try decoder.handleConflictingOneOf()
+          hadOneofValue = true
           if case .specPacket(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.payload = .specPacket(v)}
-      case 8:
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .specPacket(v)
+        }
+      }()
+      case 8: try {
         var v: ThermPacket?
+        var hadOneofValue = false
         if let current = self.payload {
-          try decoder.handleConflictingOneOf()
+          hadOneofValue = true
           if case .thermPacket(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.payload = .thermPacket(v)}
-      case 9:
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .thermPacket(v)
+        }
+      }()
+      case 9: try {
         var v: IMUPacket?
+        var hadOneofValue = false
         if let current = self.payload {
-          try decoder.handleConflictingOneOf()
+          hadOneofValue = true
           if case .imuPacket(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.payload = .imuPacket(v)}
-      case 10:
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .imuPacket(v)
+        }
+      }()
+      case 10: try {
         var v: MicPacket?
+        var hadOneofValue = false
         if let current = self.payload {
-          try decoder.handleConflictingOneOf()
+          hadOneofValue = true
           if case .micPacket(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.payload = .micPacket(v)}
-      case 11:
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .micPacket(v)
+        }
+      }()
+      case 11: try {
         var v: appSurveyDataPacket?
+        var hadOneofValue = false
         if let current = self.payload {
-          try decoder.handleConflictingOneOf()
+          hadOneofValue = true
           if case .surveyPacket(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.payload = .surveyPacket(v)}
-      case 12:
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .surveyPacket(v)
+        }
+      }()
+      case 12: try {
         var v: appMetaDataPacket?
+        var hadOneofValue = false
         if let current = self.payload {
-          try decoder.handleConflictingOneOf()
+          hadOneofValue = true
           if case .metaDataPacket(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.payload = .metaDataPacket(v)}
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payload = .metaDataPacket(v)
+        }
+      }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._header {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._header {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-    }
+    } }()
     switch self.payload {
-    case .luxPacket(let v)?:
+    case .luxPacket?: try {
+      guard case .luxPacket(let v)? = self.payload else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-    case .sgpPacket(let v)?:
+    }()
+    case .sgpPacket?: try {
+      guard case .sgpPacket(let v)? = self.payload else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
-    case .bmePacket(let v)?:
+    }()
+    case .bmePacket?: try {
+      guard case .bmePacket(let v)? = self.payload else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
-    case .blinkPacket(let v)?:
+    }()
+    case .blinkPacket?: try {
+      guard case .blinkPacket(let v)? = self.payload else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
-    case .shtPacket(let v)?:
+    }()
+    case .shtPacket?: try {
+      guard case .shtPacket(let v)? = self.payload else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
-    case .specPacket(let v)?:
+    }()
+    case .specPacket?: try {
+      guard case .specPacket(let v)? = self.payload else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
-    case .thermPacket(let v)?:
+    }()
+    case .thermPacket?: try {
+      guard case .thermPacket(let v)? = self.payload else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
-    case .imuPacket(let v)?:
+    }()
+    case .imuPacket?: try {
+      guard case .imuPacket(let v)? = self.payload else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
-    case .micPacket(let v)?:
+    }()
+    case .micPacket?: try {
+      guard case .micPacket(let v)? = self.payload else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
-    case .surveyPacket(let v)?:
+    }()
+    case .surveyPacket?: try {
+      guard case .surveyPacket(let v)? = self.payload else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
-    case .metaDataPacket(let v)?:
+    }()
+    case .metaDataPacket?: try {
+      guard case .metaDataPacket(let v)? = self.payload else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 12)
+    }()
     case nil: break
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -4763,3 +5315,4 @@ extension SensorPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
     return true
   }
 }
+

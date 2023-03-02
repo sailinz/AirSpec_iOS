@@ -60,7 +60,7 @@ enum BluetoothConstants {
     static let receivedDataKey = "received-data"
     
     
-    static let glassesNames = ["AirSpec_01ad7855", "AirSpec_01ad6d72"] /// now glasses 1 is for development, glasses 0 is for testing
+    static let glassesNames = ["_000000", "AirSpec_01ad7855", "AirSpec_01ad6d72", "AirSpec_01ad6e65"] /// now glasses 2 is for development, glasses 1 is for testing
     
     
     /// The maximum normal temperature, above which the app displays an alert.

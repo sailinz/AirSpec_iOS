@@ -79,6 +79,18 @@ struct SurveyQuestionView: View {
                         do{
                             /// save to coredata
                             try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(nextQuestion), choice: "\(currentAnswer.description)")
+                            var surveyData = appSurveyDataPacket()
+                            surveyData.payload[0].qIndex = Int32(nextQuestion)
+                            surveyData.payload[0].qChoice = "\(currentAnswer.description)"
+                            
+                            print(surveyData)
+                            
+                            do {
+                                let surveyDataBinary = try surveyData.serializedData()
+                                try RawDataViewModel.addRawData(record: surveyDataBinary)
+                            } catch {
+                                print("fail to append survey data LED notification")
+                            }
                         }catch{
                             print("Error saving survey data: \(error.localizedDescription)")
                         }

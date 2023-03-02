@@ -35,26 +35,7 @@ struct SettingView: View {
         
         NavigationView{
             VStack{
-//                Text("Settings")
-//                    .font(
-//                            .custom(
-//                            "SF Pro Display",
-//                            fixedSize: 30)
-//                            .weight(.heavy)
-//                        )
-//                    .frame(maxWidth: .infinity, alignment: .leading)
-//                    .padding()
-                
                 VStack {
-//                    Text("Glasses setting")
-//                        .font(.system(.title2) .weight(.heavy))
-//                        .frame(maxWidth: .infinity, alignment: .leading)
-//                        .onAppear{
-//                            /// in the test mode
-////                            toggleScanning()
-////                            connectToAirSpec()
-//                        }
-                    
                     VStack(alignment: .leading) {
                         HStack() {
                             Image(systemName: "person.crop.circle.badge")
@@ -63,11 +44,15 @@ struct SettingView: View {
                                 .font(.system(.subheadline))
                             TextField("Enter ID", text: $user_id, onCommit: {
                                 /// in production
-                                /// 
-                                toggleScanning()
-                                connectToAirSpec()
-   
+                                ///
                                 UserDefaults.standard.set(self.user_id, forKey: "user_id")
+                                let user_id_int = Int(UserDefaults.standard.string(forKey: "user_id") ?? "") ?? 0
+                                if( user_id_int != 0){
+                                    receiver.GLASSNAME = BluetoothConstants.glassesNames[user_id_int]
+                                    toggleScanning()
+                                    connectToAirSpec()
+                                }
+
                                     
                                 })
                                 .multilineTextAlignment(.trailing)
@@ -76,28 +61,25 @@ struct SettingView: View {
                                 
                         }
                         
-//                        Divider()
-                        
                         HStack() {
                             Image(systemName: "eyeglasses")
                                 .frame(width: 30, height: 20)
-                            Text("AirSpec")
+                            Text(receiver.GLASSNAME == "" ? "AirSpec" : receiver.GLASSNAME)
                                 .font(.system(.subheadline))
                             
                             if let peripheral = receiver.connectedPeripheral {
-                                if(receiver.GLASSNAME != ""){
-                                    if(peripheral.name!.contains(receiver.GLASSNAME)){
-                                        Text("Connected")
-                                            .frame(maxWidth: .infinity, alignment: .trailing)
-                                            .foregroundColor(Color.gray)
-                                            .font(.system(.subheadline))
-                                    }else{
-                                        Text("Disconnected")
-                                            .frame(maxWidth: .infinity, alignment: .trailing)
-                                            .foregroundColor(Color.gray)
-                                            .font(.system(.subheadline))
-                                    }
+                                if(peripheral.name!.contains(receiver.GLASSNAME)){
+                                    Text("Connected")
+                                        .frame(maxWidth: .infinity, alignment: .trailing)
+                                        .foregroundColor(Color.gray)
+                                        .font(.system(.subheadline))
+                                }else{
+                                    Text("Disconnected")
+                                        .frame(maxWidth: .infinity, alignment: .trailing)
+                                        .foregroundColor(Color.gray)
+                                        .font(.system(.subheadline))
                                 }
+                                
                             }else{
                                 Text("Disconnected")
                                     .frame(maxWidth: .infinity, alignment: .trailing)
@@ -173,7 +155,7 @@ struct SettingView: View {
                             Text("Test light")
                                 .font(.system(.subheadline))
                             Spacer()
-                            Button(action: receiver.testLightReset) {
+                            Button(action: receiver.setBlue) {
                                 Text("Reset")
                                 .font(.system(.subheadline) .weight(.semibold))
                                 .foregroundColor(.white)
@@ -183,7 +165,7 @@ struct SettingView: View {
                             .clipShape(Capsule())
                             
                             Button(action:
-                                    receiver.testLight
+                                    receiver.blueGreenLight
 //                                    {
 //                                        Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { timer in
 ////                                            print("test light with timer")
@@ -418,6 +400,11 @@ struct SettingView: View {
             
             if UserDefaults.standard.string(forKey: user_id) != ""{
                 self.user_id = UserDefaults.standard.string(forKey: "user_id") ?? ""
+                let user_id_int = Int(UserDefaults.standard.string(forKey: "user_id") ?? "") ?? 0
+                if( user_id_int != 0){
+                    receiver.GLASSNAME = BluetoothConstants.glassesNames[user_id_int]
+                }
+
             }
             
             if UserDefaults.standard.float(forKey: "minValueTemp") == 0 {
@@ -483,12 +470,9 @@ struct SettingView: View {
     func connectToAirSpec(){
         if !Array(receiver.discoveredPeripherals).isEmpty{
             for peripheral in Array(receiver.discoveredPeripherals){
-                if(receiver.GLASSNAME != ""){
-                    if(peripheral.name!.contains(receiver.GLASSNAME)){
-                        receiver.connect(to: peripheral)
-                    }
+                if(peripheral.name!.contains(receiver.GLASSNAME)){
+                    receiver.connect(to: peripheral)
                 }
-                
             }
         }
         
@@ -514,6 +498,8 @@ struct SettingView: View {
 
         if receiver.isScanning {
             receiver.stopScanning()
+//            sleep(1)
+//            receiver.startScanning()
         } else {
             receiver.startScanning()
         }
