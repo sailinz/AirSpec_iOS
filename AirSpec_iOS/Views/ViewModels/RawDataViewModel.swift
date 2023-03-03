@@ -111,6 +111,40 @@ class RawDataViewModel {
         })
     }
     
+    static func addMetaDataToRawData(payload: String, timestampUnix: Date){
+        var metaData = appMetaDataPacket()
+        metaData.payload = payload
+        metaData.timestampUnix = UInt64(timestampUnix.timeIntervalSince1970) * 1000
+        
+        
+        do {
+            let metaDataBinary = try metaData.serializedData()
+            try self.addRawData(record: metaDataBinary)
+            print(metaData)
+        } catch {
+            print("fail to append metadata:  \(error.localizedDescription)")
+        }
+    }
+    
+    static func addSurveyDataToRawData(qIndex: Int32, qChoice: String, qGroupIndex: UInt32, timestampUnix: Date){
+        var surveyData = appSurveyDataPacket()
+        surveyData.payload = [appSurveyDataPayload()]
+        surveyData.payload[0].qIndex = qIndex
+        surveyData.payload[0].qChoice = qChoice
+        surveyData.payload[0].qGroupIndex = qGroupIndex
+        surveyData.payload[0].timestampUnix = UInt64(timestampUnix.timeIntervalSince1970) * 1000
+        
+        
+
+        do {
+            let surveyDataBinary = try surveyData.serializedData()
+            try self.addRawData(record: surveyDataBinary)
+            print(surveyData)
+        } catch {
+            print("Fail to append survey data to raw data:  \(error.localizedDescription)")
+        }
+    }
+    
     
     static func addRawData(record: Data) throws {
         let newRawData = RawDataEntity(context: container.viewContext)

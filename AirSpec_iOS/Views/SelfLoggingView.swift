@@ -14,7 +14,8 @@ struct SelfLoggingView: View {
     @State private var comments: String = ""
     @State var surveyButton: Bool = false
     
-    let userID = UserDefaults.standard.double(forKey: "user_id")
+//    let userID = UserDefaults.standard.double(forKey: "user_id")
+    @State var surveyRecordIndex: Int = 0
 //    @StateObject var surveyData = SurveyDataViewModel()
 //    @EnvironmentObject var surveyData: SurveyDataViewModel
     
@@ -37,7 +38,12 @@ struct SelfLoggingView: View {
                                 .frame(height: 20)
                             HStack{
                                 Button(action:{
-//                                    surveyData.addSurveyData(timestamp: Int32(Date().timeIntervalSince1970), question: -2, choice: "not comfy", userid: Int16(userID))
+                                    do{
+                                        try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-2), choice: "not comfy")
+                                        RawDataViewModel.addSurveyDataToRawData(qIndex: -2, qChoice: "not comfy", qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
+                                    }catch{
+                                        print("Error saving survey data: \(error.localizedDescription)")
+                                    }
                                 }){
                                     ZStack{
                                         VStack{
@@ -62,7 +68,12 @@ struct SelfLoggingView: View {
                                     .frame(width: 20)
                                 
                                 Button(action:{
-//                                    surveyData.addSurveyData(timestamp: Int32(Date().timeIntervalSince1970), question: -2, choice: "comfy", userid: Int16(userID))
+                                    do{
+                                        try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-2), choice: "comfy")
+                                        RawDataViewModel.addSurveyDataToRawData(qIndex: -2, qChoice: "comfy", qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
+                                    }catch{
+                                        print("Error saving survey data: \(error.localizedDescription)")
+                                    }
                                 }){
                                     ZStack{
                                         VStack{
@@ -130,13 +141,19 @@ struct SelfLoggingView: View {
                                 
                             
                             Button(action:{
-                                            ///submit data
-//                                        surveyData.addSurveyData(timestamp: Int32(Date().timeIntervalSince1970), question: -1, choice: self.comments, userid: Int16(userID))
-                                            withAnimation{
-                                                show.toggle()
-                                            }
+                                        ///submit data
+                                    do{
+                                        try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-1), choice: self.comments)
+                                        RawDataViewModel.addSurveyDataToRawData(qIndex: -1, qChoice: self.comments, qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
+                                    }catch{
+                                        print("Error saving survey data: \(error.localizedDescription)")
+                                    }
+                                
+                                    withAnimation{
+                                        show.toggle()
+                                    }
                                             
-                                          }
+                                }
                                 ) {
                                 Text("Done")
                                 .font(.system(.subheadline) .weight(.semibold))
@@ -171,16 +188,25 @@ struct SelfLoggingView: View {
                     .foregroundColor(.pink)
             }
             .padding(5)
-            
-            
-            
-            
-            
         }
         .frame(maxWidth:.infinity, maxHeight:.infinity)
         .background(
             Color.white.opacity(0.35)
         )
+        
+        .onAppear{
+            print("survey appear")
+            if UserDefaults.standard.integer(forKey: "survey_record_index") == 0 {
+                UserDefaults.standard.set(1, forKey: "survey_record_index")
+                surveyRecordIndex = 1
+            }else{
+                surveyRecordIndex = UserDefaults.standard.integer(forKey: "survey_record_index") + 1
+                UserDefaults.standard.set(surveyRecordIndex, forKey: "survey_record_index")
+                
+            }
+        }
+        
+        
     }
 }
 

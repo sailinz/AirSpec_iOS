@@ -83,8 +83,12 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         self.serviceUUID = service
         self.TXcharacteristicUUID = characteristic
         self.centralManager = CBCentralManager(delegate: self, queue: nil)
-        
-//        connect.connect()
+        let user_id_int = Int(UserDefaults.standard.string(forKey: "user_id") ?? "") ?? 0
+        if( user_id_int != 0){
+            self.GLASSNAME = BluetoothConstants.glassesNames[user_id_int]
+            print("glass name (init): \(GLASSNAME)")
+        }
+    
     }
 
     /// -- BLE connection
@@ -134,16 +138,13 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi RSSI: NSNumber ) {
         let device = (advertisementData as NSDictionary).object(forKey: CBAdvertisementDataLocalNameKey) as? NSString
 
-        let user_id = Int(UserDefaults.standard.string(forKey: "user_id") ?? "") ?? 0
-        if( user_id != 0){
-            if let device = device {
-                if device.contains(BluetoothConstants.glassesNames[user_id]) {
-                    discoveredPeripherals.insert(peripheral)
-                    peripheral.delegate = self
-                }
-            }
-
+        if device?.contains(GLASSNAME) == true {
+            discoveredPeripherals.insert(peripheral)
+//            print("device: \(discoveredPeripherals)")
+            peripheral.delegate = self
         }
+
+    
     }
 
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {

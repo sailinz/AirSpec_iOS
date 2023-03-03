@@ -50,6 +50,7 @@ struct SurveyQuestionView: View {
     
     @Binding var showSurvey: Bool
     
+    
     let userID = UserDefaults.standard.double(forKey: "user_id")
 //    @StateObject var surveyData = SurveyDataViewModel()
 //    @EnvironmentObject var surveyData: SurveyDataViewModel
@@ -79,25 +80,14 @@ struct SurveyQuestionView: View {
                         do{
                             /// save to coredata
                             try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(nextQuestion), choice: "\(currentAnswer.description)")
-                            var surveyData = appSurveyDataPacket()
-                            surveyData.payload = [appSurveyDataPayload()]
-                            surveyData.payload[0].qIndex = Int32(nextQuestion)
-                            surveyData.payload[0].qChoice = "\(currentAnswer.description)"
-                            surveyData.payload[0].timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
-                            print(surveyData)
-                            
-                            do {
-                                let surveyDataBinary = try surveyData.serializedData()
-                                try RawDataViewModel.addRawData(record: surveyDataBinary)
-                            } catch {
-                                print("fail to append survey data LED notification")
-                            }
+                            RawDataViewModel.addSurveyDataToRawData(qIndex: Int32(nextQuestion), qChoice: "\(currentAnswer.description)", qGroupIndex: UInt32(UserDefaults.standard.integer(forKey: "survey_record_index")), timestampUnix: Date())
                         }catch{
                             print("Error saving survey data: \(error.localizedDescription)")
                         }
                         
                         
                         if(currentQuestionItem.nextQuestion[0] == 999){
+                            print("survey record index: \(UserDefaults.standard.integer(forKey: "survey_record_index"))")
                             showSurvey.toggle()
                         }
                         
@@ -136,16 +126,19 @@ struct SurveyQuestionView: View {
                     do{
                         /// save to coredata
                         try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(nextQuestion), choice: "\(currentAnswers.description)")
+                        RawDataViewModel.addSurveyDataToRawData(qIndex: Int32(nextQuestion), qChoice: "\(currentAnswers.description)", qGroupIndex: UInt32(UserDefaults.standard.integer(forKey: "survey_record_index")), timestampUnix: Date())
                     }catch{
                         print("Error saving survey data: \(error.localizedDescription)")
                     }
-                    
                     
                     
                     self.currentQuestion = currentQuestionItem.currentQuestion
                     self.nextQuestion = currentQuestionItem.nextQuestion[currentAnswer]
                     self.currentAnswer = 999 /// reset
                     self.currentAnswers = [] /// reset
+                    ///
+                    
+                    
 
                 }) {
                     HStack{
@@ -161,6 +154,7 @@ struct SurveyQuestionView: View {
             }
             
         }
+        
         
 
     }

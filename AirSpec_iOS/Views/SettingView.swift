@@ -49,14 +49,10 @@ struct SettingView: View {
                                 let user_id_int = Int(UserDefaults.standard.string(forKey: "user_id") ?? "") ?? 0
                                 if( user_id_int != 0){
                                     receiver.GLASSNAME = BluetoothConstants.glassesNames[user_id_int]
-                                    toggleScanning()
-                                    connectToAirSpec()
                                 }
-
-                                    
-                                })
-                                .multilineTextAlignment(.trailing)
-                                .font(.system(.subheadline))
+                            })
+                            .multilineTextAlignment(.trailing)
+                            .font(.system(.subheadline))
                             
                                 
                         }
@@ -64,6 +60,9 @@ struct SettingView: View {
                         HStack() {
                             Image(systemName: "eyeglasses")
                                 .frame(width: 30, height: 20)
+                            HStack{
+                                
+                            }
                             Text(receiver.GLASSNAME == "" ? "AirSpec" : receiver.GLASSNAME)
                                 .font(.system(.subheadline))
                             
@@ -88,8 +87,45 @@ struct SettingView: View {
                             }
                             
                         }
+                         
+                        HStack(){
+                            Button(action:{
+                                toggleScanning()
+                            }) {
+                                Text("\(receiver.isScanning ? "Scanning..." : "Scan")")
+                                .font(.system(.subheadline) .weight(.semibold))
+                                .foregroundColor(.white)
+                            }
+                            .padding(.all,5)
+                            .background(receiver.isScanning ?.pink.opacity(0.5) : .gray.opacity(0.5))
+                            .clipShape(Capsule())
+                            
+                            Button(action:{
+                                connectToAirSpec()
+                            }) {
+                                Text("Connect")
+                                .font(.system(.subheadline) .weight(.semibold))
+                                .foregroundColor(.white)
+                            }
+                            .padding(.all,5)
+                            .background(.pink.opacity(0.5))
+                            .clipShape(Capsule())
+                            
+                            Button(action:{
+                                if let peripheral = receiver.connectedPeripheral{
+                                    receiver.disconnect(from: peripheral, mustDisconnect: true)
+                                }
+                            
+                            }) {
+                                Text("Disconnect")
+                                .font(.system(.subheadline) .weight(.semibold))
+                                .foregroundColor(.white)
+                            }
+                            .padding(.all,5)
+                            .background(.gray.opacity(0.5))
+                            .clipShape(Capsule())
+                        }
                         
-//                        Divider()
                             
                         HStack() {
                             Image(systemName: "person.3.fill")
@@ -225,6 +261,8 @@ struct SettingView: View {
                                 UserDefaults.standard.set(self.minValueNoise/sliderWidth, forKey: "minValueNoise")
                                 UserDefaults.standard.set(self.maxValueNoise/sliderWidth, forKey: "maxValueNoise")
                                 print("\(self.minValueTemp/sliderWidth)")
+                                
+                                RawDataViewModel.addMetaDataToRawData(payload: "minValueTemp : \(self.minValueTemp/sliderWidth) C", timestampUnix: Date())
                             }) {
                                 Text("Update")
                                     .foregroundColor(.white)
@@ -398,11 +436,17 @@ struct SettingView: View {
         
         .onAppear{
             
-            if UserDefaults.standard.string(forKey: user_id) != ""{
+            if UserDefaults.standard.string(forKey: "user_id") != ""{
                 self.user_id = UserDefaults.standard.string(forKey: "user_id") ?? ""
+//                print(self.user_id)
+//                print(Int(self.user_id))
                 let user_id_int = Int(UserDefaults.standard.string(forKey: "user_id") ?? "") ?? 0
                 if( user_id_int != 0){
-                    receiver.GLASSNAME = BluetoothConstants.glassesNames[user_id_int]
+                    if(receiver.GLASSNAME) == "" {
+                        receiver.GLASSNAME = BluetoothConstants.glassesNames[user_id_int]
+                        print("glass name: \(receiver.GLASSNAME)")
+                    }
+
                 }
 
             }
@@ -469,8 +513,12 @@ struct SettingView: View {
     
     func connectToAirSpec(){
         if !Array(receiver.discoveredPeripherals).isEmpty{
+            print("trying to connect")
             for peripheral in Array(receiver.discoveredPeripherals){
+                print(peripheral)
+                print("peripheral.name! \(peripheral.name!)")
                 if(peripheral.name!.contains(receiver.GLASSNAME)){
+                    
                     receiver.connect(to: peripheral)
                 }
             }
@@ -491,19 +539,17 @@ struct SettingView: View {
 //        Text(receiver.glassesData.sensorData)
 //    }
 //
-    private func toggleScanning() {
-        guard receiver.centralManager.state == .poweredOn else {
-            return
+        private func toggleScanning() {
+            guard receiver.centralManager.state == .poweredOn else {
+                return
+            }
+    
+            if receiver.isScanning {
+                receiver.stopScanning()
+            } else {
+                receiver.startScanning()
+            }
         }
-
-        if receiver.isScanning {
-            receiver.stopScanning()
-//            sleep(1)
-//            receiver.startScanning()
-        } else {
-            receiver.startScanning()
-        }
-    }
     
 
 }
