@@ -11,6 +11,20 @@
 		032FEAD92981C2D100A2819F /* SurveyQuestionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FEAD82981C2D100A2819F /* SurveyQuestionView.swift */; };
 		032FEADB2981C67200A2819F /* QuestionFlows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FEADA2981C67200A2819F /* QuestionFlows.swift */; };
 		032FEADC2981C67200A2819F /* QuestionFlows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FEADA2981C67200A2819F /* QuestionFlows.swift */; };
+		0341135D29B28A9800393BC4 /* WatchSurveyComfyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0341135C29B28A9800393BC4 /* WatchSurveyComfyView.swift */; };
+		0341135F29B28ACD00393BC4 /* WatchSurveyCommentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0341135E29B28ACD00393BC4 /* WatchSurveyCommentView.swift */; };
+		0341136029B2DAF400393BC4 /* SurveyDataViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0380B8EB299C73D000D070FF /* SurveyDataViewModel.swift */; };
+		0341136129B2DAFC00393BC4 /* RawDataViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0380B912299EBED500D070FF /* RawDataViewModel.swift */; };
+		0341136229B2DB0A00393BC4 /* SurveyDataContainer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0380B8ED299C794F00D070FF /* SurveyDataContainer.xcdatamodeld */; };
+		0341136329B2DB1700393BC4 /* RawDataContainer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0380B8F3299C7BBC00D070FF /* RawDataContainer.xcdatamodeld */; };
+		0341136529B2DB6B00393BC4 /* Answer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0341136429B2DB6B00393BC4 /* Answer.swift */; };
+		0341136629B2DB6B00393BC4 /* Answer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0341136429B2DB6B00393BC4 /* Answer.swift */; };
+		0341136729B2DD8B00393BC4 /* airspec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D53E86298D5E8F0008B74D /* airspec.swift */; };
+		0341136829B2DD8F00393BC4 /* svc.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D53E88298D5E8F0008B74D /* svc.pb.swift */; };
+		0341136929B2DD9200393BC4 /* message.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D53E89298D5E8F0008B74D /* message.pb.swift */; };
+		0341136B29B2DDF700393BC4 /* protoc-gen-swift in Frameworks */ = {isa = PBXBuildFile; productRef = 0341136A29B2DDF700393BC4 /* protoc-gen-swift */; };
+		0341136D29B2DDF700393BC4 /* SwiftProtobuf in Frameworks */ = {isa = PBXBuildFile; productRef = 0341136C29B2DDF700393BC4 /* SwiftProtobuf */; };
+		0341136F29B2DDF700393BC4 /* SwiftProtobufPluginLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 0341136E29B2DDF700393BC4 /* SwiftProtobufPluginLibrary */; };
 		034B0D6A2942A50500F21CFB /* MyDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034B0D692942A50500F21CFB /* MyDataView.swift */; };
 		034D16DE294A7FD7005BE966 /* OpenCircularGauge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D16DD294A7FD7005BE966 /* OpenCircularGauge.swift */; };
 		034D16DF294A7FD7005BE966 /* OpenCircularGauge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D16DD294A7FD7005BE966 /* OpenCircularGauge.swift */; };
@@ -203,6 +217,9 @@
 		030FE311296719EA00AC5E24 /* PopUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopUpView.swift; sourceTree = "<group>"; };
 		032FEAD82981C2D100A2819F /* SurveyQuestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyQuestionView.swift; sourceTree = "<group>"; };
 		032FEADA2981C67200A2819F /* QuestionFlows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionFlows.swift; sourceTree = "<group>"; };
+		0341135C29B28A9800393BC4 /* WatchSurveyComfyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSurveyComfyView.swift; sourceTree = "<group>"; };
+		0341135E29B28ACD00393BC4 /* WatchSurveyCommentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSurveyCommentView.swift; sourceTree = "<group>"; };
+		0341136429B2DB6B00393BC4 /* Answer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Answer.swift; sourceTree = "<group>"; };
 		034B0D692942A50500F21CFB /* MyDataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyDataView.swift; sourceTree = "<group>"; };
 		034D16DD294A7FD7005BE966 /* OpenCircularGauge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenCircularGauge.swift; sourceTree = "<group>"; };
 		034D16E2294CF9A2005BE966 /* LinearGauge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinearGauge.swift; sourceTree = "<group>"; };
@@ -345,8 +362,11 @@
 			files = (
 				038AA923295802B50086EC1B /* InfluxDBSwift in Frameworks */,
 				038AA925295802B50086EC1B /* InfluxDBSwiftApis in Frameworks */,
+				0341136B29B2DDF700393BC4 /* protoc-gen-swift in Frameworks */,
 				038AA93729580AC60086EC1B /* ArgumentParser in Frameworks */,
+				0341136F29B2DDF700393BC4 /* SwiftProtobufPluginLibrary in Frameworks */,
 				03BC95CC2951078900AD89BE /* HealthKit.framework in Frameworks */,
+				0341136D29B2DDF700393BC4 /* SwiftProtobuf in Frameworks */,
 				03D53E9B29904C480008B74D /* WatchConnectivity.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -402,7 +422,9 @@
 				038AA93C295915DF0086EC1B /* VisualView.swift */,
 				038AA93E295915ED0086EC1B /* AirQualityView.swift */,
 				038AA940295915FD0086EC1B /* AcousticsView.swift */,
+				0341135C29B28A9800393BC4 /* WatchSurveyComfyView.swift */,
 				0350610F29AEF8590035F1B2 /* WatchSurveyQuestionView.swift */,
+				0341135E29B28ACD00393BC4 /* WatchSurveyCommentView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -439,6 +461,7 @@
 				032FEADA2981C67200A2819F /* QuestionFlows.swift */,
 				03D53E8D29900BEC0008B74D /* SessionDelegator.swift */,
 				03D53EA8299093EA0008B74D /* SensorData.swift */,
+				0341136429B2DB6B00393BC4 /* Answer.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -757,6 +780,9 @@
 				038AA922295802B50086EC1B /* InfluxDBSwift */,
 				038AA924295802B50086EC1B /* InfluxDBSwiftApis */,
 				038AA93629580AC60086EC1B /* ArgumentParser */,
+				0341136A29B2DDF700393BC4 /* protoc-gen-swift */,
+				0341136C29B2DDF700393BC4 /* SwiftProtobuf */,
+				0341136E29B2DDF700393BC4 /* SwiftProtobufPluginLibrary */,
 			);
 			productName = "AirSpec_iOS Watch App";
 			productReference = 03F21BE1292AE863001D4D8E /* AirSpec_iOS Watch App.app */;
@@ -968,6 +994,7 @@
 				03D53EA9299093EA0008B74D /* SensorData.swift in Sources */,
 				0380B8EF299C794F00D070FF /* SurveyDataContainer.xcdatamodeld in Sources */,
 				03F21BC1292AE85D001D4D8E /* ContentView.swift in Sources */,
+				0341136529B2DB6B00393BC4 /* Answer.swift in Sources */,
 				034D16DE294A7FD7005BE966 /* OpenCircularGauge.swift in Sources */,
 				03BC95E829525F7600AD89BE /* Array+SafeSubscript.swift in Sources */,
 				03BC96162956507000AD89BE /* testChart.swift in Sources */,
@@ -1019,14 +1046,19 @@
 				038AA9152957ED870086EC1B /* NetworkConstants.swift in Sources */,
 				03BC96412956669800AD89BE /* ChartStrideBy.swift in Sources */,
 				03BC96172956507000AD89BE /* testChart.swift in Sources */,
+				0341136629B2DB6B00393BC4 /* Answer.swift in Sources */,
 				038AA93F295915ED0086EC1B /* AirQualityView.swift in Sources */,
 				034D16E4294CF9A2005BE966 /* LinearGauge.swift in Sources */,
 				038AA93B29590FE80086EC1B /* ThermalView.swift in Sources */,
+				0341136829B2DD8F00393BC4 /* svc.pb.swift in Sources */,
 				038C4DB2292AF61B00699753 /* WatchHomeView.swift in Sources */,
 				03BC95E929525F7600AD89BE /* Array+SafeSubscript.swift in Sources */,
+				0341136229B2DB0A00393BC4 /* SurveyDataContainer.xcdatamodeld in Sources */,
+				0341136029B2DAF400393BC4 /* SurveyDataViewModel.swift in Sources */,
 				03F21BE9292AE863001D4D8E /* ContentView.swift in Sources */,
 				03BC95EF29525FB600AD89BE /* CrookedText+Modifiers.swift in Sources */,
 				03D53E8F29900BEC0008B74D /* SessionDelegator.swift in Sources */,
+				0341136929B2DD9200393BC4 /* message.pb.swift in Sources */,
 				0350611029AEF8590035F1B2 /* WatchSurveyQuestionView.swift in Sources */,
 				03D53EA3299075B90008B74D /* ConnectionProvider.swift in Sources */,
 				03BC95F229525FD200AD89BE /* SizeKey.swift in Sources */,
@@ -1037,10 +1069,15 @@
 				03F21BE7292AE863001D4D8E /* AirSpec_iOSApp.swift in Sources */,
 				03D53EA0299075900008B74D /* ProgramObject.swift in Sources */,
 				034D16EA294D22A0005BE966 /* SensorIconConstants.swift in Sources */,
+				0341136129B2DAFC00393BC4 /* RawDataViewModel.swift in Sources */,
 				03BC95E529525EFD00AD89BE /* CrookedText.swift in Sources */,
+				0341136329B2DB1700393BC4 /* RawDataContainer.xcdatamodeld in Sources */,
+				0341135F29B28ACD00393BC4 /* WatchSurveyCommentView.swift in Sources */,
+				0341136729B2DD8B00393BC4 /* airspec.swift in Sources */,
 				03BC963E2956668B00AD89BE /* InterpolationMethod.swift in Sources */,
 				032FEADC2981C67200A2819F /* QuestionFlows.swift in Sources */,
 				038AA93D295915DF0086EC1B /* VisualView.swift in Sources */,
+				0341135D29B28A9800393BC4 /* WatchSurveyComfyView.swift in Sources */,
 				03D53EAA299093EA0008B74D /* SensorData.swift in Sources */,
 				034D16DF294A7FD7005BE966 /* OpenCircularGauge.swift in Sources */,
 				03D53E9229900D330008B74D /* CommandStatus.swift in Sources */,
@@ -1380,9 +1417,12 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "medialab.AirSpec-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -1420,9 +1460,12 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "medialab.AirSpec-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -1708,6 +1751,21 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0341136A29B2DDF700393BC4 /* protoc-gen-swift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03D53E80298D5E4E0008B74D /* XCRemoteSwiftPackageReference "swift-protobuf" */;
+			productName = "protoc-gen-swift";
+		};
+		0341136C29B2DDF700393BC4 /* SwiftProtobuf */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03D53E80298D5E4E0008B74D /* XCRemoteSwiftPackageReference "swift-protobuf" */;
+			productName = SwiftProtobuf;
+		};
+		0341136E29B2DDF700393BC4 /* SwiftProtobufPluginLibrary */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03D53E80298D5E4E0008B74D /* XCRemoteSwiftPackageReference "swift-protobuf" */;
+			productName = SwiftProtobufPluginLibrary;
+		};
 		038AA922295802B50086EC1B /* InfluxDBSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 038AA921295802B50086EC1B /* XCRemoteSwiftPackageReference "influxdb-client-swift" */;

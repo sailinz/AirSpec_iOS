@@ -118,6 +118,7 @@ let questionFlows = [
                   4,
                   4,
                   4,
+                  4,
                   4
               ],
               multiChoice: true
@@ -359,6 +360,9 @@ let questionFlows = [
                   "faster"
               ],
               nextQuestion: [
+                  1,
+                  1,
+                  1,
                   1,
                   1,
                   1,

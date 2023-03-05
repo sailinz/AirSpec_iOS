@@ -22,18 +22,17 @@ struct WatchHomeView: View {
     
 //    @State private var cogIntensity = 10 /// must scale to a int
     @StateObject var dataReceivedWatch = SensorData()
+    @Binding var isComfyVote: Bool /// is it comfy vote view to be appeared
+    @Binding var showSurvey: Bool ///default true
+     
     
     var body: some View {
         ZStack{
             ZStack{
-                HeartAnimation()
-//                Text("\(dataReceivedWatch.sensorValueNew[4][0])")
+                if(!showSurvey || isComfyVote){
+                    HeartAnimation()
+                }
                 
-    //            GeometryReader { geometry in
-    //                Image("Asset 3" )
-    //                    .scaleEffect(0.5)
-    //                    .offset(x:geometry.size.width-40, y:geometry.size.height)
-    //            }
                 GeometryReader { geometry in
                     ForEach(0..<Int(dataReceivedWatch.sensorValueNew[4][0]), id: \.self) { index in /// cogIntensity
                         let seed = Bool.random()
@@ -49,8 +48,18 @@ struct WatchHomeView: View {
                             
                     }
                 }
+                
+            }.blur(radius: showSurvey ? 10 : 0)
+            if(showSurvey){
+                WatchSurveyComfyView(isComfyVote: $isComfyVote, showSurvey: $showSurvey)
             }
         }
+        .onAppear{
+            showSurvey = true
+            isComfyVote = true
+            print("appeared")
+        }
+        
     }
     
     func randomPosition(geometry: GeometryProxy, seed: Bool) -> (x: CGFloat, y:CGFloat){
@@ -112,10 +121,13 @@ extension Color {
 }
 
 struct WatchHomeView_Previews: PreviewProvider {
+    @State static var isComfyVote = true
+    @State static var showSurvey = true
     static var previews: some View {
-        WatchHomeView()
+        WatchHomeView(isComfyVote: $isComfyVote, showSurvey: $showSurvey)
     }
 }
+
 
 
 

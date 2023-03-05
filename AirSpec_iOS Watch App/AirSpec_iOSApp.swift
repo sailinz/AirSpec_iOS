@@ -10,9 +10,16 @@ import SwiftUI
 @main
 struct AirSpec_iOSApp: App {
     static let name: String = "AirSpec Bluetooth"
+    
+    init() {
+        RawDataViewModel.init_container()
+        SurveyDataViewModel.init_container()
+    }
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(isComfyVote: true, showSurvey: true)
+            
         }
     }
 }

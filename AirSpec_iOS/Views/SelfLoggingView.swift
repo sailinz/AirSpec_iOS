@@ -135,9 +135,6 @@ struct SelfLoggingView: View {
                                 .frame(width: 250)
                                 .background(RoundedRectangle(cornerRadius: 15).fill(Color.gray).opacity(0.2))
     //                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.pink,lineWidth: 1))
-
-                            
-                            
                                 
                             
                             Button(action:{

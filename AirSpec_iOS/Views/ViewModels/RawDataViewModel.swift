@@ -111,10 +111,11 @@ class RawDataViewModel {
         })
     }
     
-    static func addMetaDataToRawData(payload: String, timestampUnix: Date){
+    static func addMetaDataToRawData(payload: String, timestampUnix: Date, type: Int32){
         var metaData = appMetaDataPacket()
         metaData.payload = payload
         metaData.timestampUnix = UInt64(timestampUnix.timeIntervalSince1970) * 1000
+        metaData.type = UInt32(type)
         
         
         do {

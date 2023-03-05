@@ -186,6 +186,22 @@ struct SettingView: View {
                         }
                         
                         HStack() {
+                            Image(systemName: "externaldrive")
+                                .frame(width: 30, height: 20)
+                            Text("DFU")
+                                .font(.system(.subheadline))
+                            Button(action:receiver.dfu) {
+                                Text("DFU enable")
+                                .font(.system(.subheadline) .weight(.semibold))
+                                .foregroundColor(.white)
+                            }
+                            .padding(.all,5)
+                            .background(.gray.opacity(0.5))
+                            .clipShape(Capsule())
+                        
+                        }
+                        
+                        HStack() {
                             Image(systemName: "lightbulb.led.wide.fill")
                                 .frame(width: 30, height: 20)
                             Text("Test light")
@@ -262,7 +278,7 @@ struct SettingView: View {
                                 UserDefaults.standard.set(self.maxValueNoise/sliderWidth, forKey: "maxValueNoise")
                                 print("\(self.minValueTemp/sliderWidth)")
                                 
-                                RawDataViewModel.addMetaDataToRawData(payload: "minValueTemp : \(self.minValueTemp/sliderWidth) C", timestampUnix: Date())
+                                RawDataViewModel.addMetaDataToRawData(payload: "minValueTemp : \(self.minValueTemp/sliderWidth) C", timestampUnix: Date(), type: 1)
                             }) {
                                 Text("Update")
                                     .foregroundColor(.white)

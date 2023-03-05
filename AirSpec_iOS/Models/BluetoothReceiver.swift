@@ -71,7 +71,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     
     /// -- push to server
     private var timer: DispatchSourceTimer?
-    let updateFrequence = 600 /// seconds
+    let updateFrequence = 60 /// seconds
     let batchSize = 50
 //    private var reconstructedData:[SensorPacket] = [] /// for testing only
 
@@ -164,7 +164,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         timer?.setEventHandler {
             
 //            self.uploadToServer()
-//            self.storeLongTermData()
+            self.storeLongTermData()
             
         }
         timer?.resume()
@@ -283,8 +283,12 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 }
 //                print(packet)
 
+                var isIMU = false
+                var isMIC = false
+                var isBlink = false
                 switch packet.payload{
                     case .some(.sgpPacket(_)):
+                        print("sgp packet")
 //                        print(Date())
 //                        print(packet.sgpPacket)
                         for sensorPayload in packet.sgpPacket.payload {
@@ -301,6 +305,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
                     case .some(.bmePacket(_)):
 //                    print(packet.bmePacket)
+                        print("bme packet")
                         for sensorPayload in packet.bmePacket.payload {
                             if(sensorPayload.sensorID == BME680_signal_id.co2Eq){
                                 self.airQualityData[2] = Double(sensorPayload.signal) /// CO2
@@ -315,7 +320,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                         }
 
                     case .some(.luxPacket(_)):
-    //                    print("lux packet")
+                        print("lux packet")
 //                        print(packet.luxPacket)
                         for sensorPayload in packet.luxPacket.payload {
                             if(sensorPayload.lux != nil){
@@ -326,6 +331,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                             }
                         }
                     case .some(.shtPacket(_)):
+                        print("sht packet")
                         for sensorPayload in packet.shtPacket.payload {
                             if(sensorPayload.temperature != nil && sensorPayload.humidity != nil){
                                 self.thermalData[0] = Double(sensorPayload.temperature) /// temperature
@@ -342,7 +348,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                         print("spec packet")
                     case .some(.thermPacket(_)):
                     
-//                        print("thermPacket")
+                        print("thermPacket")
                         var thermNoseTip: Double = 0
                         var thermNoseBridge: Double = 0
                         var thermTempleFront: Double = 0
@@ -393,14 +399,15 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     
 
                     case .some(.imuPacket(_)):
-//                        print("imu packet")
+                        print("imu packet")
+                        isIMU = true
                         break
                     case .some(.micPacket(_)):
                         print("mic packet")
-//                        print(packet)
-//                        try TempDataViewModel.addTempData(timestamp: Int32(Date().timeIntervalSince1970), sensor: SensorIconConstants.sensorAcoustics[0].name, value: Float(self.acoutsticsData[0]))
+                        isMIC = true
                     case .some(.blinkPacket(_)):
-//                        print("blink packet")
+                        print("blink packet")
+                        isBlink = true
                         break
                     case .some(.surveyPacket(_)):
                         break
@@ -412,8 +419,11 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 }
                 
                 /// this works!
-                let data = try packet.serializedData()
-                try RawDataViewModel.addRawData(record: data)
+                if(!isMIC){
+                    let data = try packet.serializedData()
+                    try RawDataViewModel.addRawData(record: data)
+                }
+                
                 
 //                reconstructedData.append(packet)
                 
@@ -664,6 +674,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     
     func setBlue(){
 
+        print("set blue")
         /// single LED
         var singleLED = AirSpecConfigPacket()
         singleLED.header.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
@@ -686,6 +697,29 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             //handle error
             print("fail to send LED notification")
         }
+
+    }
+    
+    
+    func dfu(){
+
+        /// dfu
+        var dfu = AirSpecConfigPacket()
+        dfu.header.timestampUnix = UInt64(Date().timeIntervalSince1970)
+        dfu.dfuMode.enable = true
+
+        do {
+            let cmd = try dfu.serializedData()
+            connectedPeripheral?.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
+            print(cmd)
+        } catch {
+            //handle error
+            print("fail to send LED notification")
+        }
+
+
+        
+        
 
     }
 

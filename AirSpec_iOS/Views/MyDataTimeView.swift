@@ -47,14 +47,14 @@ struct MyDataTimeView: View {
 
     var body: some View {
         VStack(alignment: .center){
-            Text("Comfort votes")
-                .font(.system(.caption).weight(.semibold))
-
-            chartComfort
-            Text("Sensor readings")
-                .font(.system(.caption).weight(.semibold))
-            Spacer()
-                .frame(height: 60)
+//            Text("Comfort votes")
+//                .font(.system(.caption).weight(.semibold))
+//
+//            chartComfort
+//            Text("Sensor readings")
+//                .font(.system(.caption).weight(.semibold))
+//            Spacer()
+//                .frame(height: 100)
             chartEnv
 
 
@@ -220,14 +220,7 @@ struct ToggleItem: View {
     var checkTogglekImage:String
     var checkToggleText:String
     var tag: Int
-//    var lastTag: Int
     var label: String = ""
-
-//    let influxClient = try InfluxDBClient(url: NetworkConstants.url, token: NetworkConstants.token)
-
-//    mutating func updateLastTag() {
-//        self.lastTag = self.tag
-//    }
 
     var body: some View {
         let isOn = Binding (get: { self.storage[self.tag] },
@@ -239,7 +232,6 @@ struct ToggleItem: View {
 
 
         if(self.storage[self.tag]){
-//            print(self.tag)
             startQueries(i:self.tag)
 
         }
@@ -248,12 +240,6 @@ struct ToggleItem: View {
     }
 
     func startQueries(i:Int) {
-
-        /// environmental sensing
-//        var tempData: [(minutes: Date, values: Double)] = []
-    
-        
-        
         do {
             let (longTermData, onComplete) = try LongTermDataViewModel.fetchData()
             if longTermData.isEmpty {
@@ -267,8 +253,6 @@ struct ToggleItem: View {
             
             let selectedSensorData = longTermData.filter { $0.1 == sensorSettingList[i].name}
             
-//            print(sensorSettingList[i].name)
-//            print(selectedSensorData)
             
             let convertedSensorData = selectedSensorData.compactMap { tuple -> (Date, Double)? in
                 let date = tuple.0
