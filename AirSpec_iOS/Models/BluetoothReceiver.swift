@@ -60,6 +60,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
     /// -- watchConnectivity
     @Published var dataToWatch = SensorData()
+    var surveyStatusFromWatch = SensorData()
+    var isSurveyDone = false
     
     /// -- notification mechenism
     /// maybe the sampling frequency is high enough that the location information is not needed
@@ -163,8 +165,13 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         timer?.schedule(deadline: .now(), repeating: .seconds(updateFrequence))
         timer?.setEventHandler {
             
-//            self.uploadToServer()
+            self.uploadToServer()
             self.storeLongTermData()
+            
+            LocalNotification.setLocalNotification(title: "title",
+                                                   subtitle: "Subtitle",
+                                                   body: "this is body",
+                                                   when: 1)
             
         }
         timer?.resume()
@@ -281,7 +288,16 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     print("failed parsing packet: \(error)")
                     return
                 }
-//                print(packet)
+                print(packet)
+                
+                if(surveyStatusFromWatch.surveyDone){
+                    isSurveyDone = true
+                    print("received survey status")
+                }
+                if isSurveyDone{
+                    testLight()
+                    isSurveyDone = false
+                }
 
                 var isIMU = false
                 var isMIC = false
@@ -332,7 +348,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                         }
                     case .some(.shtPacket(_)):
                         print("sht packet")
-                        print(packet)
+//                        print(packet)
                         for sensorPayload in packet.shtPacket.payload {
                             if(sensorPayload.temperature != nil && sensorPayload.humidity != nil){
                                 self.thermalData[0] = Double(sensorPayload.temperature) /// temperature
@@ -740,20 +756,20 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //            //handle error
 //            print("fail to send LED notification")
 //        }
+//
+//
+//        / single LED
+        var singleLED = AirSpecConfigPacket()
+        singleLED.header.timestampUnix = UInt64(Date().timeIntervalSince1970)
 
+        singleLED.ctrlIndivLed.left.eye.blue = 200
+        singleLED.ctrlIndivLed.left.eye.green = 83
+        singleLED.ctrlIndivLed.left.eye.red = 0
 
-        /// single LED
-//        var singleLED = AirSpecConfigPacket()
-//        singleLED.header.timestampUnix = UInt32(Date().timeIntervalSince1970)
-//
-//        singleLED.ctrlIndivLed.left.eye.blue = 50
-//        singleLED.ctrlIndivLed.left.eye.green = 83
-//        singleLED.ctrlIndivLed.left.eye.red = 200
-//
-//        singleLED.ctrlIndivLed.right.eye.blue = 200
-//        singleLED.ctrlIndivLed.right.eye.green = 39
-//        singleLED.ctrlIndivLed.right.eye.red = 50
-//
+        singleLED.ctrlIndivLed.right.eye.blue = 200
+        singleLED.ctrlIndivLed.right.eye.green = 83
+        singleLED.ctrlIndivLed.right.eye.red = 0
+
 //        singleLED.ctrlIndivLed.left.forward.blue = 50
 //        singleLED.ctrlIndivLed.left.forward.green = 83
 //        singleLED.ctrlIndivLed.left.forward.red = 200
@@ -769,44 +785,44 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //        singleLED.ctrlIndivLed.right.top.blue = 200
 //        singleLED.ctrlIndivLed.right.top.green = 39
 //        singleLED.ctrlIndivLed.right.top.red = 50
-//
-//
-//        singleLED.payload = .ctrlIndivLed(singleLED.ctrlIndivLed)
-//
-//        do {
-//            let cmd = try singleLED.serializedData()
-//            connectedPeripheral?.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
-//            print(cmd)
-//        } catch {
-//            //handle error
-//            print("fail to send LED notification")
-//        }
 
 
-
-        /// blue green transition
-        var blueGreenTransition = AirSpecConfigPacket()
-        blueGreenTransition.header.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
-
-        blueGreenTransition.blueGreenTransition.enable = true
-        blueGreenTransition.blueGreenTransition.blueMinIntensity = 0
-        blueGreenTransition.blueGreenTransition.blueMaxIntensity = 255
-        blueGreenTransition.blueGreenTransition.greenMaxIntensity = 255
-        blueGreenTransition.blueGreenTransition.stepSize = 2
-        blueGreenTransition.blueGreenTransition.stepDurationMs = 100
-        blueGreenTransition.blueGreenTransition.greenHoldLengthSeconds = 5
-        blueGreenTransition.blueGreenTransition.transitionDelaySeconds = 5
-
-        blueGreenTransition.payload = .blueGreenTransition(blueGreenTransition.blueGreenTransition)
+        singleLED.payload = .ctrlIndivLed(singleLED.ctrlIndivLed)
 
         do {
-            let cmd = try blueGreenTransition.serializedData()
+            let cmd = try singleLED.serializedData()
             connectedPeripheral?.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
             print(cmd)
         } catch {
             //handle error
             print("fail to send LED notification")
         }
+
+
+
+        /// blue green transition
+//        var blueGreenTransition = AirSpecConfigPacket()
+//        blueGreenTransition.header.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
+//
+//        blueGreenTransition.blueGreenTransition.enable = true
+//        blueGreenTransition.blueGreenTransition.blueMinIntensity = 0
+//        blueGreenTransition.blueGreenTransition.blueMaxIntensity = 255
+//        blueGreenTransition.blueGreenTransition.greenMaxIntensity = 255
+//        blueGreenTransition.blueGreenTransition.stepSize = 2
+//        blueGreenTransition.blueGreenTransition.stepDurationMs = 100
+//        blueGreenTransition.blueGreenTransition.greenHoldLengthSeconds = 5
+//        blueGreenTransition.blueGreenTransition.transitionDelaySeconds = 5
+//
+//        blueGreenTransition.payload = .blueGreenTransition(blueGreenTransition.blueGreenTransition)
+//
+//        do {
+//            let cmd = try blueGreenTransition.serializedData()
+//            connectedPeripheral?.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
+//            print(cmd)
+//        } catch {
+//            //handle error
+//            print("fail to send LED notification")
+//        }
 
     }
 

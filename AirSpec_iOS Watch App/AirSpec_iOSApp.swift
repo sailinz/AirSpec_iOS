@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UserNotifications
 
 @main
 struct AirSpec_iOSApp: App {
@@ -21,5 +22,12 @@ struct AirSpec_iOSApp: App {
             ContentView(isComfyVote: true, showSurvey: true)
             
         }
+    }
+}
+
+class InterfaceController: WKInterfaceController {
+    func didReceive(_ notification: UNNotification) {
+        WKInterfaceDevice.current().play(WKHapticType.notification)
+        print("Received notification: \(notification.request.content.body)")
     }
 }

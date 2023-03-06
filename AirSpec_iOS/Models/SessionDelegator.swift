@@ -30,14 +30,17 @@ class SessionDelegator: NSObject, WCSessionDelegate {
     
 //    @Published var receivedValue: String?
     let sensorReading: PassthroughSubject<[[Double]], Never>
+    let surveyStatus: PassthroughSubject<Bool, Never>
     var sensorValueNew: [[Double]] = [Array(repeating: -1.0, count: SensorIconConstants.sensorThermal.count),
                                       Array(repeating: -1.0, count: SensorIconConstants.sensorAirQuality.count),
                                       Array(repeating: -1.0, count: SensorIconConstants.sensorVisual.count),
                                       Array(repeating: -1.0, count: SensorIconConstants.sensorAcoustics.count),
                                       Array(repeating: 3, count: 1)  ] /// cog load
+    var isSurveyDone: Bool = false
     
-    init(sensorReading: PassthroughSubject<[[Double]], Never>) {
+    init(sensorReading: PassthroughSubject<[[Double]], Never>, surveyStatus: PassthroughSubject<Bool, Never>) {
         self.sensorReading = sensorReading
+        self.surveyStatus = surveyStatus
         super.init()
     }
     
@@ -47,6 +50,7 @@ class SessionDelegator: NSObject, WCSessionDelegate {
     
     
     /// Did receive an app context.
+    #if os(watchOS)
     func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
         DispatchQueue.main.async {
             if let sensorReadingValue = applicationContext["temperatureData"] as? Double {
@@ -73,17 +77,20 @@ class SessionDelegator: NSObject, WCSessionDelegate {
         }
         
     }
-    
-    
-//    func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
-//        DispatchQueue.main.async {
-//            if let temp = message["sensorValue"] as? Int {
-//                self.sensorReading.send(temp)
-//            } else {
-//                print("There was an error")
-//            }
-//        }
-//    }
+    #endif
+             
+    #if os(iOS)
+    func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
+        DispatchQueue.main.async {
+            if let isSurveyDone = message["isSurveyDone"] as? Bool {
+                self.isSurveyDone = true
+                self.surveyStatus.send(isSurveyDone)
+            } else {
+                print("There was an error")
+            }
+        }
+    }
+    #endif
     
     /// WCSessionDelegate methods for iOS only.
     #if os(iOS)

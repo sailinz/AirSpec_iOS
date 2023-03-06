@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import WatchConnectivity
 
 struct WatchSurveyComfyView: View {
     let comfyColor:Color = .mint
@@ -14,6 +15,7 @@ struct WatchSurveyComfyView: View {
     @Binding var isComfyVote: Bool
     @Binding var showSurvey: Bool
 
+    var surveyStatusToPhone = SensorData()
     
     var body: some View {
         
@@ -32,6 +34,9 @@ struct WatchSurveyComfyView: View {
                             do{
         //                        try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-2), choice: "not comfy")
                                 try RawDataViewModel.addSurveyDataToRawData(qIndex: -2, qChoice: "not comfy", qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
+                                
+                                try surveyStatusToPhone.updateSurveyStatus()
+                                
                                 isComfyVote = false
                             }catch{
                                 print("Error saving survey data: \(error.localizedDescription)")

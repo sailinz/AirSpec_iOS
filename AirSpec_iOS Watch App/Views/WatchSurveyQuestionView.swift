@@ -22,6 +22,8 @@ struct WatchSurveyQuestionView: View {
     @State var currentQuestion = 11
     @State var nextQuestion = 11
     @Binding var showSurvey: Bool
+    
+    
 
     
     var body: some View {

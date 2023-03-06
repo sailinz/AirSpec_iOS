@@ -11,26 +11,46 @@ import WatchConnectivity
 final class SensorData: ObservableObject {
     var session: WCSession
     let delegate: WCSessionDelegate
-    let subject = PassthroughSubject<[[Double]], Never>()
-
+    
+    
+    let sensorReading = PassthroughSubject<[[Double]], Never>()
     @Published private(set) var sensorValueNew: [[Double]] = [Array(repeating: -1.0, count: SensorIconConstants.sensorThermal.count),
                                                               Array(repeating: -1.0, count: SensorIconConstants.sensorAirQuality.count),
                                                               Array(repeating: -1.0, count: SensorIconConstants.sensorVisual.count),
                                                               Array(repeating: -1.0, count: SensorIconConstants.sensorAcoustics.count),
                                                               Array(repeating: 3, count: 1)  ] /// cog load
     
-
+    
+    
+    let surveyStatus = PassthroughSubject<Bool, Never>()
+    @Published var surveyDone: Bool = false
+    
+    
     init(session: WCSession = .default) {
-        self.delegate = SessionDelegator(sensorReading: subject)
+        #if os(watchOS)
+        self.delegate = SessionDelegator(sensorReading: sensorReading, surveyStatus:surveyStatus)
         self.session = session
         self.session.delegate = self.delegate
         self.session.activate()
-
-        subject
+        sensorReading
             .receive(on: DispatchQueue.main)
             .assign(to: &$sensorValueNew)
+        #endif
+        
+        #if os(iOS)
+        self.delegate = SessionDelegator(sensorReading: sensorReading, surveyStatus:surveyStatus)
+        self.session = session
+        self.session.delegate = self.delegate
+        self.session.activate()
+        surveyStatus
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$surveyDone)
+        #endif
+  
+        
     }
 
+    
     func updateValue(sensorValue: Double, sensorName: String){
         do {
             try session.updateApplicationContext([sensorName: sensorValue])
@@ -38,5 +58,13 @@ final class SensorData: ObservableObject {
             print(error.localizedDescription)
         }
     }
+    
+    
+    func updateSurveyStatus(){
+        session.sendMessage(["isSurveyDone": true], replyHandler: nil) { error in
+                    print(error.localizedDescription)
+                }
+    }
+
 }
 
