@@ -140,8 +140,14 @@ struct SelfLoggingView: View {
                             Button(action:{
                                         ///submit data
                                     do{
-                                        try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-1), choice: self.comments)
-                                        RawDataViewModel.addSurveyDataToRawData(qIndex: -1, qChoice: self.comments, qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
+                                        
+                                        if self.comments != "" {
+                                            try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-1), choice: self.comments)
+                                            print("comments: \(self.comments)")
+                                            RawDataViewModel.addSurveyDataToRawData(qIndex: -1, qChoice: self.comments, qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
+                                        }
+                                        
+                                        
                                     }catch{
                                         print("Error saving survey data: \(error.localizedDescription)")
                                     }

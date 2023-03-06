@@ -117,12 +117,12 @@ class RawDataViewModel {
         metaData.timestampUnix = UInt64(timestampUnix.timeIntervalSince1970) * 1000
         metaData.type = UInt32(type)
 
-        var sensorPacket = SensorPacket().with {
-            $0.header = SensorPacketHeader().with {
-                $0.epoch = NSDate().timeIntervalSince1970 * 1000
+        var sensorPacket = SensorPacket.with {
+            $0.header = SensorPacketHeader.with {
+                $0.epoch = UInt64(NSDate().timeIntervalSince1970 * 1000)
             }
 
-            $0.metaDataPacket = surveyData
+            $0.metaDataPacket = metaData
         }
 
         do {
@@ -142,9 +142,9 @@ class RawDataViewModel {
         surveyData.payload[0].qGroupIndex = qGroupIndex
         surveyData.payload[0].timestampUnix = UInt64(timestampUnix.timeIntervalSince1970) * 1000
 
-        var sensorPacket = SensorPacket().with {
-            $0.header = SensorPacketHeader().with {
-                $0.epoch = NSDate().timeIntervalSince1970 * 1000
+        var sensorPacket = SensorPacket.with {
+            $0.header = SensorPacketHeader.with {
+                $0.epoch = UInt64(NSDate().timeIntervalSince1970 * 1000)
             }
 
             $0.surveyPacket = surveyData

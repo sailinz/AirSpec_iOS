@@ -288,7 +288,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     print("failed parsing packet: \(error)")
                     return
                 }
-                print(packet)
+//                print(packet)
                 
                 if(surveyStatusFromWatch.surveyDone){
                     isSurveyDone = true
@@ -416,14 +416,14 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     
 
                     case .some(.imuPacket(_)):
-                        print("imu packet")
+//                        print("imu packet")
                         isIMU = true
                         break
                     case .some(.micPacket(_)):
-                        print("mic packet")
+//                        print("mic packet")
                         isMIC = true
                     case .some(.blinkPacket(_)):
-                        print("blink packet")
+//                        print("blink packet")
                         isBlink = true
                         break
                     case .some(.surveyPacket(_)):
@@ -436,7 +436,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 }
                 
                 /// this works!
-                if(!isMIC){
+                if(!isMIC && !isIMU && !isBlink){
                     let data = try packet.serializedData()
                     try RawDataViewModel.addRawData(record: data)
                 }

@@ -73,6 +73,9 @@ class LocalNotification {
             //This callback does not trigger on main loop be careful
             if allowed {
                 print("notification allowed")
+                DispatchQueue.main.async {
+                    UIApplication.shared.registerForRemoteNotifications()
+                }
             } else {
                 print("notification error")
             }
@@ -84,11 +87,10 @@ class LocalNotification {
         content.title = title
         content.subtitle = subtitle
         content.body = body
-//        content.sound = UNNotificationSound.default
+        content.sound = UNNotificationSound.default
 
-        
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: when, repeats: false)
-        let request = UNNotificationRequest.init(identifier: "localNotificatoin", content: content, trigger: trigger)
+        let request = UNNotificationRequest.init(identifier: UUID().uuidString, content: content, trigger: trigger)
         UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
         
     }
