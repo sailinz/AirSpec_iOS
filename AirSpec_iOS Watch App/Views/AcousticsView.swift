@@ -24,6 +24,7 @@ struct AcousticsView: View {
 //    var user_id:String = "9067133"
 
     let updateFrequence = 10 /// seconds
+//    @ObservedObject var dataReceivedWatch: SensorData
     
     var body: some View {
         VStack (alignment: .leading) {

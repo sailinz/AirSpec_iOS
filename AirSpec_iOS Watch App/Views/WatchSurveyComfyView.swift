@@ -13,6 +13,7 @@ struct WatchSurveyComfyView: View {
     @State var surveyRecordIndex: Int = 0
     @Binding var isComfyVote: Bool
     @Binding var showSurvey: Bool
+
     
     var body: some View {
         
@@ -20,6 +21,8 @@ struct WatchSurveyComfyView: View {
         ZStack{
             if(isComfyVote){
                 VStack{
+                    Spacer()
+                        .frame(height: 30)
                     Text("How are you feeling now?")
                     Spacer()
                         .frame(height: 10)
@@ -49,7 +52,7 @@ struct WatchSurveyComfyView: View {
                                     }
                                     Text("Not comfy")
                                         .font(.system(.subheadline) .weight(.semibold))
-                                        .foregroundColor(uncomfyColor)
+                                        .foregroundColor(.white)
                                 }
                             }
                         }
@@ -84,13 +87,60 @@ struct WatchSurveyComfyView: View {
                                     }
                                     Text("Comfy")
                                         .font(.system(.subheadline) .weight(.semibold))
-                                        .foregroundColor(comfyColor)
+                                        .foregroundColor(.white)
                                 }
                             }
                         }
                         .buttonStyle(PlainButtonStyle())
                     }
+                    
+                    Spacer()
+                        .frame(height: 20)
+                    /// allow user to close the survey
+//                    HStack{
+                        
+                    Button(action:{
+                        withAnimation{
+                            showSurvey = false
+                            isComfyVote = false
+                        }
+                    }){
+                        Image(systemName: "xmark.circle")
+                            .font(.system(size:20, weight:.bold))
+                            .foregroundColor(.pink)
+                    }
+//                    .frame(width: 30, height: 30)
+                    .clipShape(Circle())
+                        
+//                        Spacer()
+//                            .frame(width: 100)
+                        
+//                    }
+                    
                 }
+//                .gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local)
+//                        .onEnded({ value in
+//                            if value.translation.width < 0 {
+//                                // left
+//                                print("swipe down")
+//                            }
+//
+//                            if value.translation.width > 0 {
+//                                // right
+//                                print("swipe down")
+//                            }
+//                            if value.translation.height < 0 {
+//                                // up
+//                                print("swipe down")
+//                            }
+//
+//                            if value.translation.height > 0 {
+//                                // down
+//                                print("swipe down")
+//                                showSurvey = false
+//                                isComfyVote = false
+//                            }
+//                        }))
             }else{
                 WatchSurveyQuestionView(showSurvey: $showSurvey)
             }

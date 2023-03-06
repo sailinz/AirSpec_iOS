@@ -30,15 +30,16 @@ struct WatchHomeView: View {
         ZStack{
             ZStack{
                 if(!showSurvey || isComfyVote){
-                    HeartAnimation()
+                    HeartAnimation(dataReceivedWatch: dataReceivedWatch)
                 }
                 
                 GeometryReader { geometry in
                     ForEach(0..<Int(dataReceivedWatch.sensorValueNew[4][0]), id: \.self) { index in /// cogIntensity
                         let seed = Bool.random()
                         Image("Asset " + String(Int.random(in: 1...18)))
+                            .opacity(0.4)
                             .rotationEffect(.degrees(Double.random(in: 0...360)))
-                            .scaleEffect(0.2)
+                            .scaleEffect(0.3)
                             .frame(width: CGFloat.random(in: 5...15), height: CGFloat.random(in: 5...15))
                             .offset(x: self.randomPosition(geometry: geometry, seed: seed).x, y: self.randomPosition(geometry: geometry, seed: seed).y)
                             .shadow(

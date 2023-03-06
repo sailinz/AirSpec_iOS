@@ -11,13 +11,17 @@ import HealthKit
 struct HeartAnimation: View {
 
     @State var animate: Bool = false
-    @State private var heartRate: Double? = nil
-    @State private var opacityT = SensorIconConstants.goodStateOpacity
-    @State private var opacityAQ = SensorIconConstants.goodStateOpacity
-    @State private var opacityN = SensorIconConstants.goodStateOpacity
-    @State private var opacityL = SensorIconConstants.goodStateOpacity
-   
-    private var healthStore = HKHealthStore()
+    @State var heartRate: Double? = nil
+    @State var opacityT = SensorIconConstants.goodStateOpacity
+    @State var opacityAQ = SensorIconConstants.goodStateOpacity
+    @State var opacityN = SensorIconConstants.goodStateOpacity
+    @State var opacityL = SensorIconConstants.goodStateOpacity
+    
+    #if os(watchOS)
+    @ObservedObject var dataReceivedWatch: SensorData
+    #endif
+    
+    var healthStore = HKHealthStore()
     
     
     let timer = Timer.publish(every: 3, on: .current, in: .common).autoconnect()
@@ -110,7 +114,7 @@ struct HeartAnimation: View {
         #if os(watchOS)
             NavigationView {
                 ZStack{
-                    NavigationLink(destination: VisualView()) {
+                    NavigationLink(destination: VisualView(dataReceivedWatch: dataReceivedWatch)) {
                         Image("heart_visual")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
@@ -135,7 +139,7 @@ struct HeartAnimation: View {
                     }.buttonStyle(PlainButtonStyle())
                     
                     
-                    NavigationLink(destination: AirQualityView()) {
+                    NavigationLink(destination: AirQualityView(dataReceivedWatch: dataReceivedWatch)) {
                         Image("heart_aq")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
@@ -148,7 +152,7 @@ struct HeartAnimation: View {
                     }.buttonStyle(PlainButtonStyle())
                     
                     
-                    NavigationLink(destination: ThermalView()) {
+                    NavigationLink(destination: ThermalView(dataReceivedWatch: dataReceivedWatch)) {
                         Image("heart_thermal")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
@@ -230,8 +234,8 @@ struct HeartAnimation: View {
     
 }
 
-struct HeartAnimation_Previews: PreviewProvider {
-    static var previews: some View {
-        HeartAnimation()
-    }
-}
+//struct HeartAnimation_Previews: PreviewProvider {
+//    static var previews: some View {
+//        HeartAnimation()
+//    }
+//}

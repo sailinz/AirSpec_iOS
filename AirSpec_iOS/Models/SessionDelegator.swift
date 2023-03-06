@@ -49,22 +49,22 @@ class SessionDelegator: NSObject, WCSessionDelegate {
     /// Did receive an app context.
     func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
         DispatchQueue.main.async {
-            if let sensorReading = applicationContext["temperatureData"] as? Double {
-                self.sensorValueNew[0][0] = sensorReading
-            }else if let sensorReading = applicationContext["humidityData"] as? Double {
-                self.sensorValueNew[0][1] = sensorReading
-            }else if let sensorReading = applicationContext["vocIndexData"] as? Double {
-                self.sensorValueNew[1][0] = sensorReading
-            }else if let sensorReading = applicationContext["noxIndexData"] as? Double {
-                self.sensorValueNew[1][1] = sensorReading
-            }else if let sensorReading = applicationContext["co2Data"] as? Double {
-                self.sensorValueNew[1][2] = sensorReading
-            }else if let sensorReading = applicationContext["iaqData"] as? Double {
-                self.sensorValueNew[1][3] = sensorReading
-            }else if let sensorReading = applicationContext["luxData"] as? Double {
-                self.sensorValueNew[2][0] = sensorReading
-            }else if let sensorReading = applicationContext["cogLoadData"] as? Double {
-                self.sensorValueNew[4][0] = sensorReading
+            if let sensorReadingValue = applicationContext["temperatureData"] as? Double {
+                self.sensorValueNew[0][0] = sensorReadingValue
+            }else if let sensorReadingValue = applicationContext["humidityData"] as? Double {
+                self.sensorValueNew[0][1] = sensorReadingValue
+            }else if let sensorReadingValue = applicationContext["vocIndexData"] as? Double {
+                self.sensorValueNew[1][0] = sensorReadingValue
+            }else if let sensorReadingValue = applicationContext["noxIndexData"] as? Double {
+                self.sensorValueNew[1][1] = sensorReadingValue
+            }else if let sensorReadingValue = applicationContext["co2Data"] as? Double {
+                self.sensorValueNew[1][2] = sensorReadingValue
+            }else if let sensorReadingValue = applicationContext["iaqData"] as? Double {
+                self.sensorValueNew[1][3] = sensorReadingValue
+            }else if let sensorReadingValue = applicationContext["luxData"] as? Double {
+                self.sensorValueNew[2][0] = sensorReadingValue
+            }else if let sensorReadingValue = applicationContext["cogLoadData"] as? Double {
+                self.sensorValueNew[4][0] = sensorReadingValue
             } else {
                 print("There was an error")
             }

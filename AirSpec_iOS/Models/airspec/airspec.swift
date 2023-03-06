@@ -28,8 +28,7 @@ public class Airspec {
             $0.sensorData = packets
             
             $0.meta = SubmitPackets.Meta.with {
-                //            $0.userID =
-                $0.epoch = NSDate().timeIntervalSince1970
+                $0.epoch = NSDate().timeIntervalSince1970 * 1000
                 $0.phoneUid = UInt32(UserDefaults.standard.string(forKey: "user_id") ?? "") ?? 0
             }
             
@@ -42,16 +41,11 @@ public class Airspec {
         request.httpMethod = "POST"
         request.setValue("application/protobuf", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(auth_token)", forHTTPHeaderField: "Authorization")
-
-        /// the byte array can be used to regenerate the data: https://medium.com/theengineeringgecko/protocol-buffers-for-swift-eda7eb114d08
-//        let reconstructedData = try SensorPacket.init(serializedData: data) /// does not work because the contents also have the epoch
-//        print(reconstructedData)
-
         let session = URLSession(configuration: URLSessionConfiguration.ephemeral)
         
-        // unfortunately can't test because non-darwin platforms only have uploadTask. hacked it to async
-        // with `withCheckedThrowingContinuation` but this also didn't work (possibly because I was in
-        // XCTest).
+        /// unfortunately can't test because non-darwin platforms only have uploadTask. hacked it to async
+        /// with `withCheckedThrowingContinuation` but this also didn't work (possibly because I was in
+        /// XCTest).
         let task = URLSession.shared.uploadTask(
             with: request,
             from: data

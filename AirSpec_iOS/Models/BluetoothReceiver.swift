@@ -332,6 +332,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                         }
                     case .some(.shtPacket(_)):
                         print("sht packet")
+                        print(packet)
                         for sensorPayload in packet.shtPacket.payload {
                             if(sensorPayload.temperature != nil && sensorPayload.humidity != nil){
                                 self.thermalData[0] = Double(sensorPayload.temperature) /// temperature

@@ -25,7 +25,8 @@ struct AirQualityView: View {
     @State private var AirQualityDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorAirQuality.count)
 //    var user_id:String = "9067133"
     
-    @StateObject var dataReceivedWatch = SensorData()
+//    @StateObject var dataReceivedWatch = SensorData()
+    @ObservedObject var dataReceivedWatch: SensorData
     
     var body: some View {
         VStack (alignment: .leading) {
@@ -66,11 +67,11 @@ struct AirQualityView: View {
 }
 
 
-struct AirQualityView_Previews: PreviewProvider {
-    static var previews: some View {
-        AirQualityView()
-    }
-}
+//struct AirQualityView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        AirQualityView()
+//    }
+//}
 
 
 

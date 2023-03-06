@@ -55,7 +55,7 @@ struct WatchSurveyQuestionView: View {
                                     /// end of the survey
                                     if(currentQuestionItem.nextQuestion[0] == 999){
                                         print("survey record index: \(UserDefaults.standard.integer(forKey: "survey_record_index"))")
-                                        //                                cself.uploadToServer()
+//                                        self.uploadToServer()
                                         showSurvey = false
                                     }
                                     

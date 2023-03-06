@@ -30,7 +30,8 @@ struct ThermalView: View {
 //    let updateFrequence = 10 /// seconds
     
     /// -- watch connectivity
-    @StateObject var dataReceivedWatch = SensorData()  /// need to find more efficient ways to receive these data
+//    @StateObject var dataReceivedWatch = SensorData()  /// need to find more efficient ways to receive these data
+    @ObservedObject var dataReceivedWatch: SensorData
     
     var body: some View {
         VStack (alignment: .leading) {
@@ -78,11 +79,11 @@ struct ThermalView: View {
 }
 
 
-struct ThermalView_Previews: PreviewProvider {
-    static var previews: some View {
-        ThermalView()
-    }
-}
+//struct ThermalView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ThermalView()
+//    }
+//}
 
 
 

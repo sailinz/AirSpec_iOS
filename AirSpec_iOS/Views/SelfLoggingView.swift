@@ -173,7 +173,7 @@ struct SelfLoggingView: View {
             }
             
             
-            
+            /// close the sruvey
             Button(action:{
                 withAnimation{
                     show.toggle()

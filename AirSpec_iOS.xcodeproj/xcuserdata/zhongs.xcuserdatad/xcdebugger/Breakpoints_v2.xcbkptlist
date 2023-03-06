@@ -30,8 +30,8 @@
             filePath = "AirSpec_iOS/Models/BluetoothReceiver.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "471"
-            endingLineNumber = "471"
+            startingLineNumber = "472"
+            endingLineNumber = "472"
             landmarkName = "uploadToServer()"
             landmarkType = "7">
          </BreakpointContent>
