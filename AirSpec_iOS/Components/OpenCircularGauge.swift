@@ -48,35 +48,24 @@ struct OpenCircularGauge<Content>: View where Content: View {
         let trendIcon = valueTrendIcon(for:valueTrend)
 
         Gauge(value: current, in: minValue...maxValue) {
-            Image(systemName:trendIcon)
+            Image(systemName: icon)
                 .foregroundColor(labelColor(for: current, minValue: minValue, maxValue: maxValue))
+                
             } currentValueLabel: {
-                Image(systemName: icon)
+//                Image(systemName: trendIcon)
+//                    .foregroundColor(labelColor(for: current, minValue: minValue, maxValue: maxValue))
+                Text(Int(current) == -1 ? "" : "\(Int(current))")
                     .foregroundColor(labelColor(for: current, minValue: minValue, maxValue: maxValue))
+                    .font(.system(size: 28, design: .rounded) .weight(.heavy))
             }
             .gaugeStyle(.accessoryCircular)
             .tint(gradientColors)
+            .shadow(
+                color:.white.opacity(0.2),
+                radius:4)
+        
 
-        
-//        Gauge(value: current, in: minValue...maxValue) {
-////            Image(systemName: "heart.fill")
-////                .foregroundColor(.red)
-//        } currentValueLabel: {
-//            Text("\(Int(current))")
-//                .foregroundColor(Color.green)
-//        } minimumValueLabel: {
-//            Text("\(Int(minValue))")
-//                .foregroundColor(Color.green)
-//        } maximumValueLabel: {
-//            Text("\(Int(maxValue))")
-//                .foregroundColor(Color.red)
-//        }
-//        .gaugeStyle(.accessoryCircular)
-//        .tint(LinearGradient(gradient: gradientColors, startPoint: .leading, endPoint: .trailing))
-////        .gaugeStyle(CircularGaugeStyle(tint: gradient))
-        ///
-        ///
-        
+    
     }
     
     private func labelColor(for value: Double, minValue: Double, maxValue: Double) -> Color {
@@ -91,11 +80,11 @@ struct OpenCircularGauge<Content>: View where Content: View {
     
     private func valueTrendIcon(for valueTrend:Int) -> String {
         if valueTrend == 1{
-            return "arrow.down.right"
+            return "checkmark.circle.fill"
         } else if valueTrend == 0 {
-            return "arrow.right"
+            return "minus.circle.fill"
         } else{
-            return "arrow.up.right"
+            return "xmark.circle.fill"
         }
     }
     
@@ -104,7 +93,7 @@ struct OpenCircularGauge<Content>: View where Content: View {
 
 struct OpenCircularGauge_Previews: PreviewProvider {
     static var previews: some View {
-        OpenCircularGauge(current: 55.0, minValue: 50.0, maxValue: 100.0, color1: Color.blue, color2: Color.white, color3: Color.red, color1Position: 0.3, color3Position: 0.7, valueTrend: 0, icon: "thermometer.low"){
+        OpenCircularGauge(current: 25, minValue: 50.0, maxValue: 100.0, color1: Color.blue, color2: Color.white, color3: Color.red, color1Position: 0.3, color3Position: 0.7, valueTrend: -1, icon: "thermometer.low"){
             
         }
     }

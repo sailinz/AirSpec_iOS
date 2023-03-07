@@ -124,6 +124,9 @@ struct HeartAnimation: View {
                         CrookedText(text: "Lighting", radius:90)
                             .rotationEffect(.radians(.pi*5/4))
                             .offset(x:-90,y:30)
+                            .shadow(
+                                color:Color.white.opacity(0.8),
+                                radius:2)
                     }.buttonStyle(PlainButtonStyle())
                     
                     NavigationLink(destination: AcousticsView()) {
@@ -136,6 +139,9 @@ struct HeartAnimation: View {
                         CrookedText(text: "Noise", radius:90)
                             .rotationEffect(.radians(.pi*3/4))
                             .offset(x:-60,y: 35)
+                            .shadow(
+                                color:Color.white.opacity(0.8),
+                                radius:2)
                     }.buttonStyle(PlainButtonStyle())
                     
                     
@@ -149,6 +155,9 @@ struct HeartAnimation: View {
                         CrookedText(text: "Air quality", radius:90)
                             .rotationEffect(.radians(.pi/4))
                             .offset(x:-40,y: 10)
+                            .shadow(
+                                color:Color.white.opacity(0.8),
+                                radius:2)
                     }.buttonStyle(PlainButtonStyle())
                     
                     
@@ -162,6 +171,9 @@ struct HeartAnimation: View {
                         CrookedText(text: "Thermal", radius:90)
                             .rotationEffect(.radians(.pi*7/4))
                             .offset(x:-90,y: 5)
+                            .shadow(
+                                color:Color.white.opacity(0.8),
+                                radius:2)
                     }.buttonStyle(PlainButtonStyle())
                     
                     

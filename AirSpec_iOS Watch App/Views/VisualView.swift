@@ -31,13 +31,13 @@ struct VisualView: View {
             Text("Visual")
                 .font(.system(.caption2) .weight(.heavy))
                 .padding()
-                ScrollView {
-                LazyVGrid(columns: columns, alignment: .center, spacing: 5) {
+//            ScrollView {
+                LazyVGrid(columns: columns, alignment: .center, spacing: 3) {
                     ForEach(0..<SensorIconConstants.sensorVisual.count){i in
                         VStack{
-                            Text(Int(dataReceivedWatch.sensorValueNew[2][i]) == -1 ? "" : "\(Int(dataReceivedWatch.sensorValueNew[2][i]))")
-                                .font(.system(size: 10, design: .rounded) .weight(.heavy))
-                                .foregroundColor(Color.white)
+//                            Text(Int(dataReceivedWatch.sensorValueNew[2][i]) == -1 ? "" : "\(Int(dataReceivedWatch.sensorValueNew[2][i]))")
+//                                .font(.system(size: 10, design: .rounded) .weight(.heavy))
+//                                .foregroundColor(Color.white)
                             OpenCircularGauge(
                                 current: dataReceivedWatch.sensorValueNew[2][i],
                                 minValue: SensorIconConstants.sensorVisual[i].minValue,
@@ -59,7 +59,7 @@ struct VisualView: View {
                     }
                 }
                 .padding(.horizontal)
-            }
+//            }
         }
     }
 }

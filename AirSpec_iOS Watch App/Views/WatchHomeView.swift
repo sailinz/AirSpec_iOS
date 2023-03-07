@@ -52,7 +52,7 @@ struct WatchHomeView: View {
                 
             }.blur(radius: showSurvey ? 10 : 0)
             if(showSurvey){
-                WatchSurveyComfyView(isComfyVote: $isComfyVote, showSurvey: $showSurvey)
+                WatchSurveyComfyView(isComfyVote: $isComfyVote, showSurvey: $showSurvey, surveyStatusToPhone: dataReceivedWatch)
             }
         }
         .onAppear{

@@ -39,13 +39,13 @@ struct ThermalView: View {
             Text("Thermal")
                 .font(.system(.caption2) .weight(.heavy))
                 .padding()
-            ScrollView {
-                LazyVGrid(columns: columns, alignment: .center, spacing: 5) {
+//            ScrollView {
+                LazyVGrid(columns: columns, alignment: .center, spacing: 3) {
                     ForEach(0..<SensorIconConstants.sensorThermal.count){i in
                         VStack{
-                            Text(Int(dataReceivedWatch.sensorValueNew[0][i]) == -1 ? "" : "\(Int(dataReceivedWatch.sensorValueNew[0][i]))")
-                                .font(.system(size: 10, design: .rounded) .weight(.heavy))
-                                .foregroundColor(Color.white)
+//                            Text(Int(dataReceivedWatch.sensorValueNew[0][i]) == -1 ? "" : "\(Int(dataReceivedWatch.sensorValueNew[0][i]))")
+//                                .font(.system(size: 10, design: .rounded) .weight(.heavy))
+//                                .foregroundColor(Color.white)
                             OpenCircularGauge(
                                 current: dataReceivedWatch.sensorValueNew[0][i],
                                 minValue: SensorIconConstants.sensorThermal[i].minValue,
@@ -68,7 +68,7 @@ struct ThermalView: View {
                     }
                 }
                 .padding(.horizontal)
-            }
+//            }
         }
 //        .onAppear(){
 //            viewModel.connectivityProvider.connect()

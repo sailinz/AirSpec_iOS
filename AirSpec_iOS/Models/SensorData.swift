@@ -27,7 +27,6 @@ final class SensorData: ObservableObject {
     
     
     init(session: WCSession = .default) {
-        #if os(watchOS)
         self.delegate = SessionDelegator(sensorReading: sensorReading, surveyStatus:surveyStatus)
         self.session = session
         self.session.delegate = self.delegate
@@ -35,18 +34,10 @@ final class SensorData: ObservableObject {
         sensorReading
             .receive(on: DispatchQueue.main)
             .assign(to: &$sensorValueNew)
-        #endif
         
-        #if os(iOS)
-        self.delegate = SessionDelegator(sensorReading: sensorReading, surveyStatus:surveyStatus)
-        self.session = session
-        self.session.delegate = self.delegate
-        self.session.activate()
         surveyStatus
             .receive(on: DispatchQueue.main)
             .assign(to: &$surveyDone)
-        #endif
-  
         
     }
 
@@ -60,8 +51,13 @@ final class SensorData: ObservableObject {
     }
     
     
-    func updateSurveyStatus(){
-        session.sendMessage(["isSurveyDone": true], replyHandler: nil) { error in
+    func updateSurveyStatus(isSurveyDone: Bool){
+//        do {
+//            try session.updateApplicationContext(["isSurveyDone": isSurveyDone])
+//        } catch {
+//            print(error.localizedDescription)
+//        }
+        session.sendMessage(["isSurveyDone": isSurveyDone], replyHandler: nil) { error in
                     print(error.localizedDescription)
                 }
     }

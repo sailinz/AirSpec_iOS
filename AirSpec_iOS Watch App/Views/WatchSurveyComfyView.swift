@@ -15,7 +15,7 @@ struct WatchSurveyComfyView: View {
     @Binding var isComfyVote: Bool
     @Binding var showSurvey: Bool
 
-    var surveyStatusToPhone = SensorData()
+    @ObservedObject var surveyStatusToPhone:SensorData
     
     var body: some View {
         
@@ -35,7 +35,7 @@ struct WatchSurveyComfyView: View {
         //                        try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-2), choice: "not comfy")
                                 try RawDataViewModel.addSurveyDataToRawData(qIndex: -2, qChoice: "not comfy", qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
                                 
-                                try surveyStatusToPhone.updateSurveyStatus()
+                                surveyStatusToPhone.updateSurveyStatus(isSurveyDone: true)
                                 
                                 isComfyVote = false
                             }catch{
@@ -167,11 +167,12 @@ struct WatchSurveyComfyView: View {
     }
 }
 
-struct WatchSurveyComfyView_Previews: PreviewProvider {
-    @State static var showSurvey = true
-    @State static var isComfyVote = true
-    static var previews: some View {
-        WatchSurveyComfyView(isComfyVote: $isComfyVote, showSurvey: $showSurvey)
-    }
-}
+//struct WatchSurveyComfyView_Previews: PreviewProvider {
+//    @State static var showSurvey = true
+//    @State static var isComfyVote = true
+//
+//    static var previews: some View {
+//        WatchSurveyComfyView(isComfyVote: $isComfyVote, showSurvey: $showSurvey, surveyStatusToPhone: SensorData)
+//    }
+//}
 

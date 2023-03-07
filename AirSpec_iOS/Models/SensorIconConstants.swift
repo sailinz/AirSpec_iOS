@@ -38,10 +38,10 @@ enum SensorIconConstants {
     ]
     
     static let sensorAirQuality = [
-        Icon(name: "VOC index", icon: "wind", color1: Color.mint, color2: Color.yellow, color3: Color.red, minValue: 0.0, maxValue: 500.0, color1Position:0.3, color3Position:0.7, unit: "", measurement:"sgp", type:"voc_index_value"),
-        Icon(name: "NOx index", icon: "aqi.high", color1: Color.mint, color2: Color.yellow, color3: Color.red, minValue: 0, maxValue: 10.0, color1Position:0.1, color3Position:0.5, unit: "", measurement:"sgp", type:"nox_index_value"),
-        Icon(name: "CO2", icon: "carbon.dioxide.cloud", color1: Color.mint, color2: Color.yellow, color3: Color.red, minValue: 300.0, maxValue: 1500.0, color1Position:0.25, color3Position:0.58, unit: "", measurement:"bme", type:"3", identifier:"sensor_id"),
-        Icon(name: "IAQ", icon: "aqi.medium", color1: Color.mint, color2: Color.yellow, color3: Color.red, minValue: 0.0, maxValue: 400.0, color1Position:0.25, color3Position:0.5, unit: "", measurement:"bme", type:"1", identifier:"sensor_id"),
+        Icon(name: "VOC index", icon: "aqi.medium", color1: Color.white, color2: Color.yellow, color3: Color.red, minValue: 0.0, maxValue: 500.0, color1Position:0.3, color3Position:0.7, unit: "", measurement:"sgp", type:"voc_index_value"),
+        Icon(name: "NOx index", icon: "aqi.high", color1: Color.white, color2: Color.yellow, color3: Color.red, minValue: 0, maxValue: 10.0, color1Position:0.1, color3Position:0.5, unit: "", measurement:"sgp", type:"nox_index_value"),
+        Icon(name: "CO2", icon: "carbon.dioxide.cloud", color1: Color.white, color2: Color.yellow, color3: Color.red, minValue: 300.0, maxValue: 1500.0, color1Position:0.25, color3Position:0.58, unit: "", measurement:"bme", type:"3", identifier:"sensor_id"),
+        Icon(name: "IAQ", icon: "wind", color1: Color.white, color2: Color.yellow, color3: Color.red, minValue: 0.0, maxValue: 400.0, color1Position:0.25, color3Position:0.5, unit: "", measurement:"bme", type:"1", identifier:"sensor_id"),
 //        Icon(name: "Gas               ", icon: "aqi.medium", color1: Color.mint, color2: Color.yellow, color3: Color.red, minValue: 100500, maxValue: 102000, color1Position:0.2, color3Position:0.8, measurement:"bme", type:"7", identifier:"sensor_id"),
     ]
     

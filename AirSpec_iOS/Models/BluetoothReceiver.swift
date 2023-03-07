@@ -60,8 +60,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
     /// -- watchConnectivity
     @Published var dataToWatch = SensorData()
-    var surveyStatusFromWatch = SensorData()
-    var isSurveyDone = false
+//    var surveyStatusFromWatch = SensorData()
     
     /// -- notification mechenism
     /// maybe the sampling frequency is high enough that the location information is not needed
@@ -73,7 +72,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     
     /// -- push to server
     private var timer: DispatchSourceTimer?
-    let updateFrequence = 60 /// seconds
+    let updateFrequence = 300 /// seconds
     let batchSize = 50
 //    private var reconstructedData:[SensorPacket] = [] /// for testing only
 
@@ -168,10 +167,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             self.uploadToServer()
             self.storeLongTermData()
             
-            LocalNotification.setLocalNotification(title: "title",
-                                                   subtitle: "Subtitle",
-                                                   body: "this is body",
-                                                   when: 1)
+
             
         }
         timer?.resume()
@@ -290,13 +286,9 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 }
 //                print(packet)
                 
-                if(surveyStatusFromWatch.surveyDone){
-                    isSurveyDone = true
-                    print("received survey status")
-                }
-                if isSurveyDone{
+                if(dataToWatch.surveyDone){
                     testLight()
-                    isSurveyDone = false
+                    dataToWatch.surveyDone = false
                 }
 
                 var isIMU = false
@@ -609,6 +601,10 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 let (data, onComplete) = try TempDataViewModel.fetchData()
                 if data.isEmpty {
                     print("no new data")
+                    LocalNotification.setLocalNotification(title: "No sensor data",
+                                                           subtitle: "Please check glasses connectivity",
+                                                           body: "Open AirSpec App on phone, reboot the glasses if needed.",
+                                                           when: 1)
                     try onComplete()
                     return
                 }
@@ -762,12 +758,12 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         var singleLED = AirSpecConfigPacket()
         singleLED.header.timestampUnix = UInt64(Date().timeIntervalSince1970)
 
-        singleLED.ctrlIndivLed.left.eye.blue = 200
-        singleLED.ctrlIndivLed.left.eye.green = 83
+        singleLED.ctrlIndivLed.left.eye.blue = 20
+        singleLED.ctrlIndivLed.left.eye.green = 200
         singleLED.ctrlIndivLed.left.eye.red = 0
 
-        singleLED.ctrlIndivLed.right.eye.blue = 200
-        singleLED.ctrlIndivLed.right.eye.green = 83
+        singleLED.ctrlIndivLed.right.eye.blue = 20
+        singleLED.ctrlIndivLed.right.eye.green = 200
         singleLED.ctrlIndivLed.right.eye.red = 0
 
 //        singleLED.ctrlIndivLed.left.forward.blue = 50

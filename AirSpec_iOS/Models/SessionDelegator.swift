@@ -50,34 +50,44 @@ class SessionDelegator: NSObject, WCSessionDelegate {
     
     
     /// Did receive an app context.
-    #if os(watchOS)
     func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
         DispatchQueue.main.async {
             if let sensorReadingValue = applicationContext["temperatureData"] as? Double {
                 self.sensorValueNew[0][0] = sensorReadingValue
+                self.sensorReading.send(self.sensorValueNew)
             }else if let sensorReadingValue = applicationContext["humidityData"] as? Double {
                 self.sensorValueNew[0][1] = sensorReadingValue
+                self.sensorReading.send(self.sensorValueNew)
             }else if let sensorReadingValue = applicationContext["vocIndexData"] as? Double {
                 self.sensorValueNew[1][0] = sensorReadingValue
+                self.sensorReading.send(self.sensorValueNew)
             }else if let sensorReadingValue = applicationContext["noxIndexData"] as? Double {
                 self.sensorValueNew[1][1] = sensorReadingValue
+                self.sensorReading.send(self.sensorValueNew)
             }else if let sensorReadingValue = applicationContext["co2Data"] as? Double {
                 self.sensorValueNew[1][2] = sensorReadingValue
+                self.sensorReading.send(self.sensorValueNew)
             }else if let sensorReadingValue = applicationContext["iaqData"] as? Double {
                 self.sensorValueNew[1][3] = sensorReadingValue
+                self.sensorReading.send(self.sensorValueNew)
             }else if let sensorReadingValue = applicationContext["luxData"] as? Double {
                 self.sensorValueNew[2][0] = sensorReadingValue
+                self.sensorReading.send(self.sensorValueNew)
             }else if let sensorReadingValue = applicationContext["cogLoadData"] as? Double {
                 self.sensorValueNew[4][0] = sensorReadingValue
-            } else {
+                self.sensorReading.send(self.sensorValueNew)
+//            }else if let isSurveyDoneValue = applicationContext["isSurveyDone"] as? Bool {
+//                self.isSurveyDone = isSurveyDoneValue
+//                self.surveyStatus.send(self.isSurveyDone)
+//                print("survey status received")
+            }else {
                 print("There was an error")
             }
             
-            self.sensorReading.send(self.sensorValueNew)
+            
         }
         
     }
-    #endif
              
     #if os(iOS)
     func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
@@ -85,6 +95,7 @@ class SessionDelegator: NSObject, WCSessionDelegate {
             if let isSurveyDone = message["isSurveyDone"] as? Bool {
                 self.isSurveyDone = true
                 self.surveyStatus.send(isSurveyDone)
+                print("survey status received")
             } else {
                 print("There was an error")
             }

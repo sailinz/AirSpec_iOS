@@ -8,6 +8,7 @@
 import SwiftUI
 import UserNotifications
 import BackgroundTasks
+import WatchConnectivity
 
 @main
 struct AirSpec_iOSApp: App {
@@ -32,6 +33,10 @@ struct AirSpec_iOSApp: App {
 ///https://prafullkumar77.medium.com/how-to-handle-push-notifications-in-swiftuis-new-app-lifecycle-7532c21d32d7 
 
 class AppDelegate: NSObject, UIApplicationDelegate {
+    var window: UIWindow?
+    var session: WCSession?
+    
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         return true
     }
@@ -73,15 +78,13 @@ class LocalNotification {
             //This callback does not trigger on main loop be careful
             if allowed {
                 print("notification allowed")
-                DispatchQueue.main.async {
-                    UIApplication.shared.registerForRemoteNotifications()
-                }
             } else {
                 print("notification error")
             }
         }
     }
     
+    /// thanks to chatgpt :) set identifier to UUID().uuidString rather than identifier: "localNotificatoin"
     static func setLocalNotification(title: String, subtitle: String, body: String, when: Double) {
         let content = UNMutableNotificationContent()
         content.title = title
@@ -92,7 +95,6 @@ class LocalNotification {
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: when, repeats: false)
         let request = UNNotificationRequest.init(identifier: UUID().uuidString, content: content, trigger: trigger)
         UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
-        
     }
 }
 
