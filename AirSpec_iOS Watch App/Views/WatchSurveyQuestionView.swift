@@ -24,8 +24,6 @@ struct WatchSurveyQuestionView: View {
     @Binding var showSurvey: Bool
     
     
-
-    
     var body: some View {
         VStack{
             ScrollViewReader { scrollView in

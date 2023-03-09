@@ -33,35 +33,45 @@ struct AirQualityView: View {
             Text("Air quality")
                 .font(.system(.caption2) .weight(.heavy))
                 .padding()
-//            ScrollView {
+            ScrollView {
                 LazyVGrid(columns: columns, alignment: .center, spacing: 3) {
                     ForEach(0..<SensorIconConstants.sensorAirQuality.count){i in
-                        VStack{
-//                            Text(Int(dataReceivedWatch.sensorValueNew[1][i]) == -1 ? "" : "\(Int(dataReceivedWatch.sensorValueNew[1][i]))")
-//                                .font(.system(size: 10, design: .rounded) .weight(.heavy))
-//                                .foregroundColor(Color.white)
-                            OpenCircularGauge(
-                                current: dataReceivedWatch.sensorValueNew[1][i],
-                                minValue: SensorIconConstants.sensorAirQuality[i].minValue,
-                                maxValue: SensorIconConstants.sensorAirQuality[i].maxValue,
-                                color1: SensorIconConstants.sensorAirQuality[i].color1,
-                                color2: SensorIconConstants.sensorAirQuality[i].color2,
-                                color3: SensorIconConstants.sensorAirQuality[i].color3,
-                                color1Position: SensorIconConstants.sensorAirQuality[i].color1Position,
-                                color3Position: SensorIconConstants.sensorAirQuality[i].color3Position,
-                                valueTrend: AirQualityDataTrend[i],
-                                icon: SensorIconConstants.sensorAirQuality[i].icon){
-                                }
+                        ZStack{
+                            if(SensorIconConstants.sensorAirQuality[i].name.contains("nose")){
+                                Image(systemName: "nose.fill")
+                                    .renderingMode(.template)
+                                    .foregroundColor(SensorIconConstants.customColor)
+                                    .scaleEffect(2)
+                            }
+                            VStack{
+    //                            Text(Int(dataReceivedWatch.sensorValueNew[1][i]) == -1 ? "" : "\(Int(dataReceivedWatch.sensorValueNew[1][i]))")
+    //                                .font(.system(size: 10, design: .rounded) .weight(.heavy))
+    //                                .foregroundColor(Color.white)
+                                OpenCircularGauge(
+                                    current: dataReceivedWatch.sensorValueNew[1][i],
+                                    minValue: SensorIconConstants.sensorAirQuality[i].minValue,
+                                    maxValue: SensorIconConstants.sensorAirQuality[i].maxValue,
+                                    color1: SensorIconConstants.sensorAirQuality[i].color1,
+                                    color2: SensorIconConstants.sensorAirQuality[i].color2,
+                                    color3: SensorIconConstants.sensorAirQuality[i].color3,
+                                    color1Position: SensorIconConstants.sensorAirQuality[i].color1Position,
+                                    color3Position: SensorIconConstants.sensorAirQuality[i].color3Position,
+                                    valueTrend: AirQualityDataTrend[i],
+                                    icon: SensorIconConstants.sensorAirQuality[i].icon){
+                                    }
 
 
-                                Text(SensorIconConstants.sensorAirQuality[i].name)
-                                    .foregroundColor(Color.white)
-                                    .font(.system(size: 10))
+                                    Text(SensorIconConstants.sensorAirQuality[i].name)
+                                        .foregroundColor(Color.white)
+                                        .font(.system(size: 10))
+                            }
                         }
+                        
+                        
                     }
                 }
                 .padding(.horizontal)
-//            }
+            }
         }
     }
 }

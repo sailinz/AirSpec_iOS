@@ -31,7 +31,7 @@ struct HeartAnimation: View {
         #if os(iOS)
             ZStack{
                 ZStack{
-                    CrookedText(text: "Lighting", radius:90)
+                    CrookedText(text: "Visual", radius:90)
                         .rotationEffect(.radians(.pi*5/4))
                         .offset(x:-30,y:30)
                     
@@ -121,7 +121,7 @@ struct HeartAnimation: View {
                             .frame(width: 100)
                             .offset(x:50,y:55)
                             .opacity(opacityL)
-                        CrookedText(text: "Lighting", radius:90)
+                        CrookedText(text: "Visual", radius:90)
                             .rotationEffect(.radians(.pi*5/4))
                             .offset(x:-90,y:30)
                             .shadow(

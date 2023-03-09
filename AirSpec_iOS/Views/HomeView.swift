@@ -20,11 +20,12 @@ struct HomeView: View {
     private let columns = [
         GridItem(.flexible()),
         GridItem(.flexible()),
+        GridItem(.flexible()),
     ]
 
     
     @EnvironmentObject private var receiver: BluetoothReceiver
-//    let dummyvalue = 10
+//    let dummyvalue:Double  = 10.0
 
     
     let skinTempDataName = ["thermopile_nose_bridge","thermopile_nose_tip","thermopile_temple_back","thermopile_temple_front","thermopile_temple_middle"]
@@ -45,14 +46,17 @@ struct HomeView: View {
     @State private var color1PositionAcoutstics: [Double]?
     @State private var color3PositionAcoutstics: [Double]?
 
-    let customColor = Color(red: 153/255, green: 81/255, blue: 111/255, opacity: 0.8)
-    let thermalBgImageAssets = ["Asset 15", "Asset 4"]
-    let airQualityBgImageAssets = ["Asset 6", "Asset 15", "Asset 4", "Asset 10"]
-    let visualBgImageAssets = ["Asset 11"]
-    let acousticsBgImageAssets = ["Asset 14"]
-    let scaleFactor = 0.8
-    let fontSize:CGFloat = 11
-    let bgScaleFactor = 2.6
+    // temp hum "Asset 15", "Asset 11"
+    // voc nox "Asset 6", "Asset 14"
+    //  4 "Asset 4", "Asset 10"
+    
+    let thermalBgImageAssets = ["Asset 15", "Asset 11"]
+    let airQualityBgImageAssets = ["Asset 6", "Asset 14", "Asset 4", "Asset 6", "Asset 14", "Asset 4"]
+    let visualBgImageAssets = ["Asset 10", "Asset 15", "Asset 11"]
+    let acousticsBgImageAssets = ["Asset 10"]
+    let scaleFactor = 0.9
+    let fontSize:CGFloat = 12
+    let bgScaleFactor = 2.9
 
     var body: some View {
 
@@ -61,7 +65,7 @@ struct HomeView: View {
                 ZStack{
 
                     GeometryReader { geometry in
-                        ForEach(0..<receiver.cogIntensity, id: \.self) { index in
+                        ForEach(0..<receiver.cogIntensity, id: \.self) { index in // Int(dummyvalue)
                             Image("Asset " + String(Int.random(in: 1...18)))
                                 .opacity(0.6)
                                 .rotationEffect(.degrees(Double.random(in: 0...360)))
@@ -75,22 +79,24 @@ struct HomeView: View {
                         }
                     }
 
-                    VStack {
-                    
+                    ScrollView {
+
                         /// Thermal
-                        HStack (alignment: .center) {
-//                            Text("Thermal")
-//                                .font(.system(.title2) .weight(.heavy))
-//                                .padding()
-                            LazyVGrid(columns: columns, spacing: 5) {
+                        VStack (alignment: .leading){
+                            Text("Thermal")
+                                .font(.system(size: 22) .weight(.heavy))
+                                .padding(.leading)
+                            
+                            LazyVGrid(columns: columns, spacing: 3) {
                                 ForEach(0..<SensorIconConstants.sensorThermal.count){i in
                                     ZStack{
                                         Image(thermalBgImageAssets[i])
                                             .renderingMode(.template)
-                                            .foregroundColor(customColor)
+                                            .foregroundColor(SensorIconConstants.customColor)
                                             .opacity(0.8)
-                                            .shadow(color: Color.pink, radius: 4)
+                                            .shadow(color: SensorIconConstants.customColor, radius: 1)
                                             .scaleEffect(bgScaleFactor)
+                                        
                                         VStack{
                                             OpenCircularGauge(
                                                 current: receiver.thermalData[i],
@@ -106,32 +112,43 @@ struct HomeView: View {
                                                 }
                                             
                                             Text(SensorIconConstants.sensorThermal[i].name)
+                                                .multilineTextAlignment(.center)
                                                 .foregroundColor(Color.white)
                                                 .font(.system(size: fontSize) .weight(.heavy))
+                                                .fixedSize(horizontal: false, vertical: true)
                                                 .shadow(
-                                                    color:customColor,
-                                                    radius:2)
+                                                    color:.black,
+                                                    radius:10)
                                         }
 
                                     }
                                     .scaleEffect(scaleFactor)
                                 }
                             }
-                            .padding()
+
+                        }
                             
-                            
-//                            Text("Air quality")
-//                                .font(.system(.title2) .weight(.heavy))
-//                                .padding()
-                            LazyVGrid(columns: columns, spacing: 5) {
+                        VStack (alignment: .trailing){
+                            Text("Air quality")
+                                .font(.system(size: 22) .weight(.heavy))
+                                .padding(.trailing)
+                            LazyVGrid(columns: columns, spacing: 3) {
                                 ForEach(0..<SensorIconConstants.sensorAirQuality.count){i in
                                     ZStack{
                                         Image(airQualityBgImageAssets[i])
                                             .renderingMode(.template)
-                                            .foregroundColor(customColor)
+                                            .foregroundColor(SensorIconConstants.customColor)
                                             .opacity(0.8)
-                                            .shadow(color: Color.pink, radius: 4)
+                                            .shadow(color: SensorIconConstants.customColor, radius: 1)
                                             .scaleEffect(bgScaleFactor)
+                                        
+                                        if(SensorIconConstants.sensorAirQuality[i].name.contains("nose")){
+                                            Image(systemName: "nose.fill")
+                                                .renderingMode(.template)
+                                                .foregroundColor(SensorIconConstants.customColor)
+                                                .scaleEffect(bgScaleFactor)
+                                        }
+                                        
                                         VStack{
                                             OpenCircularGauge(
                                                 current: receiver.airQualityData[i],
@@ -147,11 +164,13 @@ struct HomeView: View {
                                                 }
                                             
                                             Text(SensorIconConstants.sensorAirQuality[i].name)
+                                                .multilineTextAlignment(.center)
                                                 .foregroundColor(Color.white)
                                                 .font(.system(size: fontSize) .weight(.heavy))
+                                                .fixedSize(horizontal: false, vertical: true)
                                                 .shadow(
-                                                    color:customColor,
-                                                    radius:2)
+                                                    color:.black,
+                                                    radius:10)
 
                                         }
 
@@ -160,29 +179,35 @@ struct HomeView: View {
                                 
                                 }
                             }
-                            .padding()
-
-  
                         }
                         
                         HeartAnimation()
-                            .padding(.top, 10)
-                            .padding(.bottom, 20)
-                    
+                            .padding(.top, 30)
+                            .padding(.bottom, 70)
+                            .scaleEffect(0.95)
+                            
 
-                        HStack (alignment: .center) {
-//                            Text("Lighting")
-//                                .font(.system(.title2) .weight(.heavy))
-//                                .padding()
-                            LazyVGrid(columns: [GridItem(.flexible())], spacing: 1) {
+                        VStack (alignment: .leading) {
+                            Text("Visual")
+                                .font(.system(size: 22) .weight(.heavy))
+                                .padding(.leading)
+                            LazyVGrid(columns: columns, spacing: 1) {
                                 ForEach(0..<SensorIconConstants.sensorVisual.count){i in
                                     ZStack{
                                         Image(visualBgImageAssets[i])
                                             .renderingMode(.template)
-                                            .foregroundColor(customColor)
+                                            .foregroundColor(SensorIconConstants.customColor)
                                             .opacity(0.8)
-                                            .shadow(color: Color.pink, radius: 4)
+                                            .shadow(color: SensorIconConstants.customColor, radius: 1)
                                             .scaleEffect(bgScaleFactor)
+                                        
+                                        if(SensorIconConstants.sensorVisual[i].name.contains("eye")){
+                                            Image(systemName: "eye")
+                                                .renderingMode(.template)
+                                                .foregroundColor(SensorIconConstants.customColor)
+                                                .scaleEffect(bgScaleFactor)
+                                        }
+                                        
                                         VStack{
                                             OpenCircularGauge(
                                                 current: receiver.visualData[i],
@@ -198,33 +223,38 @@ struct HomeView: View {
                                                 }
                                             
                                             Text(SensorIconConstants.sensorVisual[i].name)
+                                                .multilineTextAlignment(.center)
                                                 .foregroundColor(Color.white)
                                                 .font(.system(size: fontSize) .weight(.heavy))
+                                                .fixedSize(horizontal: false, vertical: true)
                                                 .shadow(
-                                                    color:customColor,
-                                                    radius:2)
+                                                    color:.black,
+                                                    radius:10)
                                         }
                                     }
                                     .scaleEffect(scaleFactor)
                                     
                                 }
-
+                                
                             }
-                            .padding()
+                        }
 
-//                            Text("Noise")
-//                                .font(.system(.title2) .weight(.heavy))
-//                                .padding()
-                            LazyVGrid(columns: [GridItem(.flexible())], spacing: 1) {
+                        
+                        VStack (alignment: .trailing) {
+                            Text("Noise")
+                                .font(.system(size: 22) .weight(.heavy))
+                                .padding(.trailing)
+                            LazyVGrid(columns: columns, spacing: 1) {
                                 ForEach(0..<SensorIconConstants.sensorAcoustics.count){i in
                                     let dummyValue = Double.random(in: 50.0 ..< 80.0)
                                     ZStack{
                                         Image(acousticsBgImageAssets[i])
                                             .renderingMode(.template)
-                                            .foregroundColor(customColor)
+                                            .foregroundColor(SensorIconConstants.customColor)
                                             .opacity(0.8)
-                                            .shadow(color: Color.pink, radius: 4)
+                                            .shadow(color: SensorIconConstants.customColor, radius: 1)
                                             .scaleEffect(bgScaleFactor)
+                                        
                                         VStack{
                                             OpenCircularGauge(
                                                 current: dummyValue,
@@ -240,11 +270,13 @@ struct HomeView: View {
                                                 }
                                             
                                             Text(SensorIconConstants.sensorAcoustics[i].name)
+                                                .multilineTextAlignment(.center)
                                                 .foregroundColor(Color.white)
                                                 .font(.system(size: fontSize) .weight(.heavy))
+                                                .fixedSize(horizontal: false, vertical: true)
                                                 .shadow(
-                                                    color:customColor,
-                                                    radius:2)
+                                                    color:.black,
+                                                    radius:10)
                                         }
 
                                     }
@@ -252,7 +284,6 @@ struct HomeView: View {
                                     
                                 }
                             }
-                            .padding()
                             
                         }
 
@@ -267,8 +298,10 @@ struct HomeView: View {
                 /// get user's comfort range
                 color1PositionThermal = [UserDefaults.standard.double(forKey: "minValueTemp"), UserDefaults.standard.double(forKey: "minValueHum")]
                 color3PositionThermal = [UserDefaults.standard.double(forKey: "maxValueTemp"), UserDefaults.standard.double(forKey: "maxValueHum")]
-                color1PositionVisual = [UserDefaults.standard.double(forKey: "minValueLightIntensity")]
-                color3PositionVisual = [UserDefaults.standard.double(forKey: "maxValueLightIntensity")]
+                
+                color1PositionVisual = [UserDefaults.standard.double(forKey: "minValueLightIntensity"),UserDefaults.standard.double(forKey: "minValueTemp"), UserDefaults.standard.double(forKey: "minValueHum")]
+                color3PositionVisual = [UserDefaults.standard.double(forKey: "maxValueLightIntensity"),UserDefaults.standard.double(forKey: "maxValueTemp"), UserDefaults.standard.double(forKey: "maxValueHum")]
+                
                 color1PositionAcoutstics = [UserDefaults.standard.double(forKey: "minValueNoise"), UserDefaults.standard.double(forKey: "minValueNoise")]
                 color3PositionAcoutstics = [UserDefaults.standard.double(forKey: "maxValueNoise"), UserDefaults.standard.double(forKey: "maxValueNoise")]
 
@@ -282,8 +315,10 @@ struct HomeView: View {
             /// get user's comfort range
             color1PositionThermal = [UserDefaults.standard.double(forKey: "minValueTemp"), UserDefaults.standard.double(forKey: "minValueHum")]
             color3PositionThermal = [UserDefaults.standard.double(forKey: "maxValueTemp"), UserDefaults.standard.double(forKey: "maxValueHum")]
-            color1PositionVisual = [UserDefaults.standard.double(forKey: "minValueLightIntensity")]
-            color3PositionVisual = [UserDefaults.standard.double(forKey: "maxValueLightIntensity")]
+            
+            color1PositionVisual = [UserDefaults.standard.double(forKey: "minValueLightIntensity"),UserDefaults.standard.double(forKey: "minValueTemp"), UserDefaults.standard.double(forKey: "minValueHum")]
+            color3PositionVisual = [UserDefaults.standard.double(forKey: "maxValueLightIntensity"),UserDefaults.standard.double(forKey: "maxValueTemp"), UserDefaults.standard.double(forKey: "maxValueHum")]
+            
             color1PositionAcoutstics = [UserDefaults.standard.double(forKey: "minValueNoise"), UserDefaults.standard.double(forKey: "minValueNoise")]
             color3PositionAcoutstics = [UserDefaults.standard.double(forKey: "maxValueNoise"), UserDefaults.standard.double(forKey: "maxValueNoise")]
 

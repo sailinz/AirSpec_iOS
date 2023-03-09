@@ -73,6 +73,7 @@ struct SettingView: View {
                                         .foregroundColor(Color.gray)
                                         .font(.system(.subheadline))
                                 }else{
+                                    
                                     Text("Disconnected")
                                         .frame(maxWidth: .infinity, alignment: .trailing)
                                         .foregroundColor(Color.gray)
@@ -207,7 +208,8 @@ struct SettingView: View {
                             Text("Test light")
                                 .font(.system(.subheadline))
                             Spacer()
-                            Button(action: receiver.setBlue) {
+
+                            Button(action: receiver.testLight) {
                                 Text("Reset")
                                 .font(.system(.subheadline) .weight(.semibold))
                                 .foregroundColor(.white)
@@ -217,14 +219,15 @@ struct SettingView: View {
                             .clipShape(Capsule())
                             
                             Button(action:
-                                    receiver.blueGreenLight
-//                                    {
+                                    {
+                                        print("testBlueGreenLight")
+                                        receiver.blueGreenLight(isEnable: true)
 //                                        Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { timer in
 ////                                            print("test light with timer")
 ////                                            receiver.testLightReset()
 //                                            receiver.testLight()
 //                                        }
-//                                    }
+                                    }
                                     
                                 ) {
                                 Text("Test")

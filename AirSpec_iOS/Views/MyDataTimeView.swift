@@ -11,10 +11,7 @@ import InfluxDBSwift
 import Foundation
 
 
-private let sensorSettingList = [SensorIconConstants.sensorThermal[0],SensorIconConstants.sensorThermal[1],
-                                 SensorIconConstants.sensorAirQuality[0],SensorIconConstants.sensorAirQuality[1],
-                                 SensorIconConstants.sensorAirQuality[2],SensorIconConstants.sensorAirQuality[3],
-                                 SensorIconConstants.sensorVisual[0], SensorIconConstants.sensorAcoustics[0]]
+private let sensorSettingList = SensorIconConstants.sensorThermal + SensorIconConstants.sensorAirQuality + SensorIconConstants.sensorVisual + SensorIconConstants.sensorAcoustics
 
 struct MyDataTimeView: View {
   
@@ -35,8 +32,9 @@ struct MyDataTimeView: View {
     @State var data: [(minutes: Date, values: Double)] = []
     @State private var selectedElement: temp?
 
-    @State var flags = Array(repeating: false, count: 8)
+    @State var flags = Array(repeating: false, count: sensorSettingList.count)
     @State var user_id: String = ""
+    
     
     private let columns = [
         GridItem(.flexible()),
@@ -46,7 +44,9 @@ struct MyDataTimeView: View {
     ]
 
     var body: some View {
-        VStack(alignment: .center){
+        
+//
+        VStack(alignment: .leading){
 //            Text("Comfort votes")
 //                .font(.system(.caption).weight(.semibold))
 //
@@ -55,10 +55,19 @@ struct MyDataTimeView: View {
 //                .font(.system(.caption).weight(.semibold))
 //            Spacer()
 //                .frame(height: 100)
+            HStack{
+                Image(systemName: "info.circle")
+                Text("About \(sensorSettingList[flags.firstIndex(where: { $0 }) ?? 0].name.replacingOccurrences(of: "\n", with: " "))")
+                    .font(.system(size: 22) .weight(.heavy))
+            }
+            .padding()
+            
+            
             chartEnv
+                .padding()
 
 
-            LazyVGrid(columns: columns, spacing: 20){
+            LazyVGrid(columns: columns, spacing: 18){
                 ForEach(flags.indices) { j in
                     VStack{
                         ToggleItem(storage: self.$flags, user_id: self.$user_id, data: self.$data, checkTogglekImage: sensorSettingList[j].icon, checkToggleText:sensorSettingList[j].name, tag: j, label: "")
@@ -82,7 +91,7 @@ struct MyDataTimeView: View {
                 }
                 .foregroundStyle(by: .value("Comfort status", series.comfortType))
                 .symbol(by: .value("Comfort status", series.comfortType))
-                .symbolSize(pointSize * 2)
+                .symbolSize(pointSize * 1.8)
             }
         }
         .chartLegend(.hidden)
@@ -101,11 +110,12 @@ struct MyDataTimeView: View {
     }
 
     private var chartEnv: some View {
+    
         Chart(data, id: \.minutes) {
             BarMark(
                 x: .value("Date", $0.minutes),
                 y: .value("values", $0.values),
-                width:1
+                width:2
             )
             .lineStyle(StrokeStyle(lineWidth: lineWidth))
             .foregroundStyle(chartColor.gradient)
@@ -232,6 +242,7 @@ struct ToggleItem: View {
 
 
         if(self.storage[self.tag]){
+            
             startQueries(i:self.tag)
 
         }
@@ -264,7 +275,10 @@ struct ToggleItem: View {
             if convertedSensorData.isEmpty {
                 print("No matching tuples found")
             } else {
-                DispatchQueue.main.async { self.data = convertedSensorData }
+                DispatchQueue.main.async {
+                    self.data = convertedSensorData
+                    
+                }
                 
             }
             
@@ -305,13 +319,15 @@ struct CheckToggleStyle: ToggleStyle {
             icon: {
                 VStack{
                     Image(systemName: checkTogglekImage)
+                        .font(.system(size: 22))
                         .foregroundColor(configuration.isOn ? .pink : .gray)
                         .imageScale(.large)
                         .frame(width: 30, height: 30)
 
                     Text(checkToggleText)
+                        .multilineTextAlignment(.center)
                         .foregroundColor(configuration.isOn ? .pink : .gray)
-                        .font(configuration.isOn ? (.system(size: 10) .weight(.semibold)) : (.system(size: 8).weight(.regular)))
+                        .font(configuration.isOn ? (.system(size: 13) .weight(.semibold)) : (.system(size: 12).weight(.regular)))
                 }
             }
         }

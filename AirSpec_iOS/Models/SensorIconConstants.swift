@@ -32,29 +32,35 @@ struct Icon  {
 
 enum SensorIconConstants {
     static let sensorThermal = [
-        Icon(name: "Temperature", icon: "thermometer.medium", color1: Color.cyan, color2: Color.white, color3: Color.red, minValue: 10.0, maxValue: 35.0, color1Position:0.2, color3Position:0.8, unit:"°C", measurement:"sht45", type:"temperature"),
-        Icon(name: "Humidity", icon: "humidity", color1: Color.yellow, color2: Color.white, color3: Color.cyan, minValue: 0.0, maxValue: 100.0, color1Position:0.3, color3Position:0.7, unit:"%", measurement:"sht45", type:"humidity"),
+        Icon(name: "Temperature\n", icon: "thermometer.medium", color1: Color.cyan, color2: Color.white, color3: Color.red, minValue: 10.0, maxValue: 35.0, color1Position:0.2, color3Position:0.8, unit:"°C", measurement:"sht45", type:"temperature"),
+        Icon(name: "Humidity\n", icon: "humidity", color1: Color.yellow, color2: Color.white, color3: Color.cyan, minValue: 0.0, maxValue: 100.0, color1Position:0.3, color3Position:0.7, unit:"%", measurement:"sht45", type:"humidity"),
 //        Icon(name: "Air pressure  ", icon: "cloud.fog", color1: Color.white, color2: Color.red, color3: Color.red, minValue: 100000, maxValue: 102000, color1Position:0.2, color3Position:0.8, measurement:"bme", type:"7", identifier:"sensor_id"), /// both pressure and gas is sensor_id 7????
     ]
     
     static let sensorAirQuality = [
-        Icon(name: "VOC index", icon: "aqi.medium", color1: Color.white, color2: Color.yellow, color3: Color.red, minValue: 0.0, maxValue: 500.0, color1Position:0.3, color3Position:0.7, unit: "", measurement:"sgp", type:"voc_index_value"),
-        Icon(name: "NOx index", icon: "aqi.high", color1: Color.white, color2: Color.yellow, color3: Color.red, minValue: 0, maxValue: 10.0, color1Position:0.1, color3Position:0.5, unit: "", measurement:"sgp", type:"nox_index_value"),
-        Icon(name: "CO2", icon: "carbon.dioxide.cloud", color1: Color.white, color2: Color.yellow, color3: Color.red, minValue: 300.0, maxValue: 1500.0, color1Position:0.25, color3Position:0.58, unit: "", measurement:"bme", type:"3", identifier:"sensor_id"),
-        Icon(name: "IAQ", icon: "wind", color1: Color.white, color2: Color.yellow, color3: Color.red, minValue: 0.0, maxValue: 400.0, color1Position:0.25, color3Position:0.5, unit: "", measurement:"bme", type:"1", identifier:"sensor_id"),
+        Icon(name: "VOC\n", icon: "aqi.medium", color1: Color.white, color2: Color.yellow, color3: Color.red, minValue: 0.0, maxValue: 500.0, color1Position:0.3, color3Position:0.7, unit: "", measurement:"sgp", type:"voc_index_value"),
+        Icon(name: "NOx\n", icon: "aqi.high", color1: Color.white, color2: Color.yellow, color3: Color.red, minValue: 0, maxValue: 10.0, color1Position:0.1, color3Position:0.5, unit: "", measurement:"sgp", type:"nox_index_value"),
+        Icon(name: "CO2\n(nose)", icon: "carbon.dioxide.cloud", color1: Color.white, color2: Color.yellow, color3: Color.red, minValue: 300.0, maxValue: 1500.0, color1Position:0.25, color3Position:0.58, unit: "", measurement:"bme", type:"3", identifier:"sensor_id"),
+        Icon(name: "VOC\n(nose)", icon: "aqi.medium", color1: Color.white, color2: Color.yellow, color3: Color.red, minValue: 0.0, maxValue: 500.0, color1Position:0.3, color3Position:0.7, unit: "", measurement:"sgp", type:"voc_index_value"),
+        Icon(name: "NOx\n(nose)", icon: "aqi.high", color1: Color.white, color2: Color.yellow, color3: Color.red, minValue: 0, maxValue: 10.0, color1Position:0.1, color3Position:0.5, unit: "", measurement:"sgp", type:"nox_index_value"),
+        Icon(name: "IAQ\n(nose)", icon: "wind", color1: Color.white, color2: Color.yellow, color3: Color.red, minValue: 0.0, maxValue: 400.0, color1Position:0.25, color3Position:0.5, unit: "", measurement:"bme", type:"1", identifier:"sensor_id"),
 //        Icon(name: "Gas               ", icon: "aqi.medium", color1: Color.mint, color2: Color.yellow, color3: Color.red, minValue: 100500, maxValue: 102000, color1Position:0.2, color3Position:0.8, measurement:"bme", type:"7", identifier:"sensor_id"),
+        
     ]
     
     static let sensorVisual = [
-        Icon(name: "Light Intensity", icon: "light.overhead.right", color1: Color.yellow, color2: Color.white, color3: Color.yellow, minValue: 0.0, maxValue: 1000.0, color1Position:0.1, color3Position:0.8, unit: "lux", measurement:"lux",type:""),
+        Icon(name: "Illuminance\n(eye)", icon: "light.overhead.right", color1: Color.yellow, color2: Color.white, color3: Color.yellow, minValue: 0.0, maxValue: 1000.0, color1Position:0.1, color3Position:0.8, unit: "lux", measurement:"lux",type:""),
+        Icon(name: "Temperature\n(eye)", icon: "thermometer.medium", color1: Color.cyan, color2: Color.white, color3: Color.red, minValue: 10.0, maxValue: 35.0, color1Position:0.2, color3Position:0.8, unit:"°C", measurement:"sht45", type:"temperature"),
+        Icon(name: "Humidity\n(eye)", icon: "humidity", color1: Color.yellow, color2: Color.white, color3: Color.cyan, minValue: 0.0, maxValue: 100.0, color1Position:0.3, color3Position:0.7, unit:"%", measurement:"sht45", type:"humidity")
     ]
     
     static let sensorAcoustics = [
-        Icon(name: "Noise Level", icon: "ear", color1: Color.yellow, color2: Color.white, color3: Color.yellow, minValue: 0.0, maxValue: 150.0, color1Position:0.2, color3Position:0.8, unit:"dBA", measurement:"",type:""),
+        Icon(name: "Noise dB\n", icon: "ear", color1: Color.yellow, color2: Color.white, color3: Color.yellow, minValue: 0.0, maxValue: 150.0, color1Position:0.2, color3Position:0.8, unit:"dBA", measurement:"",type:""),
 //        Icon(name: "FFT", icon: "ear.and.waveform", color1: Color.yellow, color2: Color.white, color3: Color.yellow, minValue: 0.0, maxValue: 150.0, color1Position:0.2, color3Position:0.8, unit: "dBA", measurement:"",type:""),
     ]
     
     static let goodStateOpacity = 0.7
     static let badStateOpacity = 0.3
+    static let customColor = Color(red: 153/255, green: 81/255, blue: 111/255)
 }
 

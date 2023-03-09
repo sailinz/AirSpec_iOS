@@ -38,25 +38,35 @@ struct OpenCircularGauge<Content>: View where Content: View {
     var body: some View {
 
         let gradientColors = Gradient(stops: [
-            .init(color: color1, location: color1Position-0.1),
-            .init(color: color2, location: color1Position+0.1),
-            .init(color: color2, location: color3Position-0.1),
-            .init(color: color3, location: color3Position+0.1)
+            .init(color: color1, location: color1Position-0.05),
+            .init(color: color2, location: color1Position+0.05),
+            .init(color: color2, location: color3Position-0.05),
+            .init(color: color3, location: color3Position+0.05)
         ]
         )
     
         let trendIcon = valueTrendIcon(for:valueTrend)
-
+        
         Gauge(value: current, in: minValue...maxValue) {
+        
             Image(systemName: icon)
-                .foregroundColor(labelColor(for: current, minValue: minValue, maxValue: maxValue))
-                
-            } currentValueLabel: {
+                .foregroundColor(.white)
+                .scaleEffect(1.8)
+//                .foregroundColor(labelColor(for: current, minValue: minValue, maxValue: maxValue))
+//                .shadow(
+//                    color:.white.opacity(0.2),
+//                    radius:0.2)
+            
+            
+        } currentValueLabel: {
 //                Image(systemName: trendIcon)
 //                    .foregroundColor(labelColor(for: current, minValue: minValue, maxValue: maxValue))
                 Text(Int(current) == -1 ? "" : "\(Int(current))")
                     .foregroundColor(labelColor(for: current, minValue: minValue, maxValue: maxValue))
                     .font(.system(size: 28, design: .rounded) .weight(.heavy))
+//                    .shadow(
+//                        color:.white.opacity(0.5),
+//                        radius:1)
             }
             .gaugeStyle(.accessoryCircular)
             .tint(gradientColors)

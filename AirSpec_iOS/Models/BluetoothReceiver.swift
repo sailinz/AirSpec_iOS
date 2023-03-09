@@ -33,13 +33,12 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         category: String(describing: BluetoothReceiver.self)
     )
 
-    /// -- BLE connection variables
+    /// -- BLE CONNNECTION VARIABLES
     weak var delegate: BluetoothReceiverDelegate? = nil
     var centralManager: CBCentralManager!
     private var serviceUUID: CBUUID!
     private var TXcharacteristicUUID: CBUUID!
     var sendCharacteristic: CBCharacteristic!
-//    let GLASSNAME =  "AirSpec_01ad7855"///"CAPTIVATE"      _01ad6d72
     @Published var GLASSNAME =  ""
     @Published private(set) var connectedPeripheral: CBPeripheral? = nil
     private(set) var knownDisconnectedPeripheral: CBPeripheral? = nil
@@ -48,7 +47,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     var mustDisconnect = false
     @Published var discoveredPeripherals = Set<CBPeripheral>()
 
-    /// -- realtime sensor data
+    /// -- REAL-TIME SENSOR DATA
     @Published var thermalData = Array(repeating: -1.0, count: SensorIconConstants.sensorThermal.count)
     @Published var airQualityData = Array(repeating: -1.0, count: SensorIconConstants.sensorAirQuality.count)
     @Published var visualData = Array(repeating: -1.0, count: SensorIconConstants.sensorVisual.count)
@@ -58,22 +57,23 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     let cogLoadOffset: Double = 3
     let cogLoadMultiFactor: Double = 5
 
-    /// -- watchConnectivity
+    /// -- WATCH CONNECTIVITY
     @Published var dataToWatch = SensorData()
 //    var surveyStatusFromWatch = SensorData()
     
-    /// -- notification mechenism
+    /// -- NOTIFICATION MECHENISM
     /// maybe the sampling frequency is high enough that the location information is not needed
 //    let locationManager = CLLocationManager()
 //    var previousLocation: CLLocation?
     var prevNotificationTime: Date = Date()
-    var randomNextNotificationGap: Int = 15
+    var randomNextNotificationGap: Int = 15 /// minute
+    var notificationTimer:DispatchSourceTimer?
+    let greenHoldTime = 60 * 15 /// sec
     
-    
-    /// -- push to server
+    /// -- PUSH TO THE SERVER
     private var timer: DispatchSourceTimer?
-    let updateFrequence = 300 /// seconds
-    let batchSize = 50
+    let updateFrequence = 60 * 10 /// seconds
+//    let batchSize = 50
 //    private var reconstructedData:[SensorPacket] = [] /// for testing only
 
     
@@ -144,8 +144,6 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //            print("device: \(discoveredPeripherals)")
             peripheral.delegate = self
         }
-
-    
     }
 
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
@@ -159,16 +157,14 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         knownDisconnectedPeripheral = nil
         peripheral.discoverServices([BluetoothConstants.airspecServiceUUID])
         
+        RawDataViewModel.addMetaDataToRawData(payload: "connected to \(peripheral.name ?? "unnamed peripheral")", timestampUnix: Date(), type: 5)
+
         
         timer = DispatchSource.makeTimerSource()
-        timer?.schedule(deadline: .now(), repeating: .seconds(updateFrequence))
+        timer?.schedule(deadline: .now() + .seconds(updateFrequence), repeating: .seconds(updateFrequence))
         timer?.setEventHandler {
-            
             self.uploadToServer()
             self.storeLongTermData()
-            
-
-            
         }
         timer?.resume()
     }
@@ -178,6 +174,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         logger.info("disconnected from \(peripheral.name ?? "unnamed peripheral")")
         connectedPeripheral = nil
+        
+        RawDataViewModel.addMetaDataToRawData(payload: "disconnected from \(peripheral.name ?? "unnamed peripheral")", timestampUnix: Date(), type: 5)
 
         /// Keep track of the last known peripheral.
         knownDisconnectedPeripheral = peripheral
@@ -218,26 +216,6 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     }
 
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error? ) {
-//        if let error = error {
-//            logger.error("error discovering characteristic: \(error.localizedDescription)")
-//            delegate?.didFailWithError(.failedToDiscoverCharacteristics)
-//            return
-//        }
-//
-//        guard let characteristics = service.characteristics, !characteristics.isEmpty else {
-//            logger.info("no characteristics discovered on \(peripheral.name ?? "unnamed peripheral") for service \(service.description)")
-//            delegate?.didFailWithError(.failedToDiscoverCharacteristics)
-//            return
-//        }
-
-//        if let characteristic = characteristics.first(where: { $0.uuid == TXcharacteristicUUID }) {
-//            logger.info("discovered characteristic \(characteristic.uuid) on \(peripheral.name ?? "unnamed peripheral")")
-//            peripheral.readValue(for: characteristic) /// Immediately read the characteristic's value.
-//
-//            /// Subscribe to the characteristic.
-//            peripheral.setNotifyValue(true, for: characteristic)
-//            logger.info("setNotifyValue for \(characteristic.uuid) on \(peripheral.name ?? "unnamed peripheral")")
-//        }
         logger.info("service UUID: \(service.uuid)")
         logger.info("total no. of characteristics: \(service.characteristics!.count)")
 
@@ -255,7 +233,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 sendCharacteristic = thisCharacteristic
                 logger.info("found write characteristics")
                 
-                setBlue() /// set initial blue color and set timestamp to the
+                setBlue() /// set initial blue color and set timestamp to the latest
 
             }
 
@@ -282,53 +260,58 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             do {
                 guard let packet = try? Airspec.decode_packet(data) else {
                     print("failed parsing packet: \(error)")
+                    RawDataViewModel.addMetaDataToRawData(payload: "failed parsing packet: \(error) ", timestampUnix: Date(), type: 2)
                     return
                 }
 //                print(packet)
                 
                 if(dataToWatch.surveyDone){
-                    testLight()
+                    blueGreenLight(isEnable: false)
+                    setBlue()
                     dataToWatch.surveyDone = false
+                    notificationTimer?.cancel()
+                    notificationTimer = nil
+                    RawDataViewModel.addMetaDataToRawData(payload: "survey received; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
                 }
 
-                var isIMU = false
-                var isMIC = false
-                var isBlink = false
+//                var isIMU = false
+//                var isMIC = false
+//                var isBlink = false
                 switch packet.payload{
                     case .some(.sgpPacket(_)):
-                        print("sgp packet")
+//                        print("sgp packet")
 //                        print(Date())
 //                        print(packet.sgpPacket)
                         for sensorPayload in packet.sgpPacket.payload {
                             if(sensorPayload.vocIndexValue != nil && sensorPayload.noxIndexValue != nil){
-                                self.airQualityData[0] = Double(sensorPayload.vocIndexValue) /// voc index
-                                dataToWatch.updateValue(sensorValue: self.airQualityData[0], sensorName: "vocIndexData")
-                                self.airQualityData[1] = Double(sensorPayload.noxIndexValue) /// nox index
-                                dataToWatch.updateValue(sensorValue: self.airQualityData[1], sensorName: "noxIndexData")
+                                self.airQualityData[3] = Double(sensorPayload.vocIndexValue) /// voc index nose
+                                dataToWatch.updateValue(sensorValue: self.airQualityData[3], sensorName: "vocIndexData")
+                                self.airQualityData[4] = Double(sensorPayload.noxIndexValue) /// nox index nose
+                                dataToWatch.updateValue(sensorValue: self.airQualityData[4], sensorName: "noxIndexData")
                                 
-                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[0].name, value: Float(self.airQualityData[0]))
-                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[1].name, value: Float(self.airQualityData[1]))
+                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[3].name, value: Float(self.airQualityData[3]))
+                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[4].name, value: Float(self.airQualityData[4]))
                             }
                         }
 
                     case .some(.bmePacket(_)):
 //                    print(packet.bmePacket)
-                        print("bme packet")
+//                        print("bme packet")
                         for sensorPayload in packet.bmePacket.payload {
                             if(sensorPayload.sensorID == BME680_signal_id.co2Eq){
                                 self.airQualityData[2] = Double(sensorPayload.signal) /// CO2
                                 dataToWatch.updateValue(sensorValue: self.airQualityData[2], sensorName: "co2Data")
                             }else if(sensorPayload.sensorID == BME680_signal_id.iaq){
-                                self.airQualityData[3] = Double(sensorPayload.signal) /// IAQ
-                                dataToWatch.updateValue(sensorValue: self.airQualityData[3], sensorName: "iaqData")
+                                self.airQualityData[5] = Double(sensorPayload.signal) /// IAQ
+                                dataToWatch.updateValue(sensorValue: self.airQualityData[5], sensorName: "iaqData")
                                 
                                 try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[2].name, value: Float(self.airQualityData[2]))
-                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[3].name, value: Float(self.airQualityData[3]))
+                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[5].name, value: Float(self.airQualityData[5]))
                             }
                         }
 
                     case .some(.luxPacket(_)):
-                        print("lux packet")
+//                        print("lux packet")
 //                        print(packet.luxPacket)
                         for sensorPayload in packet.luxPacket.payload {
                             if(sensorPayload.lux != nil){
@@ -339,25 +322,25 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                             }
                         }
                     case .some(.shtPacket(_)):
-                        print("sht packet")
+//                        print("sht packet")
 //                        print(packet)
                         for sensorPayload in packet.shtPacket.payload {
                             if(sensorPayload.temperature != nil && sensorPayload.humidity != nil){
-                                self.thermalData[0] = Double(sensorPayload.temperature) /// temperature
-                                dataToWatch.updateValue(sensorValue: self.thermalData[0], sensorName: "temperatureData")
+                                self.visualData[1] = Double(sensorPayload.temperature) /// temperature
+                                dataToWatch.updateValue(sensorValue: self.visualData[1], sensorName: "temperatureData")
                                 print(sensorPayload.humidity)
-                                self.thermalData[1] = Double(sensorPayload.humidity) /// humidity
-                                dataToWatch.updateValue(sensorValue: self.thermalData[1], sensorName: "humidityData")
+                                self.visualData[2] = Double(sensorPayload.humidity) /// humidity
+                                dataToWatch.updateValue(sensorValue: self.visualData[2], sensorName: "humidityData")
                                 
-                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorThermal[0].name, value: Float(self.thermalData[0]))
-                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorThermal[1].name, value: Float(self.thermalData[1]))
+                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[1].name, value: Float(self.visualData[1]))
+                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[2].name, value: Float(self.visualData[2]))
                             }
                         }
                     case .some(.specPacket(_)):
-                        print("spec packet")
+//                        print("spec packet")
+                        break
                     case .some(.thermPacket(_)):
-                    
-                        print("thermPacket")
+//                        print("thermPacket")
                         var thermNoseTip: Double = 0
                         var thermNoseBridge: Double = 0
                         var thermTempleFront: Double = 0
@@ -394,12 +377,12 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                         if(Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - 4) * cogLoadMultiFactor - cogLoadOffset) > 0){
                            
                             cogIntensity = Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - cogLoadOffset) * cogLoadMultiFactor  + 3)
-                            print("cogload baseline: \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
-                            print("cogload est: \(cogIntensity)")
+//                            print("cogload baseline: \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
+//                            print("cogload est: \(cogIntensity)")
                             dataToWatch.updateValue(sensorValue: Double(cogIntensity), sensorName: "cogLoadData")
                         }else{
-                            print("cogload baseline (neg): \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
-                            print("cogload est (neg): \(Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - cogLoadOffset) * cogLoadMultiFactor  + 3))")
+//                            print("cogload baseline (neg): \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
+//                            print("cogload est (neg): \(Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - cogLoadOffset) * cogLoadMultiFactor  + 3))")
                         }
                         
                         
@@ -409,14 +392,16 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
                     case .some(.imuPacket(_)):
 //                        print("imu packet")
-                        isIMU = true
+//                        isIMU = true
                         break
                     case .some(.micPacket(_)):
 //                        print("mic packet")
-                        isMIC = true
+//                        isMIC = true
+                        break
                     case .some(.blinkPacket(_)):
-//                        print("blink packet")
-                        isBlink = true
+                        print(packet)
+                        print("blink packet")
+//                        isBlink = true
                         break
                     case .some(.surveyPacket(_)):
                         break
@@ -428,18 +413,15 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 }
                 
                 /// this works!
-                if(!isMIC && !isIMU && !isBlink){
-                    let data = try packet.serializedData()
-                    try RawDataViewModel.addRawData(record: data)
-                }
-                
-                
-//                reconstructedData.append(packet)
-                
-//                try Airspec.send_packets(packets: [packet], auth_token: AUTH_TOKEN)
+//                if(!isBlink){
+                let data = try packet.serializedData()
+                try RawDataViewModel.addRawData(record: data)
+//                }
 
             } catch {
                 logger.error("packet decode/send problems: \(error).")
+                RawDataViewModel.addMetaDataToRawData(payload: "packet decode/send problems: \(error).", timestampUnix: Date(), type: 2)
+
             }
 
         }
@@ -478,6 +460,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                         }
                     } catch {
                         print("cannot upload the data to the server: \(error)")
+                        RawDataViewModel.addMetaDataToRawData(payload: "cannot upload the data to the server: \(error)", timestampUnix: Date(), type: 2)
+
                     }
                 }
                 
@@ -488,11 +472,13 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     /// check if we shall trigger the LED notification
     func triggerLEDNotification(tempData: [(Date, String, Float)], means: [String: (Float, Date)]){
         var flagcoefficientVariation = false
+        var flagcoefficientVariationWho = ""
+        var flagcoefficientVariationValue =  0.0
         var flagMean = false
+        var flagMeanWho = ""
+        var flagMeanValue = 0.0
         var flagRandom = Double.random(in: 0...1) < 0.8 /// 80% chance of being true
         
-        var meanTriggerSensor: String
-        var coeefficientVariationTriggerSensor: String
         
         let coefficientVariationBenchmark: Float = 1.0
         
@@ -506,13 +492,15 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             let coefficientVariation = sqrt(variance)/mean
             
             
-            print(coefficientVariation)
+//            print(coefficientVariation)
             
             /// Check if the variance of the temperature data is above the benchmark
             if coefficientVariation >= coefficientVariationBenchmark {
                 /// Trigger LED notification for high variance
                 print("Variance for \(sensorName) is above benchmark (\(coefficientVariationBenchmark)): \(coefficientVariation)")
                 flagMean = true
+                flagcoefficientVariationWho = sensorName
+                flagcoefficientVariationValue = Double(coefficientVariation)
                 break
             }
             
@@ -520,50 +508,66 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             if sensorName == SensorIconConstants.sensorThermal[0].name{
                 if Double(mean) < UserDefaults.standard.double(forKey: "minValueTemp"){
                     flagMean = true
-                    print("flagMean sensor \(sensorName) and value \(coefficientVariation)")
+                    flagMeanWho = sensorName
+                    flagMeanValue = Double(mean)
+                    print("flagMean sensor \(sensorName) and value \(mean)")
                     break
                 }
                 
                 if Double(mean) > UserDefaults.standard.double(forKey: "maxValueTemp"){
                     flagMean = true
-                    print("flagMean sensor \(sensorName) and value \(coefficientVariation)")
+                    flagMeanWho = sensorName
+                    flagMeanValue = Double(mean)
+                    print("flagMean sensor \(sensorName) and value \(mean)")
                     break
                 }
             }else if sensorName == SensorIconConstants.sensorThermal[1].name{
                 if Double(mean) < UserDefaults.standard.double(forKey: "minValueHum"){
                     flagMean = true
-                    print("flagMean sensor \(sensorName) and value \(coefficientVariation)")
+                    flagMeanWho = sensorName
+                    flagMeanValue = Double(mean)
+                    print("flagMean sensor \(sensorName) and value \(mean)")
                     break
                 }
                 
                 if Double(mean) > UserDefaults.standard.double(forKey: "maxValueHum"){
                     flagMean = true
-                    print("flagMean sensor \(sensorName) and value \(coefficientVariation)")
+                    flagMeanWho = sensorName
+                    flagMeanValue = Double(mean)
+                    print("flagMean sensor \(sensorName) and value \(mean)")
                     break
                 }
                 
             }else if sensorName == SensorIconConstants.sensorVisual[0].name{
                 if Double(mean) < UserDefaults.standard.double(forKey: "minValueLightIntensity"){
                     flagMean = true
-                    print("flagMean sensor \(sensorName) and value \(coefficientVariation)")
+                    flagMeanWho = sensorName
+                    flagMeanValue = Double(mean)
+                    print("flagMean sensor \(sensorName) and value \(mean)")
                     break
                 }
                 
                 if Double(mean) > UserDefaults.standard.double(forKey: "maxValueLightIntensity"){
                     flagMean = true
-                    print("flagMean sensor \(sensorName) and value \(coefficientVariation)")
+                    flagMeanWho = sensorName
+                    flagMeanValue = Double(mean)
+                    print("flagMean sensor \(sensorName) and value \(mean)")
                     break
                 }
             }else if sensorName == SensorIconConstants.sensorAcoustics[0].name{
                 if Double(mean) < UserDefaults.standard.double(forKey: "minValueNoise"){
                     flagMean = true
-                    print("flagMean sensor \(sensorName) and value \(coefficientVariation)")
+                    flagMeanWho = sensorName
+                    flagMeanValue = Double(mean)
+                    print("flagMean sensor \(sensorName) and value \(mean)")
                     break
                 }
                 
                 if Double(mean) > UserDefaults.standard.double(forKey: "maxValueNoise"){
                     flagMean = true
-                    print("flagMean sensor \(sensorName) and value \(coefficientVariation)")
+                    flagMeanWho = sensorName
+                    flagMeanValue = Double(mean)
+                    print("flagMean sensor \(sensorName) and value \(mean)")
                     break
                 }
             }else{
@@ -576,26 +580,27 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
                 if let minuteDifference = components.minute {
                     if minuteDifference > randomNextNotificationGap {
-                        print("(led notification) notification gap: \(randomNextNotificationGap), minuteDifference: \(minuteDifference), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom)")
-                        testLight()
+//                        print("(led notification) notification gap: \(randomNextNotificationGap), minuteDifference: \(minuteDifference), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom), flagcoefficientVariationWho: \(flagcoefficientVariationWho), flagcoefficientVariationValue: \(flagcoefficientVariationValue), flagMeanWho: \(flagMeanWho), flagMeanValue: \(flagMeanValue)")
+                        blueGreenLight(isEnable: true)
                         randomNextNotificationGap = Int.random(in: 5...10)
+                        RawDataViewModel.addMetaDataToRawData(payload: "(LED notification triggered) notification gap: \(randomNextNotificationGap), minuteDifference: \(minuteDifference), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom), flagcoefficientVariationWho: \(flagcoefficientVariationWho), flagcoefficientVariationValue: \(flagcoefficientVariationValue), flagMeanWho: \(flagMeanWho), flagMeanValue: \(flagMeanValue)", timestampUnix: Date(), type: 3)
                     }else{
-                        print("(no notification)  notification gap: \(randomNextNotificationGap), minuteDifference: \(minuteDifference), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom)")
+                        print("(no LED notification)  notification gap: \(randomNextNotificationGap), minuteDifference: \(minuteDifference), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom)")
+                        
+                        RawDataViewModel.addMetaDataToRawData(payload: "(no LED notification: too short to prev survey) notification gap: \(randomNextNotificationGap), minuteDifference: \(minuteDifference), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom), flagcoefficientVariationWho: \(flagcoefficientVariationWho), flagcoefficientVariationValue: \(flagcoefficientVariationValue), flagMeanWho: \(flagMeanWho), flagMeanValue: \(flagMeanValue)", timestampUnix: Date(), type: 3)
                     }
                 }
             }else{
-                print("(no notification)  notification gap: \(randomNextNotificationGap), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom)")
+                print("(no LED notification)  notification gap: \(randomNextNotificationGap), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom)")
+                RawDataViewModel.addMetaDataToRawData(payload: "(no LED notification: not much changes in the environments & random flag decided no)  notification gap: \(randomNextNotificationGap), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom), flagcoefficientVariationWho: \(flagcoefficientVariationWho), flagcoefficientVariationValue: \(flagcoefficientVariationValue), flagMeanWho: \(flagMeanWho), flagMeanValue: \(flagMeanValue)", timestampUnix: Date(), type: 3)
             }
-            
-            
-            
+ 
         }
 
     }
 
     /// storeLongTermData
     func storeLongTermData() {
-                
         while true {
             do {
                 let (data, onComplete) = try TempDataViewModel.fetchData()
@@ -604,7 +609,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     LocalNotification.setLocalNotification(title: "No sensor data",
                                                            subtitle: "Please check glasses connectivity",
                                                            body: "Open AirSpec App on phone, reboot the glasses if needed.",
-                                                           when: 1)
+                                                           when: 1) /// now
+                    RawDataViewModel.addMetaDataToRawData(payload: "Glasses status check notification (vibration) triggered", timestampUnix: Date(), type: 4)
                     try onComplete()
                     return
                 }
@@ -643,6 +649,16 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 print(try LongTermDataViewModel.count())
                 
                 triggerLEDNotification(tempData: data, means: means)
+                notificationTimer = DispatchSource.makeTimerSource()
+                notificationTimer?.schedule(deadline: .now() + .seconds(greenHoldTime), repeating: .never)
+                notificationTimer?.setEventHandler {
+                    LocalNotification.setLocalNotification(title: "Did you miss the survey?",
+                                                           subtitle: "",
+                                                           body: "Kindly answer the survey when you notice the LED light is green",
+                                                           when: 1)
+                    RawDataViewModel.addMetaDataToRawData(payload: "Survey missing (vibration) triggered", timestampUnix: Date(), type: 3)
+                }
+                notificationTimer?.resume()
 
                 if let err = err {
                     throw err
@@ -651,26 +667,27 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 }
             } catch {
                 print("cannot push data to the Long Term Data Container: \(error)")
+                RawDataViewModel.addMetaDataToRawData(payload: "[App issue] cannot push data to the Long Term Data Container: \(error)", timestampUnix: Date(), type: 2)
             }
         }
 
     }
     
     
-    func blueGreenLight(){
+    func blueGreenLight(isEnable: Bool){
 
         /// blue green transition
         var blueGreenTransition = AirSpecConfigPacket()
         blueGreenTransition.header.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
 
-        blueGreenTransition.blueGreenTransition.enable = true
+        blueGreenTransition.blueGreenTransition.enable = isEnable /// true for enable the transition; false for turning off the high sampling rate
         blueGreenTransition.blueGreenTransition.blueMinIntensity = 60
         blueGreenTransition.blueGreenTransition.blueMaxIntensity = 60
         blueGreenTransition.blueGreenTransition.greenMaxIntensity = 60
         blueGreenTransition.blueGreenTransition.stepSize = 2
         blueGreenTransition.blueGreenTransition.stepDurationMs = 100
-        blueGreenTransition.blueGreenTransition.greenHoldLengthSeconds = 10
-        blueGreenTransition.blueGreenTransition.transitionDelaySeconds = 10
+        blueGreenTransition.blueGreenTransition.greenHoldLengthSeconds = UInt32(greenHoldTime)
+        blueGreenTransition.blueGreenTransition.transitionDelaySeconds = 2
 
         blueGreenTransition.payload = .blueGreenTransition(blueGreenTransition.blueGreenTransition)
 
@@ -680,7 +697,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             print(cmd)
         } catch {
             //handle error
-            print("fail to send LED notification")
+            print("Fail to send blue-green transition")
+            RawDataViewModel.addMetaDataToRawData(payload: "Fail to send blue-green transition: \(error)", timestampUnix: Date(), type: 2)
         }
 
     }
@@ -708,7 +726,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             print(cmd)
         } catch {
             //handle error
-            print("fail to send LED notification")
+            print("Fail to set blue")
+            RawDataViewModel.addMetaDataToRawData(payload: "Fail to set LED blue: \(error)", timestampUnix: Date(), type: 2)
         }
 
     }
@@ -727,12 +746,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             print(cmd)
         } catch {
             //handle error
-            print("fail to send LED notification")
+            print("fail to set DFU mode")
         }
-
-
-        
-        
 
     }
 

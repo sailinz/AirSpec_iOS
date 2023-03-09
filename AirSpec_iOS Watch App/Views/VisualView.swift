@@ -33,29 +33,39 @@ struct VisualView: View {
                 .padding()
 //            ScrollView {
                 LazyVGrid(columns: columns, alignment: .center, spacing: 3) {
+                    
                     ForEach(0..<SensorIconConstants.sensorVisual.count){i in
-                        VStack{
-//                            Text(Int(dataReceivedWatch.sensorValueNew[2][i]) == -1 ? "" : "\(Int(dataReceivedWatch.sensorValueNew[2][i]))")
-//                                .font(.system(size: 10, design: .rounded) .weight(.heavy))
-//                                .foregroundColor(Color.white)
-                            OpenCircularGauge(
-                                current: dataReceivedWatch.sensorValueNew[2][i],
-                                minValue: SensorIconConstants.sensorVisual[i].minValue,
-                                maxValue: SensorIconConstants.sensorVisual[i].maxValue,
-                                color1: SensorIconConstants.sensorVisual[i].color1,
-                                color2: SensorIconConstants.sensorVisual[i].color2,
-                                color3: SensorIconConstants.sensorVisual[i].color3,
-                                color1Position: SensorIconConstants.sensorVisual[i].color1Position,
-                                color3Position: SensorIconConstants.sensorVisual[i].color3Position,
-                                valueTrend: VisualDataTrend[i],
-                                icon: SensorIconConstants.sensorVisual[i].icon){
-                                }
-                            
+                        ZStack{
+                            if(SensorIconConstants.sensorVisual[i].name.contains("eye")){
+                                Image(systemName: "eye")
+                                    .renderingMode(.template)
+                                    .foregroundColor(SensorIconConstants.customColor)
+                                    .scaleEffect(2)
+                            }
+                            VStack{
+    //                            Text(Int(dataReceivedWatch.sensorValueNew[2][i]) == -1 ? "" : "\(Int(dataReceivedWatch.sensorValueNew[2][i]))")
+    //                                .font(.system(size: 10, design: .rounded) .weight(.heavy))
+    //                                .foregroundColor(Color.white)
+                                OpenCircularGauge(
+                                    current: dataReceivedWatch.sensorValueNew[2][i],
+                                    minValue: SensorIconConstants.sensorVisual[i].minValue,
+                                    maxValue: SensorIconConstants.sensorVisual[i].maxValue,
+                                    color1: SensorIconConstants.sensorVisual[i].color1,
+                                    color2: SensorIconConstants.sensorVisual[i].color2,
+                                    color3: SensorIconConstants.sensorVisual[i].color3,
+                                    color1Position: SensorIconConstants.sensorVisual[i].color1Position,
+                                    color3Position: SensorIconConstants.sensorVisual[i].color3Position,
+                                    valueTrend: VisualDataTrend[i],
+                                    icon: SensorIconConstants.sensorVisual[i].icon){
+                                    }
+                                
 
-                                Text(SensorIconConstants.sensorVisual[i].name)
-                                    .foregroundColor(Color.white)
-                                    .font(.system(size: 10))
+                                    Text(SensorIconConstants.sensorVisual[i].name)
+                                        .foregroundColor(Color.white)
+                                        .font(.system(size: 10))
+                            }
                         }
+                        
                     }
                 }
                 .padding(.horizontal)
