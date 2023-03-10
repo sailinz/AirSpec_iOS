@@ -72,6 +72,7 @@ struct WatchSurveyComfyView: View {
                                 
         //                        try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-2), choice: "comfy")
                                 try RawDataViewModel.addSurveyDataToRawData(qIndex: -2, qChoice: "comfy", qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
+                                surveyStatusToPhone.updateSurveyStatus(isSurveyDone: true)
                                 isComfyVote = false
                             }catch{
                                 print("Error saving survey data: \(error.localizedDescription)")

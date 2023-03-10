@@ -51,7 +51,8 @@ struct OpenCircularGauge<Content>: View where Content: View {
         
             Image(systemName: icon)
                 .foregroundColor(.white)
-                .scaleEffect(1.8)
+                .font(.system(size: 18))
+//                .scaleEffect(1.8)
 //                .foregroundColor(labelColor(for: current, minValue: minValue, maxValue: maxValue))
 //                .shadow(
 //                    color:.white.opacity(0.2),

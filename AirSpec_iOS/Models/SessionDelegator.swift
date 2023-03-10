@@ -35,7 +35,14 @@ class SessionDelegator: NSObject, WCSessionDelegate {
                                       Array(repeating: -1.0, count: SensorIconConstants.sensorAirQuality.count),
                                       Array(repeating: -1.0, count: SensorIconConstants.sensorVisual.count),
                                       Array(repeating: -1.0, count: SensorIconConstants.sensorAcoustics.count),
-                                      Array(repeating: 3, count: 1)  ] /// cog load
+                                      Array(repeating: 3, count: 1), /// cog load
+                                      SensorIconConstants.sensorThermal.map { $0.minValue }, ///5
+                                      SensorIconConstants.sensorThermal.map { $0.maxValue }, ///6
+                                      SensorIconConstants.sensorVisual.map { $0.minValue }, /// 7
+                                      SensorIconConstants.sensorVisual.map { $0.maxValue }, ///8
+                                      SensorIconConstants.sensorAcoustics.map { $0.minValue }, ///9
+                                      SensorIconConstants.sensorAcoustics.map { $0.maxValue } ///10
+                                      ]
     var isSurveyDone: Bool = false
     
     init(sensorReading: PassthroughSubject<[[Double]], Never>, surveyStatus: PassthroughSubject<Bool, Never>) {
@@ -52,34 +59,74 @@ class SessionDelegator: NSObject, WCSessionDelegate {
     /// Did receive an app context.
     func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
         DispatchQueue.main.async {
-            if let sensorReadingValue = applicationContext["temperatureData"] as? Double {
-                self.sensorValueNew[0][0] = sensorReadingValue
+            if let sensorReadingValue = applicationContext["temperatureAmbientData"] as? Double {
+                self.sensorValueNew[2][1] = sensorReadingValue
                 self.sensorReading.send(self.sensorValueNew)
-            }else if let sensorReadingValue = applicationContext["humidityData"] as? Double {
-                self.sensorValueNew[0][1] = sensorReadingValue
+            }else if let sensorReadingValue = applicationContext["humidityAmbientData"] as? Double {
+                self.sensorValueNew[2][2] = sensorReadingValue
                 self.sensorReading.send(self.sensorValueNew)
-            }else if let sensorReadingValue = applicationContext["vocIndexData"] as? Double {
+            }else if let sensorReadingValue = applicationContext["vocIndexAmbientData"] as? Double {
                 self.sensorValueNew[1][0] = sensorReadingValue
                 self.sensorReading.send(self.sensorValueNew)
-            }else if let sensorReadingValue = applicationContext["noxIndexData"] as? Double {
+            }else if let sensorReadingValue = applicationContext["noxIndexAmbientData"] as? Double {
                 self.sensorValueNew[1][1] = sensorReadingValue
                 self.sensorReading.send(self.sensorValueNew)
             }else if let sensorReadingValue = applicationContext["co2Data"] as? Double {
                 self.sensorValueNew[1][2] = sensorReadingValue
                 self.sensorReading.send(self.sensorValueNew)
-            }else if let sensorReadingValue = applicationContext["iaqData"] as? Double {
+            }else if let sensorReadingValue = applicationContext["vocIndexData"] as? Double {
                 self.sensorValueNew[1][3] = sensorReadingValue
+                self.sensorReading.send(self.sensorValueNew)
+            }else if let sensorReadingValue = applicationContext["noxIndexData"] as? Double {
+                self.sensorValueNew[1][4] = sensorReadingValue
+                self.sensorReading.send(self.sensorValueNew)
+            }else if let sensorReadingValue = applicationContext["iaqData"] as? Double {
+                self.sensorValueNew[1][5] = sensorReadingValue
                 self.sensorReading.send(self.sensorValueNew)
             }else if let sensorReadingValue = applicationContext["luxData"] as? Double {
                 self.sensorValueNew[2][0] = sensorReadingValue
                 self.sensorReading.send(self.sensorValueNew)
+            }else if let sensorReadingValue = applicationContext["temperatureData"] as? Double {
+                self.sensorValueNew[2][1] = sensorReadingValue
+                self.sensorReading.send(self.sensorValueNew)
+            }else if let sensorReadingValue = applicationContext["humidityData"] as? Double {
+                self.sensorValueNew[2][2] = sensorReadingValue
+                self.sensorReading.send(self.sensorValueNew)
+            }else if let sensorReadingValue = applicationContext["noiseData"] as? Double {
+                self.sensorValueNew[3][0] = sensorReadingValue
+                self.sensorReading.send(self.sensorValueNew)
             }else if let sensorReadingValue = applicationContext["cogLoadData"] as? Double {
                 self.sensorValueNew[4][0] = sensorReadingValue
                 self.sensorReading.send(self.sensorValueNew)
-//            }else if let isSurveyDoneValue = applicationContext["isSurveyDone"] as? Bool {
-//                self.isSurveyDone = isSurveyDoneValue
-//                self.surveyStatus.send(self.isSurveyDone)
-//                print("survey status received")
+            }else if let sensorReadingValue = applicationContext["minValueTemp"] as? Double {
+                self.sensorValueNew[5][0] = sensorReadingValue
+                self.sensorValueNew[7][1] = sensorReadingValue
+                self.sensorReading.send(self.sensorValueNew)
+            }else if let sensorReadingValue = applicationContext["maxValueTemp"] as? Double {
+                self.sensorValueNew[6][0] = sensorReadingValue
+                self.sensorValueNew[8][1] = sensorReadingValue
+                self.sensorReading.send(self.sensorValueNew)
+            }else if let sensorReadingValue = applicationContext["minValueHum"] as? Double {
+                self.sensorValueNew[5][1] = sensorReadingValue
+                self.sensorValueNew[7][2] = sensorReadingValue
+                self.sensorReading.send(self.sensorValueNew)
+            }else if let sensorReadingValue = applicationContext["maxValueHum"] as? Double {
+                self.sensorValueNew[6][1] = sensorReadingValue
+                self.sensorValueNew[8][2] = sensorReadingValue
+                self.sensorReading.send(self.sensorValueNew)
+            }else if let sensorReadingValue = applicationContext["minValueLightIntensity"] as? Double {
+                self.sensorValueNew[7][0] = sensorReadingValue
+                self.sensorReading.send(self.sensorValueNew)
+            }else if let sensorReadingValue = applicationContext["maxValueLightIntensity"] as? Double {
+                self.sensorValueNew[8][0] = sensorReadingValue
+                self.sensorReading.send(self.sensorValueNew)
+            }else if let sensorReadingValue = applicationContext["minValueNoise"] as? Double {
+                self.sensorValueNew[9][0] = sensorReadingValue
+                self.sensorReading.send(self.sensorValueNew)
+            }else if let sensorReadingValue = applicationContext["maxValueNoise"] as? Double {
+                self.sensorValueNew[10][0] = sensorReadingValue
+                self.sensorReading.send(self.sensorValueNew)
+    
             }else {
                 print("There was an error")
             }

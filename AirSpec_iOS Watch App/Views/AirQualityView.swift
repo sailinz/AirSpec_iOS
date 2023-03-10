@@ -41,7 +41,8 @@ struct AirQualityView: View {
                                 Image(systemName: "nose.fill")
                                     .renderingMode(.template)
                                     .foregroundColor(SensorIconConstants.customColor)
-                                    .scaleEffect(2)
+                                    .opacity(0.5)
+                                    .font(.system(size: 30))
                             }
                             VStack{
     //                            Text(Int(dataReceivedWatch.sensorValueNew[1][i]) == -1 ? "" : "\(Int(dataReceivedWatch.sensorValueNew[1][i]))")

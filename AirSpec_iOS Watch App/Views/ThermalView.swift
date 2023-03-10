@@ -78,7 +78,7 @@ struct ThermalView: View {
     
 }
 
-
+//
 //struct ThermalView_Previews: PreviewProvider {
 //    static var previews: some View {
 //        ThermalView()

@@ -14,11 +14,20 @@ final class SensorData: ObservableObject {
     
     
     let sensorReading = PassthroughSubject<[[Double]], Never>()
-    @Published private(set) var sensorValueNew: [[Double]] = [Array(repeating: -1.0, count: SensorIconConstants.sensorThermal.count),
-                                                              Array(repeating: -1.0, count: SensorIconConstants.sensorAirQuality.count),
-                                                              Array(repeating: -1.0, count: SensorIconConstants.sensorVisual.count),
-                                                              Array(repeating: -1.0, count: SensorIconConstants.sensorAcoustics.count),
-                                                              Array(repeating: 3, count: 1)  ] /// cog load
+    @Published private(set) var sensorValueNew: [[Double]] = [
+      Array(repeating: -1.0, count: SensorIconConstants.sensorThermal.count), ///0
+      Array(repeating: -1.0, count: SensorIconConstants.sensorAirQuality.count), ///1
+      Array(repeating: -1.0, count: SensorIconConstants.sensorVisual.count), ///2
+      Array(repeating: -1.0, count: SensorIconConstants.sensorAcoustics.count), ///3
+      Array(repeating: 3, count: 1), /// cog load 4
+      SensorIconConstants.sensorThermal.map { $0.minValue }, ///5
+      SensorIconConstants.sensorThermal.map { $0.maxValue }, ///6
+      SensorIconConstants.sensorVisual.map { $0.minValue }, /// 7
+      SensorIconConstants.sensorVisual.map { $0.maxValue }, ///8
+      SensorIconConstants.sensorAcoustics.map { $0.minValue }, ///9
+      SensorIconConstants.sensorAcoustics.map { $0.maxValue } ///10
+                                                              
+    ]
     
     
     

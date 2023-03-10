@@ -317,7 +317,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                             if(sensorPayload.lux != nil){
                                 self.visualData[0] = Double(sensorPayload.lux) /// lux
                                 dataToWatch.updateValue(sensorValue: self.visualData[0], sensorName: "luxData")
-                                
+                                dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueLightIntensity")), sensorName: "minValueLightIntensity")
+                                dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueLightIntensity")), sensorName: "maxValueLightIntensity")
                                 try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[0].name, value: Float(self.visualData[0]))
                             }
                         }
@@ -328,9 +329,14 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                             if(sensorPayload.temperature != nil && sensorPayload.humidity != nil){
                                 self.visualData[1] = Double(sensorPayload.temperature) /// temperature
                                 dataToWatch.updateValue(sensorValue: self.visualData[1], sensorName: "temperatureData")
-                                print(sensorPayload.humidity)
                                 self.visualData[2] = Double(sensorPayload.humidity) /// humidity
                                 dataToWatch.updateValue(sensorValue: self.visualData[2], sensorName: "humidityData")
+                                
+                                dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueTemp")), sensorName: "minValueTemp")
+                                dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueTemp")), sensorName: "maxValueTemp")
+                                
+                                dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueHum")), sensorName: "minValueHum")
+                                dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueHum")), sensorName: "maxValueHum")
                                 
                                 try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[1].name, value: Float(self.visualData[1]))
                                 try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[2].name, value: Float(self.visualData[2]))

@@ -40,7 +40,8 @@ struct VisualView: View {
                                 Image(systemName: "eye")
                                     .renderingMode(.template)
                                     .foregroundColor(SensorIconConstants.customColor)
-                                    .scaleEffect(2)
+                                    .opacity(0.5)
+                                    .font(.system(size: 30))
                             }
                             VStack{
     //                            Text(Int(dataReceivedWatch.sensorValueNew[2][i]) == -1 ? "" : "\(Int(dataReceivedWatch.sensorValueNew[2][i]))")

@@ -128,63 +128,63 @@ struct SettingView: View {
                         }
                         
                             
-                        HStack() {
-                            Image(systemName: "person.3.fill")
-                                .frame(width: 30, height: 20)
-                            Text("Public mode")
-                                .font(.system(.subheadline))
-                            Toggle(isOn: $togglePublicState) {
-                                
-                                }
-                                .buttonStyle(PlainButtonStyle())
-                                .tint(.pink)
-                                .alignmentGuide(.trailing) { _ in return -10 }
-                        
-                        }
+//                        HStack() {
+//                            Image(systemName: "person.3.fill")
+//                                .frame(width: 30, height: 20)
+//                            Text("Public mode")
+//                                .font(.system(.subheadline))
+//                            Toggle(isOn: $togglePublicState) {
+//
+//                                }
+//                                .buttonStyle(PlainButtonStyle())
+//                                .tint(.pink)
+//                                .alignmentGuide(.trailing) { _ in return -10 }
+//
+//                        }
                         
 //                        Divider()
                             
-                        HStack() {
-                            Image(systemName: "heart.circle")
-                                .frame(width: 30, height: 20)
-                            Text("Range detection")
-                                .font(.system(.subheadline))
-                            Toggle(isOn: $toggleRangeState) {
-                                }
-                                .buttonStyle(PlainButtonStyle())
-                                .tint(.pink)
-                                .alignmentGuide(.trailing) { _ in return -10 }
-                        
-                        }
-                        
-                        HStack() {
-                            Image(systemName: "externaldrive")
-                                .frame(width: 30, height: 20)
-                            Text("Core data")
-                                .font(.system(.subheadline))
-                            Button(action: {
-//                                let dirPaths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
-//                                let docsDir = dirPaths[0]
-//                                print(docsDir)
-                                do {
-                                    let countRaw = try RawDataViewModel.count()
-                                    let countSurvey = try SurveyDataViewModel.count()
-                                    
-                                    print("\(countRaw) items in raw data datastore")
-                                    print("\(countSurvey) items in survey data datastore")
-                                } catch {
-                                    print("error fetching data: \(error)")
-                                }
-                            }) {
-                                Text("Print")
-                                .font(.system(.subheadline) .weight(.semibold))
-                                .foregroundColor(.white)
-                            }
-                            .padding(.all,5)
-                            .background(.gray.opacity(0.5))
-                            .clipShape(Capsule())
-                        
-                        }
+//                        HStack() {
+//                            Image(systemName: "heart.circle")
+//                                .frame(width: 30, height: 20)
+//                            Text("Range detection")
+//                                .font(.system(.subheadline))
+//                            Toggle(isOn: $toggleRangeState) {
+//                                }
+//                                .buttonStyle(PlainButtonStyle())
+//                                .tint(.pink)
+//                                .alignmentGuide(.trailing) { _ in return -10 }
+//
+//                        }
+//
+//                        HStack() {
+//                            Image(systemName: "externaldrive")
+//                                .frame(width: 30, height: 20)
+//                            Text("Core data")
+//                                .font(.system(.subheadline))
+//                            Button(action: {
+////                                let dirPaths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
+////                                let docsDir = dirPaths[0]
+////                                print(docsDir)
+//                                do {
+//                                    let countRaw = try RawDataViewModel.count()
+//                                    let countSurvey = try SurveyDataViewModel.count()
+//
+//                                    print("\(countRaw) items in raw data datastore")
+//                                    print("\(countSurvey) items in survey data datastore")
+//                                } catch {
+//                                    print("error fetching data: \(error)")
+//                                }
+//                            }) {
+//                                Text("Print")
+//                                .font(.system(.subheadline) .weight(.semibold))
+//                                .foregroundColor(.white)
+//                            }
+//                            .padding(.all,5)
+//                            .background(.gray.opacity(0.5))
+//                            .clipShape(Capsule())
+//
+//                        }
                         
                         HStack() {
                             Image(systemName: "externaldrive")
@@ -202,43 +202,43 @@ struct SettingView: View {
                         
                         }
                         
-                        HStack() {
-                            Image(systemName: "lightbulb.led.wide.fill")
-                                .frame(width: 30, height: 20)
-                            Text("Test light")
-                                .font(.system(.subheadline))
-                            Spacer()
-
-                            Button(action: receiver.testLight) {
-                                Text("Reset")
-                                .font(.system(.subheadline) .weight(.semibold))
-                                .foregroundColor(.white)
-                            }
-                            .padding(.all,5)
-                            .background(.gray.opacity(0.5))
-                            .clipShape(Capsule())
-                            
-                            Button(action:
-                                    {
-                                        print("testBlueGreenLight")
-                                        receiver.blueGreenLight(isEnable: true)
-//                                        Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { timer in
-////                                            print("test light with timer")
-////                                            receiver.testLightReset()
-//                                            receiver.testLight()
-//                                        }
-                                    }
-                                    
-                                ) {
-                                Text("Test")
-                                .font(.system(.subheadline) .weight(.semibold))
-                                .foregroundColor(.white)
-                            }
-                            .padding(.all,5)
-                            .background(.pink.opacity(0.5))
-                            .clipShape(Capsule())
-                            
-                        }
+//                        HStack() {
+//                            Image(systemName: "lightbulb.led.wide.fill")
+//                                .frame(width: 30, height: 20)
+//                            Text("Test light")
+//                                .font(.system(.subheadline))
+//                            Spacer()
+//
+//                            Button(action: receiver.testLight) {
+//                                Text("Reset")
+//                                .font(.system(.subheadline) .weight(.semibold))
+//                                .foregroundColor(.white)
+//                            }
+//                            .padding(.all,5)
+//                            .background(.gray.opacity(0.5))
+//                            .clipShape(Capsule())
+//                            
+//                            Button(action:
+//                                    {
+//                                        print("testBlueGreenLight")
+//                                        receiver.blueGreenLight(isEnable: true)
+////                                        Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { timer in
+//////                                            print("test light with timer")
+//////                                            receiver.testLightReset()
+////                                            receiver.testLight()
+////                                        }
+//                                    }
+//                                    
+//                                ) {
+//                                Text("Test")
+//                                .font(.system(.subheadline) .weight(.semibold))
+//                                .foregroundColor(.white)
+//                            }
+//                            .padding(.all,5)
+//                            .background(.pink.opacity(0.5))
+//                            .clipShape(Capsule())
+//                            
+//                        }
                         
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
