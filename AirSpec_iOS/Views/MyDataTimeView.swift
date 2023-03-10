@@ -55,10 +55,12 @@ struct MyDataTimeView: View {
 //                .font(.system(.caption).weight(.semibold))
 //            Spacer()
 //                .frame(height: 100)
-            HStack{
-                Image(systemName: "info.circle")
-                Text("About \(sensorSettingList[flags.firstIndex(where: { $0 }) ?? 0].name.replacingOccurrences(of: "\n", with: " "))")
-                    .font(.system(size: 22) .weight(.heavy))
+            VStack{
+                HStack{
+                    Image(systemName: "info.circle")
+                    Text("About \(sensorSettingList[flags.firstIndex(where: { $0 }) ?? 0].name.replacingOccurrences(of: "\n", with: " "))")
+                        .font(.system(size: 22) .weight(.heavy))
+                }
                 Text(sensorSettingList[flags.firstIndex(where: { $0 }) ?? 0].meaning)
                     .font(.system(size: 12) .weight(.light))
             }
@@ -69,7 +71,7 @@ struct MyDataTimeView: View {
                 .padding()
 
 
-            LazyVGrid(columns: columns, spacing: 18){
+            LazyVGrid(columns: columns, spacing: 10){
                 ForEach(flags.indices) { j in
                     VStack{
                         ToggleItem(storage: self.$flags, user_id: self.$user_id, data: self.$data, checkTogglekImage: sensorSettingList[j].icon, checkToggleText:sensorSettingList[j].name, tag: j, label: "")
@@ -321,10 +323,10 @@ struct CheckToggleStyle: ToggleStyle {
             icon: {
                 VStack{
                     Image(systemName: checkTogglekImage)
-                        .font(.system(size: 22))
+                        .font(.system(size: 20))
                         .foregroundColor(configuration.isOn ? .pink : .gray)
                         .imageScale(.large)
-                        .frame(width: 30, height: 30)
+                        .frame(width: 25, height: 25)
 
                     Text(checkToggleText)
                         .multilineTextAlignment(.center)
