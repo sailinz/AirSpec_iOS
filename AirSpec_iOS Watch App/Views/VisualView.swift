@@ -54,8 +54,8 @@ struct VisualView: View {
                                     color1: SensorIconConstants.sensorVisual[i].color1,
                                     color2: SensorIconConstants.sensorVisual[i].color2,
                                     color3: SensorIconConstants.sensorVisual[i].color3,
-                                    color1Position: SensorIconConstants.sensorVisual[i].color1Position,
-                                    color3Position: SensorIconConstants.sensorVisual[i].color3Position,
+                                    color1Position: dataReceivedWatch.sensorValueNew[7][i],
+                                    color3Position: dataReceivedWatch.sensorValueNew[8][i],
                                     valueTrend: VisualDataTrend[i],
                                     icon: SensorIconConstants.sensorVisual[i].icon){
                                     }

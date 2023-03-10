@@ -39,7 +39,7 @@ struct AcousticsView: View {
 //                                .font(.system(size: 10, design: .rounded) .weight(.heavy))
 //                                .foregroundColor(Color.white)
                             OpenCircularGauge(
-                                current: AcousticsData[i],
+                                current: AcousticsData[i], //ataReceivedWatch.sensorValueNew[3][i]
                                 minValue: SensorIconConstants.sensorAcoustics[i].minValue,
                                 maxValue: SensorIconConstants.sensorAcoustics[i].maxValue,
                                 color1: SensorIconConstants.sensorAcoustics[i].color1,
@@ -47,6 +47,8 @@ struct AcousticsView: View {
                                 color3: SensorIconConstants.sensorAcoustics[i].color3,
                                 color1Position: SensorIconConstants.sensorAcoustics[i].color1Position,
                                 color3Position: SensorIconConstants.sensorAcoustics[i].color3Position,
+                                // color1Position: dataReceivedWatch.sensorValueNew[9][i],
+                                // color3Position: dataReceivedWatch.sensorValueNew[10][i],
                                 valueTrend: AcousticsDataTrend[i],
                                 icon: SensorIconConstants.sensorAcoustics[i].icon){
                                 }

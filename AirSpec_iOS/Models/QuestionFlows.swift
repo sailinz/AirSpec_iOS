@@ -75,6 +75,8 @@ let questionFlows = [
                 "Air quality",
                 "Lighting",
                 "Noise",
+                "Mood",
+                "Bodily condition (e.g., hungry)",
                 "Others",
                 "None"
             ],
@@ -83,10 +85,14 @@ let questionFlows = [
                 "air-quality-smelly",
                 "light-bright",
                 "noise-privacy",
+                "leisure-privacy",
+                "appearance",
                 "other",
                 "none-1"
             ],
             nextQuestion: [
+                2,
+                2,
                 2,
                 2,
                 2,
@@ -309,13 +315,13 @@ let questionFlows = [
               title: "Rate your state of focus just before this survey",
               identifier: "activity-category",
               options: [
-                  "-3 Distracted",
-                  "-2",
-                  "-1",
-                  "0",
-                  "1",
-                  "2",
-                  "3 Deeply"
+                  "Very distracted",
+                  "Distracted",
+                  "Lightly distracted",
+                  "Neutral",
+                  "Lightly focused",
+                  "Focused",
+                  "Deeply, effortly in flow"
               ],
               icons: [
                   "mood-bad",
@@ -339,19 +345,121 @@ let questionFlows = [
         ),
         Question(
               currentQuestion: 12,
-              title: "How long do you think it's been since you last completed a survey?",
+              title: "How much of the time were you in a flow state since your last survey? (show 0-100%)",
               identifier: "activity-category",
               options: [
-                  "0-10 min",
-                  "10-20 min",
-                  "20-30 min",
-                  "30-40 min",
-                  "40-50 min",
-                  "50-60 min",
-                  ">1 hour"
+                  "0%",
+                  "10%",
+                  "20%",
+                  "30%",
+                  "40%",
+                  "50%",
+                  "60%",
+                  "70%",
+                  "80%",
+                  "90%",
+                  "100%"
+                  
               ],
               icons: [
                   "faster",
+                  "faster",
+                  "faster",
+                  "faster",
+                  "faster",
+                  "faster",
+                  "faster",
+                  "faster",
+                  "faster",
+                  "faster",
+                  "faster"
+              ],
+              nextQuestion: [
+                  13,
+                  13,
+                  13,
+                  13,
+                  13,
+                  13,
+                  13,
+                  13,
+                  13,
+                  13,
+                  13
+              ],
+              multiChoice: false
+        ),
+        
+        Question(
+              currentQuestion: 13,
+              title: "How long do you think it's been since you last completed a survey?",
+              identifier: "activity-category",
+              options: [
+                  "0-30 min",
+                  "30-60 min",
+                  "60-90 min",
+                  "90-120 min",
+                  ">120 min"
+              ],
+              icons: [
+                  "faster",
+                  "faster",
+                  "faster",
+                  "faster",
+                  "faster"
+              ],
+              nextQuestion: [
+                  14,
+                  15,
+                  16,
+                  17,
+                  1
+              ],
+              multiChoice: false
+        ),
+        
+        Question(
+              currentQuestion: 14,
+              title: "More detailly, how long do you think it's been since you last completed a survey?",
+              identifier: "activity-category",
+              options: [
+                  "Less than 10 min",
+                  "10-15 min",
+                  "16-20 min",
+                  "20-25 min",
+                  "26-30 min"
+              ],
+              icons: [
+                  "faster",
+                  "faster",
+                  "faster",
+                  "faster",
+                  "faster"
+              ],
+              nextQuestion: [
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+              ],
+              multiChoice: false
+        ),
+        
+        Question(
+              currentQuestion: 15,
+              title: "More detailly, how long do you think it's been since you last completed a survey?",
+              identifier: "activity-category",
+              options: [
+                  "31-35 min",
+                  "36-40 min",
+                  "41-45 min",
+                  "46-50 min",
+                  "51-55 min",
+                  "56-60 min",
+                  
+              ],
+              icons: [
                   "faster",
                   "faster",
                   "faster",
@@ -365,11 +473,75 @@ let questionFlows = [
                   1,
                   1,
                   1,
+                  1
+              ],
+              multiChoice: false
+        ),
+        
+        Question(
+              currentQuestion: 16,
+              title: "More detailly, how long do you think it's been since you last completed a survey?",
+              identifier: "activity-category",
+              options: [
+                  "61-65 min",
+                  "66-70 min",
+                  "71-75 min",
+                  "76-80 min",
+                  "81-85 min",
+                  "86-90 min",
+                  
+              ],
+              icons: [
+                  "faster",
+                  "faster",
+                  "faster",
+                  "faster",
+                  "faster",
+                  "faster"
+              ],
+              nextQuestion: [
+                  1,
+                  1,
+                  1,
+                  1,
                   1,
                   1
               ],
               multiChoice: false
         ),
+        
+        Question(
+              currentQuestion: 17,
+              title: "More detailly, how long do you think it's been since you last completed a survey?",
+              identifier: "activity-category",
+              options: [
+                  "91-95 min",
+                  "96-100 min",
+                  "101-105 min",
+                  "106-110 min",
+                  "111-115 min",
+                  "116-120 min",
+                  
+              ],
+              icons: [
+                  "faster",
+                  "faster",
+                  "faster",
+                  "faster",
+                  "faster",
+                  "faster"
+              ],
+              nextQuestion: [
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+              ],
+              multiChoice: false
+        ),
+        
     ])
 ]
 

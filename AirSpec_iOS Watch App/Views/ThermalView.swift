@@ -53,8 +53,8 @@ struct ThermalView: View {
                                 color1: SensorIconConstants.sensorThermal[i].color1,
                                 color2: SensorIconConstants.sensorThermal[i].color2,
                                 color3: SensorIconConstants.sensorThermal[i].color3,
-                                color1Position: SensorIconConstants.sensorThermal[i].color1Position,
-                                color3Position: SensorIconConstants.sensorThermal[i].color3Position,
+                                color1Position: dataReceivedWatch.sensorValueNew[5][i],
+                                color3Position: dataReceivedWatch.sensorValueNew[6][i],
                                 valueTrend: thermalDataTrend[i],
                                 icon: SensorIconConstants.sensorThermal[i].icon){
                                 }

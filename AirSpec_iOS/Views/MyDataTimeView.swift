@@ -59,6 +59,8 @@ struct MyDataTimeView: View {
                 Image(systemName: "info.circle")
                 Text("About \(sensorSettingList[flags.firstIndex(where: { $0 }) ?? 0].name.replacingOccurrences(of: "\n", with: " "))")
                     .font(.system(size: 22) .weight(.heavy))
+                Text(sensorSettingList[flags.firstIndex(where: { $0 }) ?? 0].meaning)
+                    .font(.system(size: 12) .weight(.light))
             }
             .padding()
             
