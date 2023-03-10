@@ -25,7 +25,7 @@ struct HomeView: View {
 
     
     @EnvironmentObject private var receiver: BluetoothReceiver
-//    let dummyvalue:Double  = 10.0
+    let dummyvalue:Double  = 10.0
 
     
     let skinTempDataName = ["thermopile_nose_bridge","thermopile_nose_tip","thermopile_temple_back","thermopile_temple_front","thermopile_temple_middle"]
@@ -46,46 +46,63 @@ struct HomeView: View {
     @State private var color1PositionAcoutstics: [Double]?
     @State private var color3PositionAcoutstics: [Double]?
 
-    // temp hum "Asset 15", "Asset 11"
-    // voc nox "Asset 6", "Asset 14"
-    //  4 "Asset 4", "Asset 10"
     
+    
+//    let thermalBgImageAssets = ["Asset 15", "Asset 11"]
+//    let airQualityBgImageAssets = ["Asset 6", "Asset 14", "Asset 4", "Asset 6", "Asset 14", "Asset 4"]
+//    let visualBgImageAssets = ["Asset 10", "Asset 15", "Asset 11"]
+//    let acousticsBgImageAssets = ["Asset 10"]
+//
     let thermalBgImageAssets = ["Asset 15", "Asset 11"]
-    let airQualityBgImageAssets = ["Asset 6", "Asset 14", "Asset 4", "Asset 6", "Asset 14", "Asset 4"]
+    let airQualityBgImageAssets = ["Asset 10", "Asset 14", "Asset 4", "Asset 15", "Asset 11", "Asset 6"]
     let visualBgImageAssets = ["Asset 10", "Asset 15", "Asset 11"]
     let acousticsBgImageAssets = ["Asset 10"]
+    
     let scaleFactor = 0.9
     let fontSize:CGFloat = 12
     let bgScaleFactor = 2.9
 
+    
+    @State var isClickedThermal: Bool = false
+    @State var isClickedAirQuality: Bool = false
+    @State var isClickedVisual: Bool = false
+    @State var isClickedNoise: Bool = false
+    
     var body: some View {
 
         NavigationView{
-            VStack{
-                ZStack{
+            ZStack{
+                
 
-                    GeometryReader { geometry in
-                        ForEach(0..<receiver.cogIntensity, id: \.self) { index in // Int(dummyvalue)
-                            Image("Asset " + String(Int.random(in: 1...18)))
-                                .opacity(0.6)
-                                .rotationEffect(.degrees(Double.random(in: 0...360)))
-                                .frame(width: CGFloat.random(in: 5...15), height: CGFloat.random(in: 5...15))
-                                .offset(x: self.randomX(geometry: geometry), y: self.randomY(geometry: geometry))
-                                .shadow(
-                                    color:Color.pink.opacity(0.5),
-                                    radius:4)
-                                .animation(Animation.easeIn(duration: 1).delay(1))
+                GeometryReader { geometry in
+                    ForEach(0..<Int(dummyvalue), id: \.self) { index in // receiver.cogIntensity
+                        Image("Asset " + String(Int.random(in: 1...18)))
+                            .opacity(0.6)
+                            .rotationEffect(.degrees(Double.random(in: 0...360)))
+                            .frame(width: CGFloat.random(in: 5...15), height: CGFloat.random(in: 5...15))
+                            .offset(x: self.randomX(geometry: geometry), y: self.randomY(geometry: geometry))
+                            .shadow(
+                                color:Color.pink.opacity(0.5),
+                                radius:4)
+                            .animation(Animation.easeIn(duration: 1).delay(1))
 
-                        }
                     }
+                }
+            
+                
+                VStack{
+                    HeartAnimation( isClickedThermal: $isClickedThermal, isClickedAirQuality: $isClickedAirQuality, isClickedVisual: $isClickedVisual, isClickedNoise: $isClickedNoise)
+                        .padding(.top, 30)
+                        .padding(.bottom, 70)
 
-                    ScrollView {
+//                    ScrollView {
 
+                    if isClickedThermal{
                         /// Thermal
                         VStack (alignment: .leading){
-                            Text("Thermal")
-                                .font(.system(size: 22) .weight(.heavy))
-                                .padding(.leading)
+                            //                            Text("Thermal")
+                            //                                .font(.system(size: 22) .weight(.heavy))
+                            //                                .padding(.leading)
                             
                             LazyVGrid(columns: columns, spacing: 3) {
                                 ForEach(0..<SensorIconConstants.sensorThermal.count){i in
@@ -93,13 +110,13 @@ struct HomeView: View {
                                         Image(thermalBgImageAssets[i])
                                             .renderingMode(.template)
                                             .foregroundColor(SensorIconConstants.customColor)
-                                            .opacity(0.8)
-                                            .shadow(color: SensorIconConstants.customColor, radius: 1)
+                                            .opacity(0.7)
+                                            .shadow(color: .pink, radius: 2)
                                             .scaleEffect(bgScaleFactor)
                                         
                                         VStack{
                                             OpenCircularGauge(
-                                                current: receiver.thermalData[i],
+                                                current: dummyvalue, // receiver.thermalData[i],
                                                 minValue: SensorIconConstants.sensorThermal[i].minValue,
                                                 maxValue: SensorIconConstants.sensorThermal[i].maxValue,
                                                 color1: SensorIconConstants.sensorThermal[i].color1,
@@ -120,26 +137,28 @@ struct HomeView: View {
                                                     color:.black,
                                                     radius:10)
                                         }
-
+                                        
                                     }
                                     .scaleEffect(scaleFactor)
                                 }
                             }
-
-                        }
                             
+                        }
+                    }
+                    
+                    if isClickedAirQuality{
                         VStack (alignment: .trailing){
-                            Text("Air quality")
-                                .font(.system(size: 22) .weight(.heavy))
-                                .padding(.trailing)
+                            //                            Text("Air quality")
+                            //                                .font(.system(size: 22) .weight(.heavy))
+                            //                                .padding(.trailing)
                             LazyVGrid(columns: columns, spacing: 3) {
                                 ForEach(0..<SensorIconConstants.sensorAirQuality.count){i in
                                     ZStack{
                                         Image(airQualityBgImageAssets[i])
                                             .renderingMode(.template)
                                             .foregroundColor(SensorIconConstants.customColor)
-                                            .opacity(0.8)
-                                            .shadow(color: SensorIconConstants.customColor, radius: 1)
+                                            .opacity(0.7)
+                                            .shadow(color: .pink, radius: 2)
                                             .scaleEffect(bgScaleFactor)
                                         
                                         if(SensorIconConstants.sensorAirQuality[i].name.contains("nose")){
@@ -151,7 +170,7 @@ struct HomeView: View {
                                         
                                         VStack{
                                             OpenCircularGauge(
-                                                current: receiver.airQualityData[i],
+                                                current: dummyvalue,// receiver.airQualityData[i],
                                                 minValue: SensorIconConstants.sensorAirQuality[i].minValue,
                                                 maxValue: SensorIconConstants.sensorAirQuality[i].maxValue,
                                                 color1: SensorIconConstants.sensorAirQuality[i].color1,
@@ -171,34 +190,31 @@ struct HomeView: View {
                                                 .shadow(
                                                     color:.black,
                                                     radius:10)
-
+                                            
                                         }
-
+                                        
                                     }
                                     .scaleEffect(scaleFactor)
-                                
+                                    
                                 }
                             }
                         }
+                    }
                         
-                        HeartAnimation()
-                            .padding(.top, 30)
-                            .padding(.bottom, 70)
-                            .scaleEffect(0.95)
                             
-
+                    if isClickedVisual{
                         VStack (alignment: .leading) {
-                            Text("Visual")
-                                .font(.system(size: 22) .weight(.heavy))
-                                .padding(.leading)
+                            //                            Text("Visual")
+                            //                                .font(.system(size: 22) .weight(.heavy))
+                            //                                .padding(.leading)
                             LazyVGrid(columns: columns, spacing: 1) {
                                 ForEach(0..<SensorIconConstants.sensorVisual.count){i in
                                     ZStack{
                                         Image(visualBgImageAssets[i])
                                             .renderingMode(.template)
                                             .foregroundColor(SensorIconConstants.customColor)
-                                            .opacity(0.8)
-                                            .shadow(color: SensorIconConstants.customColor, radius: 1)
+                                            .opacity(0.7)
+                                            .shadow(color: .pink, radius: 2)
                                             .scaleEffect(bgScaleFactor)
                                         
                                         if(SensorIconConstants.sensorVisual[i].name.contains("eye")){
@@ -210,7 +226,7 @@ struct HomeView: View {
                                         
                                         VStack{
                                             OpenCircularGauge(
-                                                current: receiver.visualData[i],
+                                                current: dummyvalue,//receiver.visualData[i],
                                                 minValue: SensorIconConstants.sensorVisual[i].minValue,
                                                 maxValue: SensorIconConstants.sensorVisual[i].maxValue,
                                                 color1: SensorIconConstants.sensorVisual[i].color1,
@@ -238,12 +254,13 @@ struct HomeView: View {
                                 
                             }
                         }
+                    }
 
-                        
-                        VStack (alignment: .trailing) {
-                            Text("Noise")
-                                .font(.system(size: 22) .weight(.heavy))
-                                .padding(.trailing)
+                    if isClickedNoise{
+                        VStack (alignment: .leading) {
+//                            Text("Noise")
+//                                .font(.system(size: 22) .weight(.heavy))
+//                                .padding(.trailing)
                             LazyVGrid(columns: columns, spacing: 1) {
                                 ForEach(0..<SensorIconConstants.sensorAcoustics.count){i in
                                     let dummyValue = Double.random(in: 50.0 ..< 80.0)
@@ -251,8 +268,8 @@ struct HomeView: View {
                                         Image(acousticsBgImageAssets[i])
                                             .renderingMode(.template)
                                             .foregroundColor(SensorIconConstants.customColor)
-                                            .opacity(0.8)
-                                            .shadow(color: SensorIconConstants.customColor, radius: 1)
+                                            .opacity(0.7)
+                                            .shadow(color: .pink, radius: 2)
                                             .scaleEffect(bgScaleFactor)
                                         
                                         VStack{
@@ -278,23 +295,28 @@ struct HomeView: View {
                                                     color:.black,
                                                     radius:10)
                                         }
-
+                                        
                                     }
                                     .scaleEffect(scaleFactor)
                                     
                                 }
                             }
-                            
                         }
-
                     }
+
                 }
+                    
+                
             }
             .navigationTitle("Home")
         }
 
         .onChange(of: scenePhase) { newPhase in
             if newPhase == .active {
+                isClickedThermal = false
+                isClickedAirQuality = false
+                isClickedVisual = false
+                isClickedNoise = false
                 /// get user's comfort range
                 color1PositionThermal = [UserDefaults.standard.double(forKey: "minValueTemp"), UserDefaults.standard.double(forKey: "minValueHum")]
                 color3PositionThermal = [UserDefaults.standard.double(forKey: "maxValueTemp"), UserDefaults.standard.double(forKey: "maxValueHum")]
@@ -311,7 +333,12 @@ struct HomeView: View {
         }
 
         .onAppear{
-            print("Active")
+            isClickedThermal = false
+            isClickedAirQuality = false
+            isClickedVisual = false
+            isClickedNoise = false
+            print("iOS Home Active")
+            
             /// get user's comfort range
             color1PositionThermal = [UserDefaults.standard.double(forKey: "minValueTemp"), UserDefaults.standard.double(forKey: "minValueHum")]
             color3PositionThermal = [UserDefaults.standard.double(forKey: "maxValueTemp"), UserDefaults.standard.double(forKey: "maxValueHum")]

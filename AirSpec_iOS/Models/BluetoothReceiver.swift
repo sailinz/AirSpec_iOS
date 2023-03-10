@@ -69,6 +69,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     var randomNextNotificationGap: Int = 15 /// minute
     var notificationTimer:DispatchSourceTimer?
     let greenHoldTime = 60 * 15 /// sec
+    var disconnectionTimer:DispatchSourceTimer?
     
     /// -- PUSH TO THE SERVER
     private var timer: DispatchSourceTimer?
@@ -158,6 +159,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         peripheral.discoverServices([BluetoothConstants.airspecServiceUUID])
         
         RawDataViewModel.addMetaDataToRawData(payload: "connected to \(peripheral.name ?? "unnamed peripheral")", timestampUnix: Date(), type: 5)
+        disconnectionTimer?.cancel()
+        disconnectionTimer = nil
 
         
         timer = DispatchSource.makeTimerSource()
@@ -176,6 +179,19 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         connectedPeripheral = nil
         
         RawDataViewModel.addMetaDataToRawData(payload: "disconnected from \(peripheral.name ?? "unnamed peripheral")", timestampUnix: Date(), type: 5)
+        
+        disconnectionTimer = DispatchSource.makeTimerSource()
+        disconnectionTimer?.schedule(deadline: .now() + .seconds(180), repeating: .seconds(updateFrequence))
+        disconnectionTimer?.setEventHandler {
+            LocalNotification.setLocalNotification(title: "No sensor data",
+                                                   subtitle: "Please check glasses connectivity",
+                                                   body: "Open AirSpec App on phone, reboot the glasses if needed.",
+                                                   when: 1) /// now
+        }
+        disconnectionTimer?.resume()
+        
+        
+        
 
         /// Keep track of the last known peripheral.
         knownDisconnectedPeripheral = peripheral
@@ -612,10 +628,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 let (data, onComplete) = try TempDataViewModel.fetchData()
                 if data.isEmpty {
                     print("no new data")
-                    LocalNotification.setLocalNotification(title: "No sensor data",
-                                                           subtitle: "Please check glasses connectivity",
-                                                           body: "Open AirSpec App on phone, reboot the glasses if needed.",
-                                                           when: 1) /// now
+                    
                     RawDataViewModel.addMetaDataToRawData(payload: "Glasses status check notification (vibration) triggered", timestampUnix: Date(), type: 4)
                     try onComplete()
                     return

@@ -21,6 +21,13 @@ struct HeartAnimation: View {
     @ObservedObject var dataReceivedWatch: SensorData
     #endif
     
+    #if os(iOS)
+    @Binding var isClickedThermal: Bool
+    @Binding var isClickedAirQuality: Bool
+    @Binding var isClickedVisual: Bool
+    @Binding var isClickedNoise: Bool
+    #endif
+    
     var healthStore = HKHealthStore()
     
     
@@ -52,40 +59,65 @@ struct HeartAnimation: View {
                 
                 
                 ZStack{
+                    Button(action: {
+                        isClickedThermal = false
+                        isClickedAirQuality = false
+                        isClickedVisual = true
+                        isClickedNoise = false
+                            }) {
+                                Image("heart_visual")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 100)
+                                    .offset(x:-30,y:55)
+                                    .opacity(opacityL)
+                            }.buttonStyle(PlainButtonStyle())
                     
-                    Image("heart_visual")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 100)
-                        .offset(x:-30,y:55)
-                        .opacity(opacityL)
+                    Button(action: {
+                        isClickedThermal = false
+                        isClickedAirQuality = false
+                        isClickedVisual = false
+                        isClickedNoise = true
+                            }) {
+                                Image("heart_noise")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 120)
+                                    .offset(x:40,y:60)
+                                    .opacity(opacityN)
+                                
+                            }.buttonStyle(PlainButtonStyle())
                     
+                    Button(action: {
+                        isClickedThermal = false
+                        isClickedAirQuality = true
+                        isClickedVisual = false
+                        isClickedNoise = false
+                            }) {
+                                Image("heart_aq")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 120)
+                                    .offset(x:50,y: -15)
+                                    .opacity(opacityAQ)
+                                
+                            }.buttonStyle(PlainButtonStyle())
                     
+                    Button(action: {
+                        isClickedThermal = true
+                        isClickedAirQuality = false
+                        isClickedVisual = false
+                        isClickedNoise = false
+                            }) {
+                                Image("heart_thermal")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 120)
+                                    .offset(x:-40,y: 0)
+                                    .opacity(opacityT)
+                            }.buttonStyle(PlainButtonStyle())
                     
-                    Image("heart_noise")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 120)
-                        .offset(x:40,y:60)
-                        .opacity(opacityN)
 
-                    
-                    Image("heart_aq")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 120)
-                        .offset(x:50,y: -15)
-                        .opacity(opacityAQ)
-                    
-                    
-                    Image("heart_thermal")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 120)
-                        .offset(x:-40,y: 0)
-                        .opacity(opacityT)
-                    
-                    
                     Text(heartRate.map {String(format: "%.0f", $0)+" BPM" } ?? "-- BPM")
                         .font(.system(.largeTitle, design: .rounded) .weight(.heavy))
                         .foregroundColor(.white)
@@ -246,8 +278,20 @@ struct HeartAnimation: View {
     
 }
 
-//struct HeartAnimation_Previews: PreviewProvider {
-//    static var previews: some View {
-//        HeartAnimation()
-//    }
-//}
+#if os(iOS)
+struct HeartAnimation_Previews: PreviewProvider {
+    struct HeartAnimationWrapper: View {
+        @State var isClickedThermal = false
+        @State var isClickedAirQuality = false
+        @State var isClickedVisual = false
+        @State var isClickedNoise = false
+        
+        var body: some View {
+            HeartAnimation(isClickedThermal: $isClickedThermal, isClickedAirQuality: $isClickedAirQuality, isClickedVisual: $isClickedVisual, isClickedNoise: $isClickedNoise)
+        }
+    }
+    
+    static var previews: some View {
+        HeartAnimationWrapper()
+    }
+}#endif
