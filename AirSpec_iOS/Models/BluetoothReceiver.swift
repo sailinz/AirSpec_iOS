@@ -421,8 +421,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //                        isMIC = true
                         break
                     case .some(.blinkPacket(_)):
-                        print(packet)
-                        print("blink packet")
+//                        print(packet)
+//                        print("blink packet")
 //                        isBlink = true
                         break
                     case .some(.surveyPacket(_)):

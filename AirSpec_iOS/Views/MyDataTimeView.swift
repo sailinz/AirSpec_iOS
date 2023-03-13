@@ -63,18 +63,21 @@ struct MyDataTimeView: View {
                 }
                 Text(sensorSettingList[flags.firstIndex(where: { $0 }) ?? 0].meaning)
                     .font(.system(size: 12) .weight(.light))
+                    .fixedSize(horizontal: false, vertical: false)
             }
             .padding()
+            
+            Spacer()
             
             
             chartEnv
                 .padding()
 
 
-            LazyVGrid(columns: columns, spacing: 10){
+            LazyVGrid(columns: columns, spacing: 8){
                 ForEach(flags.indices) { j in
                     VStack{
-                        ToggleItem(storage: self.$flags, user_id: self.$user_id, data: self.$data, checkTogglekImage: sensorSettingList[j].icon, checkToggleText:sensorSettingList[j].name, tag: j, label: "")
+                        ToggleItem(storage: self.$flags, selectedElement: self.$selectedElement, data: self.$data, checkTogglekImage: sensorSettingList[j].icon, checkToggleText:sensorSettingList[j].name, tag: j, label: "")
 
                     }
 
@@ -134,73 +137,74 @@ struct MyDataTimeView: View {
 //            .symbol(Circle().strokeBorder(lineWidth: lineWidth))
 //            .symbolSize(showSymbols ? 10 : 0)
         }
-        .chartOverlay { proxy in
-            GeometryReader { geo in
-                Rectangle().fill(.clear).contentShape(Rectangle())
-                    .gesture(
-                        SpatialTapGesture()
-                            .onEnded { value in
-                                let element = findElement(location: value.location, proxy: proxy, geometry: geo)
-                                if selectedElement?.minutes == element?.minutes {
-                                    /// If tapping the same element, clear the selection.
-                                    selectedElement = nil
-                                } else {
-                                    selectedElement = element
-                                }
-                            }
-                            .exclusively(
-                                before: DragGesture()
-                                    .onChanged { value in
-                                        selectedElement = findElement(location: value.location, proxy: proxy, geometry: geo)
-                                    }
-                            )
-                    )
-            }
-        }
-        .chartBackground { proxy in
-            ZStack(alignment: .topLeading) {
-                GeometryReader { geo in
-                    if showLollipop,
-                       let selectedElement {
-                        let dateInterval = Calendar.current.dateInterval(of: .minute, for: selectedElement.minutes)!
-                        let startPositionX1 = proxy.position(forX: dateInterval.start) ?? 0
-
-                        let lineX = startPositionX1 + geo[proxy.plotAreaFrame].origin.x
-                        let lineHeight = geo[proxy.plotAreaFrame].maxY
-                        let boxWidth: CGFloat = 50
-                        let boxOffset = max(0, min(geo.size.width - boxWidth, lineX - boxWidth / 2))
-
-                        Rectangle()
-                            .fill(.black)
-                            .frame(width: 2, height: lineHeight)
-                            .position(x: lineX, y: lineHeight / 2)
-
-                        VStack(alignment: .center) {
-                            Text("\(selectedElement.minutes, format: .dateTime.hour().minute())")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            Text("\(selectedElement.values, format: .number)")
-                                .font(.body.bold())
-                                .foregroundColor(.primary)
-                        }
-                        .frame(width: boxWidth, alignment: .leading)
-                        .background {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 8)
-                                    .fill(.background)
-                                RoundedRectangle(cornerRadius: 8)
-                                    .fill(.quaternary.opacity(0.7))
-                            }
-                            .padding(.horizontal, -8)
-                            .padding(.vertical, -4)
-                        }
-                        .offset(x: boxOffset, y:-50)
-                    }
-                }
-            }
-        }
+//        .chartOverlay { proxy in
+//            GeometryReader { geo in
+//                Rectangle().fill(.clear).contentShape(Rectangle())
+//                    .gesture(
+//                        SpatialTapGesture()
+//                            .onEnded { value in
+//                                let element = findElement(location: value.location, proxy: proxy, geometry: geo)
+//                                if selectedElement?.minutes == element?.minutes {
+//                                    /// If tapping the same element, clear the selection.
+//                                    selectedElement = nil
+//                                } else {
+//                                    selectedElement = element
+//                                }
+//                            }
+//                            .exclusively(
+//                                before: DragGesture()
+//                                    .onChanged { value in
+//                                        selectedElement = findElement(location: value.location, proxy: proxy, geometry: geo)
+//                                    }
+//                            )
+//                    )
+//            }
+//        }
+//        .chartBackground { proxy in
+//            ZStack(alignment: .topLeading) {
+//                GeometryReader { geo in
+//                    if showLollipop{
+//                        if let selectedElement = self.selectedElement {
+//                            let dateInterval = Calendar.current.dateInterval(of: .minute, for: selectedElement.minutes)!
+//                            let startPositionX1 = proxy.position(forX: dateInterval.start) ?? 0
+//
+//                            let lineX = startPositionX1 + geo[proxy.plotAreaFrame].origin.x
+//                            let lineHeight = geo[proxy.plotAreaFrame].maxY
+//                            let boxWidth: CGFloat = 50
+//                            let boxOffset = max(0, min(geo.size.width - boxWidth, lineX - boxWidth / 2))
+//
+//                            Rectangle()
+//                                .fill(.black)
+//                                .frame(width: 2, height: lineHeight)
+//                                .position(x: lineX, y: lineHeight / 2)
+//
+//                            VStack(alignment: .center) {
+//                                Text("\(selectedElement.minutes, format: .dateTime.hour().minute())")
+//                                    .font(.caption)
+//                                    .foregroundStyle(.secondary)
+//                                Text("\(selectedElement.values, format: .number)")
+//                                    .font(.body.bold())
+//                                    .foregroundColor(.primary)
+//                            }
+//                            .frame(width: boxWidth, alignment: .leading)
+//                            .background {
+//                                ZStack {
+//                                    RoundedRectangle(cornerRadius: 8)
+//                                        .fill(.background)
+//                                    RoundedRectangle(cornerRadius: 8)
+//                                        .fill(.quaternary.opacity(0.7))
+//                                }
+//                                .padding(.horizontal, -8)
+//                                .padding(.vertical, -4)
+//                            }
+//                            .offset(x: boxOffset, y:-50)
+//                        }
+//                    }
+//                }
+//            }
+//        }
         .chartXAxis(.automatic)
-        .chartYAxis(.hidden)
+        .chartYAxis(.automatic)
         .frame(height: Constants.detailChartHeight) /// :Constants.detailChartHeight
     }
 
@@ -228,7 +232,7 @@ struct MyDataTimeView: View {
 
 struct ToggleItem: View {
     @Binding var storage: [Bool]
-    @Binding var user_id: String
+    @Binding var selectedElement: temp?
     @Binding var data: [(minutes: Date, values: Double)]
 
     var checkTogglekImage:String
@@ -246,8 +250,9 @@ struct ToggleItem: View {
 
 
         if(self.storage[self.tag]){
-            
+            selectedElement = nil
             startQueries(i:self.tag)
+        
 
         }
         return Toggle(label, isOn: isOn)
@@ -255,6 +260,7 @@ struct ToggleItem: View {
     }
 
     func startQueries(i:Int) {
+        
         do {
             let (longTermData, onComplete) = try LongTermDataViewModel.fetchData()
             if longTermData.isEmpty {
@@ -331,7 +337,8 @@ struct CheckToggleStyle: ToggleStyle {
                     Text(checkToggleText)
                         .multilineTextAlignment(.center)
                         .foregroundColor(configuration.isOn ? .pink : .gray)
-                        .font(configuration.isOn ? (.system(size: 13) .weight(.semibold)) : (.system(size: 12).weight(.regular)))
+                        .font(configuration.isOn ? (.system(size: 12) .weight(.semibold)) : (.system(size: 11).weight(.regular)))
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
         }
