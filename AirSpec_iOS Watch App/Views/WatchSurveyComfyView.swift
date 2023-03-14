@@ -12,7 +12,7 @@ struct WatchSurveyComfyView: View {
     let comfyColor:Color = .mint
     let uncomfyColor:Color = .pink
     @State var surveyRecordIndex: Int = 0
-    @State var eyeCalibration:Bool = false
+    @Binding var eyeCalibration:Bool
     @Binding var isComfyVote: Bool
     @Binding var showSurvey: Bool
 
@@ -23,7 +23,7 @@ struct WatchSurveyComfyView: View {
         
         ZStack{
             if eyeCalibration{
-                BlinkView(eyeCalibrationDone: $eyeCalibration)
+                BlinkView(eyeCalibration: $eyeCalibration)
             }else{
                 if(isComfyVote){
                     VStack{
@@ -126,7 +126,7 @@ struct WatchSurveyComfyView: View {
                             
                             Button(action:{
                                 withAnimation{
-                                    self.eyeCalibration.toggle()
+                                    eyeCalibration = true
                                 }
                             }){
                                 Image(systemName: "eye.circle")
@@ -138,29 +138,6 @@ struct WatchSurveyComfyView: View {
                         }
                         
                     }
-                    //                .gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local)
-                    //                        .onEnded({ value in
-                    //                            if value.translation.width < 0 {
-                    //                                // left
-                    //                                print("swipe down")
-                    //                            }
-                    //
-                    //                            if value.translation.width > 0 {
-                    //                                // right
-                    //                                print("swipe down")
-                    //                            }
-                    //                            if value.translation.height < 0 {
-                    //                                // up
-                    //                                print("swipe down")
-                    //                            }
-                    //
-                    //                            if value.translation.height > 0 {
-                    //                                // down
-                    //                                print("swipe down")
-                    //                                showSurvey = false
-                    //                                isComfyVote = false
-                    //                            }
-                    //                        }))
                 }else{
                     WatchSurveyQuestionView(showSurvey: $showSurvey)
                 }
@@ -169,6 +146,7 @@ struct WatchSurveyComfyView: View {
         .onAppear{
             showSurvey = true
             isComfyVote = true
+            eyeCalibration = false
             print("survey appear")
             
             if UserDefaults.standard.integer(forKey: "survey_record_index") == 0 {

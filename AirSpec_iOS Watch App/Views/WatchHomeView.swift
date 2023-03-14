@@ -24,6 +24,7 @@ struct WatchHomeView: View {
     @StateObject var dataReceivedWatch = SensorData()
     @Binding var isComfyVote: Bool /// is it comfy vote view to be appeared
     @Binding var showSurvey: Bool ///default true
+    @Binding var eyeCalibration: Bool
      
     
     var body: some View {
@@ -52,7 +53,7 @@ struct WatchHomeView: View {
                 
             }.blur(radius: showSurvey ? 10 : 0)
             if(showSurvey){
-                WatchSurveyComfyView(isComfyVote: $isComfyVote, showSurvey: $showSurvey, surveyStatusToPhone: dataReceivedWatch)
+                WatchSurveyComfyView(eyeCalibration: $eyeCalibration, isComfyVote: $isComfyVote, showSurvey: $showSurvey, surveyStatusToPhone: dataReceivedWatch)
             }
         }
         .onAppear{
@@ -124,8 +125,9 @@ extension Color {
 struct WatchHomeView_Previews: PreviewProvider {
     @State static var isComfyVote = true
     @State static var showSurvey = true
+    @State static var eyeCalibration = false
     static var previews: some View {
-        WatchHomeView(isComfyVote: $isComfyVote, showSurvey: $showSurvey)
+        WatchHomeView(isComfyVote: $isComfyVote, showSurvey: $showSurvey, eyeCalibration: $eyeCalibration)
     }
 }
 

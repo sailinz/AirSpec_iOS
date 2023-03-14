@@ -85,7 +85,7 @@ let questionFlows = [
                 "air-quality-smelly",
                 "light-bright",
                 "noise-privacy",
-                "leisure-privacy",
+                "entertainmentß",
                 "appearance",
                 "other",
                 "none-1"
@@ -324,13 +324,13 @@ let questionFlows = [
                   "Deeply, effortly in flow"
               ],
               icons: [
-                  "mood-bad",
-                  "mood-bad",
-                  "mood-bad",
-                  "mood-neutral",
-                  "mood-good",
-                  "mood-good",
-                  "mood-good"
+                  "distracted",
+                  "distracted",
+                  "distracted",
+                  "bored",
+                  "focus",
+                  "focus",
+                  "focus"
               ],
               nextQuestion: [
                   12,

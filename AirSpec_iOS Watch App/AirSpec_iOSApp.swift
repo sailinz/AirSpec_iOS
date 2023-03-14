@@ -19,7 +19,7 @@ struct AirSpec_iOSApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView(isComfyVote: true, showSurvey: true)
+            ContentView(isComfyVote: true, showSurvey: true, eyeCalibration: false)
             
         }
     }

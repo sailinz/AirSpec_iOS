@@ -12,46 +12,61 @@ import Foundation
 
 struct BlinkView: View {
     @State var whereToLook:String = "left"
-    @Binding var eyeCalibrationDone:Bool
+    @Binding var eyeCalibration:Bool
     @State(initialValue: WorkoutDataStore())
     private var backgroundSession: WorkoutDataStore
     
     let healthStore = HKHealthStore()
     let session = HKWorkoutSession(activityType: .running, locationType: .outdoor)
-
+    var blinkTimer: DispatchSourceTimer? = DispatchSource.makeTimerSource()
     
     var body: some View {
-        LookWhereView(whereToLook: $whereToLook)
-            .onAppear {
-                
+        ZStack{
+            LookWhereView(whereToLook: $whereToLook)
+//            Button(action:{
+//                withAnimation{
+//                    eyeCalibration = false
+//                }
+//            }){
+//                Image(systemName: "xmark.circle")
+//                    .font(.system(size:20, weight:.bold))
+//                    .foregroundColor(.pink)
+//            }
+//            .clipShape(Circle())
+        }
+        .onAppear {
                 self.backgroundSession.startWorkoutSession()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
-                    Timer.scheduledTimer(withTimeInterval: 6, repeats: true) { timer in
-                        
-                        WKInterfaceDevice.current().play(.success)
-                        
-                        switch whereToLook {
-                        case "left":
-                            whereToLook = "right"
-                        case "right":
-                            whereToLook = "up"
-                        case "up":
-                            whereToLook = "down"
-                        case "down":
-                            whereToLook = "blink"
-                        case "blink":
-                            timer.invalidate()
-        
-                            eyeCalibrationDone.toggle()
-                        default:
-                            break
-                        }
+                // Start the animation look
+                blinkTimer?.schedule(deadline: .now() + 18, repeating: 18)
+                blinkTimer?.setEventHandler {
+                    WKInterfaceDevice.current().play(.success)
+
+                    switch whereToLook {
+                    case "left":
+                        whereToLook = "right"
+                    case "right":
+                        whereToLook = "up"
+                    case "up":
+                        whereToLook = "down"
+                    case "down":
+                        whereToLook = "blink"
+                    case "blink":
+                        blinkTimer?.cancel()
+                        self.backgroundSession.stopWorkoutSession()
+                        eyeCalibration = false
+                        break
+                    default:
+                        break
                     }
                 }
+                blinkTimer?.resume()
+
             }
-            .onDisappear{
-                self.backgroundSession.stopWorkoutSession()
-            }
+        .onDisappear{
+            self.backgroundSession.stopWorkoutSession()
+            blinkTimer?.cancel()
+
+        }
         
     }
    
@@ -59,8 +74,8 @@ struct BlinkView: View {
 
 struct LookWhereView: View{
     let width: CGFloat = 5 // width of the ring
-    let radius: CGFloat = 100 // radius of the ring
-    let circleDiameter: CGFloat = 50 // diameter of the circle
+    let radius: CGFloat = 80 // radius of the ring
+    let circleDiameter: CGFloat = 40 // diameter of the circle
     var circleOffset: CGFloat = -20// offset of the circle from the left edge
     @State private var isCircleOffset = false
     @Binding var whereToLook: String
@@ -71,7 +86,7 @@ struct LookWhereView: View{
             // Outer ring
             ZStack{
                 Circle()
-                    .strokeBorder(Color.pink, lineWidth: width)
+                    .strokeBorder(Color.mint, lineWidth: width)
                     .frame(width: radius, height: radius)
                     .opacity(!isCircleOffset ? {
                         switch whereToLook {
@@ -85,7 +100,7 @@ struct LookWhereView: View{
                 
                 // Inner circle
                 Circle()
-                    .foregroundColor(.pink)
+                    .foregroundColor(.mint)
                     .frame(width: circleDiameter, height: circleDiameter)
                     .opacity(!isCircleOffset ? {
                         switch whereToLook {
@@ -166,16 +181,20 @@ struct LookWhereView: View{
             if isCircleOffset{
                 if(whereToLook != "blink"){
                     Text("Look **\(whereToLook)** when you feel the **vibration**.")
+                        .fixedSize(horizontal: false, vertical: false)
                 }else{
                     Text("Then **open** your eyes when you feel the **vibration** again.")
+                        .fixedSize(horizontal: false, vertical: false)
                 }
                 
                 
             }else{
                 if(whereToLook != "blink"){
                     Text("Then go back to **center** when you feel the **vibration** again.")
+                        .fixedSize(horizontal: false, vertical: false)
                 }else{
                     Text("**Close** your eyes when you feel the **vibration**.")
+                        .fixedSize(horizontal: false, vertical: false)
                     
                 }
                 
@@ -212,6 +231,6 @@ struct LookWhereView_Previews: PreviewProvider {
 struct BlinkView_Previews: PreviewProvider {
     static var previews: some View {
         let eyeCalibrationDone = Binding.constant(false) // Create a binding variable with an initial value of "left"
-        return BlinkView(eyeCalibrationDone:eyeCalibrationDone)
+        return BlinkView(eyeCalibration:eyeCalibrationDone)
     }
 }
