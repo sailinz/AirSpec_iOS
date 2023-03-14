@@ -9,7 +9,7 @@ import CoreData
 
 class SurveyDataViewModel {
     static let container: NSPersistentContainer = NSPersistentContainer(name: "SurveyDataContainer")
-    static let MAX_UNSENT_COUNT = 4096 * 3
+    static let MAX_UNSENT_COUNT = 4096000
     
     static let q = DispatchQueue(label: "init_surveydata")
     static var has_init = false
@@ -26,6 +26,7 @@ class SurveyDataViewModel {
             container.loadPersistentStores{(description, error) in
                 if let error = error {
                     err = error
+                    RawDataViewModel.addMetaDataToRawData(payload: "survey data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
                 }
             }
             
@@ -49,6 +50,7 @@ class SurveyDataViewModel {
                 ret = try ctx.count(for: request)
             } catch {
                 err = error
+                RawDataViewModel.addMetaDataToRawData(payload: "survey data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
             }
         }
         
@@ -79,6 +81,7 @@ class SurveyDataViewModel {
                 try ctx.save()
             } catch {
                 err = error
+                RawDataViewModel.addMetaDataToRawData(payload: "survey data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
             }
         }
         
@@ -124,6 +127,7 @@ class SurveyDataViewModel {
                 try ctx.save()
             } catch {
                 err = error
+                RawDataViewModel.addMetaDataToRawData(payload: "survey data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
             }
         }
         

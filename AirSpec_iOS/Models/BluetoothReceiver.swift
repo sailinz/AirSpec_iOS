@@ -74,7 +74,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     
     /// -- PUSH TO THE SERVER
     private var timer: DispatchSourceTimer?
-    let updateFrequence = 60 * 10 /// seconds
+    let updateFrequence = 60 * 5 /// seconds
 //    let batchSize = 50
 //    private var reconstructedData:[SensorPacket] = [] /// for testing only
 
@@ -283,9 +283,9 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //                print(packet)
                 
                 if(dataToWatch.surveyDone){
-//                    blueGreenLight(isEnable: false)
-//                    setBlue()
-                    testLight(leftBlue: 20, leftGreen: 150, leftRed: 0, rightBlue: 20, rightGreen: 150, rightRed: 0)
+                    blueGreenLight(isEnable: false)
+                    setBlue()
+//                    testLight(leftBlue: 20, leftGreen: 150, leftRed: 0, rightBlue: 20, rightGreen: 150, rightRed: 0)
                     dataToWatch.surveyDone = false
                     notificationTimer?.cancel()
                     notificationTimer = nil
@@ -294,8 +294,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 
                 if(dataToWatch.isEyeCalibrationDone){
 //                    blueGreenLight(isEnable: false)
-//                    setBlue()
-                    testLight(leftBlue: 150, leftGreen: 20, leftRed: 0, rightBlue: 150, rightGreen: 20, rightRed: 0)
+                    setBlue()
+//                    testLight(leftBlue: 150, leftGreen: 20, leftRed: 0, rightBlue: 150, rightGreen: 20, rightRed: 0)
                     dataToWatch.isEyeCalibrationDone = false
                     RawDataViewModel.addMetaDataToRawData(payload: "eye calibration started", timestampUnix: Date(), type: 2)
                 }

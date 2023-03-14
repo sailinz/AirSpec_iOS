@@ -282,6 +282,13 @@ struct SettingView: View {
                                 print("\(self.minValueTemp/sliderWidth)")
                                 
                                 RawDataViewModel.addMetaDataToRawData(payload: "minValueTemp : \(self.minValueTemp/sliderWidth) C", timestampUnix: Date(), type: 1)
+                                RawDataViewModel.addMetaDataToRawData(payload: "maxValueTemp : \(self.minValueTemp/sliderWidth) C", timestampUnix: Date(), type: 1)
+                                RawDataViewModel.addMetaDataToRawData(payload: "minValueHum : \(self.minValueTemp/sliderWidth) %", timestampUnix: Date(), type: 1)
+                                RawDataViewModel.addMetaDataToRawData(payload: "maxValueHum : \(self.minValueTemp/sliderWidth) %", timestampUnix: Date(), type: 1)
+                                RawDataViewModel.addMetaDataToRawData(payload: "minValueLightIntensity : \(self.minValueTemp/sliderWidth) lux", timestampUnix: Date(), type: 1)
+                                RawDataViewModel.addMetaDataToRawData(payload: "maxValueLightIntensity : \(self.minValueTemp/sliderWidth) lux", timestampUnix: Date(), type: 1)
+                                RawDataViewModel.addMetaDataToRawData(payload: "minValueNoise : \(self.minValueTemp/sliderWidth) dBA", timestampUnix: Date(), type: 1)
+                                RawDataViewModel.addMetaDataToRawData(payload: "maxValueNoise : \(self.minValueTemp/sliderWidth) dBA", timestampUnix: Date(), type: 1)
                             }) {
                                 Text("Update")
                                     .foregroundColor(.white)

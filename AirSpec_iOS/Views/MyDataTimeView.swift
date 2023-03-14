@@ -91,6 +91,8 @@ struct MyDataTimeView: View {
                     }
                     .onTapGesture {
                         self.isTodayData.toggle()
+                        RawDataViewModel.addMetaDataToRawData(payload: "Long term data of today is checked: \(self.isTodayData) (true: today; false: all days)", timestampUnix: Date(), type: 1)
+
                     }
                     Text("Today")
                         .font(.system(.subheadline) .weight(.semibold))
@@ -284,7 +286,7 @@ struct ToggleItem: View {
 
         if(self.storage[self.tag]){
             startQueries(i:self.tag)
-        
+            RawDataViewModel.addMetaDataToRawData(payload: "Long term data \(sensorSettingList[self.tag].name) is checked", timestampUnix: Date(), type: 1)
 
         }
         return Toggle(label, isOn: isOn)
@@ -363,6 +365,7 @@ struct ToggleItem: View {
             
         } catch {
             print("no long term data: \(error)")
+            RawDataViewModel.addMetaDataToRawData(payload: "no long term data: \(error)", timestampUnix: Date(), type: 2)
         }
         
     }

@@ -46,6 +46,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        RawDataViewModel.addMetaDataToRawData(payload: "didFailToRegisterForRemoteNotificationsWithError: \(error.localizedDescription)", timestampUnix: Date(), type: 2)
         print(error.localizedDescription)
     }
 }
@@ -80,6 +81,7 @@ class LocalNotification {
                 print("notification allowed")
             } else {
                 print("notification error")
+                RawDataViewModel.addMetaDataToRawData(payload: "notification error", timestampUnix: Date(), type: 2)
             }
         }
     }

@@ -26,6 +26,7 @@ class LongTermDataViewModel {
             container.loadPersistentStores{(description, error) in
                 if let error = error {
                     err = error
+                    RawDataViewModel.addMetaDataToRawData(payload: "temp data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
                 }
             }
             
@@ -49,6 +50,7 @@ class LongTermDataViewModel {
                 ret = try ctx.count(for: request)
             } catch {
                 err = error
+                RawDataViewModel.addMetaDataToRawData(payload: "temp data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
             }
         }
         
@@ -81,6 +83,7 @@ class LongTermDataViewModel {
 //                try ctx.save()
             } catch {
                 err = error
+                RawDataViewModel.addMetaDataToRawData(payload: "temp data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
             }
         }
         
@@ -141,6 +144,7 @@ class LongTermDataViewModel {
                 try ctx.save()
             } catch {
                 err = error
+                RawDataViewModel.addMetaDataToRawData(payload: "temp data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
             }
         }
         

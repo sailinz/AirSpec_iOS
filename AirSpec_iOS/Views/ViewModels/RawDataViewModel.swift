@@ -10,7 +10,7 @@ import CoreData
 
 class RawDataViewModel {
     static let container: NSPersistentContainer = NSPersistentContainer(name: "RawDataContainer")
-    static let MAX_UNSENT_COUNT = 4096
+    static let MAX_UNSENT_COUNT = 4096000
 
     static let q = DispatchQueue(label: "init_rawdata")
     static var has_init = false
@@ -27,6 +27,7 @@ class RawDataViewModel {
             container.loadPersistentStores{(description, error) in
                 if let error = error {
                     err = error
+                    RawDataViewModel.addMetaDataToRawData(payload: "temp data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
                 }
             }
 
@@ -50,6 +51,7 @@ class RawDataViewModel {
                 ret = try ctx.count(for: request)
             } catch {
                 err = error
+                RawDataViewModel.addMetaDataToRawData(payload: "temp data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
             }
         }
 
@@ -81,6 +83,7 @@ class RawDataViewModel {
                 try ctx.save()
             } catch {
                 err = error
+                RawDataViewModel.addMetaDataToRawData(payload: "temp data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
             }
         }
 
@@ -102,6 +105,7 @@ class RawDataViewModel {
                     try ctx.save()
                 } catch {
                     err = error
+                    RawDataViewModel.addMetaDataToRawData(payload: "temp data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
                 }
             }
 
@@ -185,6 +189,7 @@ class RawDataViewModel {
                 try ctx.save()
             } catch {
                 err = error
+                RawDataViewModel.addMetaDataToRawData(payload: "temp data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
             }
         }
 

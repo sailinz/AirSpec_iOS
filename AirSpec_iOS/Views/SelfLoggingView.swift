@@ -42,6 +42,7 @@ struct SelfLoggingView: View {
                                         try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-2), choice: "not comfy")
                                         RawDataViewModel.addSurveyDataToRawData(qIndex: -2, qChoice: "not comfy", qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
                                     }catch{
+                                        RawDataViewModel.addMetaDataToRawData(payload: "Error saving survey data: \(error.localizedDescription)", timestampUnix: Date(), type: 2)
                                         print("Error saving survey data: \(error.localizedDescription)")
                                     }
                                 }){
@@ -72,6 +73,7 @@ struct SelfLoggingView: View {
                                         try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-2), choice: "comfy")
                                         RawDataViewModel.addSurveyDataToRawData(qIndex: -2, qChoice: "comfy", qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
                                     }catch{
+                                        RawDataViewModel.addMetaDataToRawData(payload: "Error saving survey data: \(error.localizedDescription)", timestampUnix: Date(), type: 2)
                                         print("Error saving survey data: \(error.localizedDescription)")
                                     }
                                 }){
@@ -149,6 +151,7 @@ struct SelfLoggingView: View {
                                         
                                         
                                     }catch{
+                                        RawDataViewModel.addMetaDataToRawData(payload: "Error saving survey data: \(error.localizedDescription)", timestampUnix: Date(), type: 2)
                                         print("Error saving survey data: \(error.localizedDescription)")
                                     }
                                 
