@@ -12,6 +12,7 @@ struct WatchSurveyComfyView: View {
     let comfyColor:Color = .mint
     let uncomfyColor:Color = .pink
     @State var surveyRecordIndex: Int = 0
+    @State var eyeCalibration:Bool = false
     @Binding var isComfyVote: Bool
     @Binding var showSurvey: Bool
 
@@ -21,134 +22,148 @@ struct WatchSurveyComfyView: View {
         
         
         ZStack{
-            if(isComfyVote){
-                VStack{
-                    Spacer()
-                        .frame(height: 30)
-                    Text("How are you feeling now?")
-                    Spacer()
-                        .frame(height: 10)
-                    HStack{
-                        Button(action:{
-                            print("isSurvey: \(showSurvey)")
-                            do{
-        //                        try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-2), choice: "not comfy")
-                                try RawDataViewModel.addSurveyDataToRawData(qIndex: -2, qChoice: "not comfy", qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
-                                
-                                surveyStatusToPhone.updateSurveyStatus(isSurveyDone: true)
-                                
-                                isComfyVote = false
-                            }catch{
-                                print("Error saving survey data: \(error.localizedDescription)")
-                            }
-                        }){
-                            ZStack{
-                                VStack{
-                                    ZStack{
-                                        Circle()
-                                            .frame(width:42, height:42)
-                                            .foregroundColor(uncomfyColor)
-                                            .shadow(color: uncomfyColor, radius: 2, x: 0, y: 2)
-                                        Image("not_comfy")
-                                            .resizable()
-                                            .renderingMode(.template)
+            if eyeCalibration{
+                BlinkView(eyeCalibrationDone: $eyeCalibration)
+            }else{
+                if(isComfyVote){
+                    VStack{
+                        Spacer()
+                            .frame(height: 30)
+                        Text("How are you feeling now?")
+                        Spacer()
+                            .frame(height: 10)
+                        HStack{
+                            Button(action:{
+                                print("isSurvey: \(showSurvey)")
+                                do{
+                                    //                        try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-2), choice: "not comfy")
+                                    try RawDataViewModel.addSurveyDataToRawData(qIndex: -2, qChoice: "not comfy", qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
+                                    
+                                    surveyStatusToPhone.updateSurveyStatus(isSurveyDone: true)
+                                    
+                                    isComfyVote = false
+                                }catch{
+                                    print("Error saving survey data: \(error.localizedDescription)")
+                                }
+                            }){
+                                ZStack{
+                                    VStack{
+                                        ZStack{
+                                            Circle()
+                                                .frame(width:42, height:42)
+                                                .foregroundColor(uncomfyColor)
+                                                .shadow(color: uncomfyColor, radius: 2, x: 0, y: 2)
+                                            Image("not_comfy")
+                                                .resizable()
+                                                .renderingMode(.template)
+                                                .foregroundColor(.white)
+                                                .frame(width: 20, height:20)
+                                        }
+                                        Text("Not comfy")
+                                            .font(.system(.subheadline) .weight(.semibold))
                                             .foregroundColor(.white)
-                                            .frame(width: 20, height:20)
                                     }
-                                    Text("Not comfy")
-                                        .font(.system(.subheadline) .weight(.semibold))
-                                        .foregroundColor(.white)
                                 }
                             }
+                            .buttonStyle(PlainButtonStyle())
+                            
+                            Spacer()
+                                .frame(width: 15)
+                            
+                            Button(action:{
+                                print("isSurvey: \(showSurvey)")
+                                do{
+                                    
+                                    //                        try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-2), choice: "comfy")
+                                    try RawDataViewModel.addSurveyDataToRawData(qIndex: -2, qChoice: "comfy", qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
+                                    surveyStatusToPhone.updateSurveyStatus(isSurveyDone: true)
+                                    isComfyVote = false
+                                }catch{
+                                    print("Error saving survey data: \(error.localizedDescription)")
+                                }
+                            }){
+                                ZStack{
+                                    VStack{
+                                        ZStack{
+                                            Circle()
+                                                .frame(width:42, height:42)
+                                                .foregroundColor(comfyColor)
+                                                .shadow(color: comfyColor, radius: 2, x: 0, y: 2)
+                                            Image("comfy")
+                                                .resizable()
+                                                .renderingMode(.template)
+                                                .foregroundColor(.white)
+                                                .frame(width: 20, height:20)
+                                        }
+                                        Text("Comfy")
+                                            .font(.system(.subheadline) .weight(.semibold))
+                                            .foregroundColor(.white)
+                                    }
+                                }
+                            }
+                            .buttonStyle(PlainButtonStyle())
                         }
-                        .buttonStyle(PlainButtonStyle())
                         
                         Spacer()
-                            .frame(width: 15)
-                    
-                        Button(action:{
-                            print("isSurvey: \(showSurvey)")
-                            do{
-                                
-        //                        try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-2), choice: "comfy")
-                                try RawDataViewModel.addSurveyDataToRawData(qIndex: -2, qChoice: "comfy", qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
-                                surveyStatusToPhone.updateSurveyStatus(isSurveyDone: true)
-                                isComfyVote = false
-                            }catch{
-                                print("Error saving survey data: \(error.localizedDescription)")
-                            }
-                        }){
-                            ZStack{
-                                VStack{
-                                    ZStack{
-                                        Circle()
-                                            .frame(width:42, height:42)
-                                            .foregroundColor(comfyColor)
-                                            .shadow(color: comfyColor, radius: 2, x: 0, y: 2)
-                                        Image("comfy")
-                                            .resizable()
-                                            .renderingMode(.template)
-                                            .foregroundColor(.white)
-                                            .frame(width: 20, height:20)
-                                    }
-                                    Text("Comfy")
-                                        .font(.system(.subheadline) .weight(.semibold))
-                                        .foregroundColor(.white)
+                            .frame(height: 20)
+                        /// allow user to close the survey
+                        HStack{
+                            
+                            Button(action:{
+                                withAnimation{
+                                    showSurvey = false
+                                    isComfyVote = false
                                 }
+                            }){
+                                Image(systemName: "xmark.circle")
+                                    .font(.system(size:20, weight:.bold))
+                                    .foregroundColor(.pink)
                             }
+                            .clipShape(Circle())
+                            
+                            Spacer()
+                                .frame(width: 10)
+                            
+                            Button(action:{
+                                withAnimation{
+                                    self.eyeCalibration.toggle()
+                                }
+                            }){
+                                Image(systemName: "eye.circle")
+                                    .font(.system(size:20, weight:.bold))
+                                    .foregroundColor(.mint)
+                            }
+                            .clipShape(Circle())
+                            
                         }
-                        .buttonStyle(PlainButtonStyle())
+                        
                     }
-                    
-                    Spacer()
-                        .frame(height: 20)
-                    /// allow user to close the survey
-//                    HStack{
-                        
-                    Button(action:{
-                        withAnimation{
-                            showSurvey = false
-                            isComfyVote = false
-                        }
-                    }){
-                        Image(systemName: "xmark.circle")
-                            .font(.system(size:20, weight:.bold))
-                            .foregroundColor(.pink)
-                    }
-//                    .frame(width: 30, height: 30)
-                    .clipShape(Circle())
-                        
-//                        Spacer()
-//                            .frame(width: 100)
-                        
-//                    }
-                    
+                    //                .gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local)
+                    //                        .onEnded({ value in
+                    //                            if value.translation.width < 0 {
+                    //                                // left
+                    //                                print("swipe down")
+                    //                            }
+                    //
+                    //                            if value.translation.width > 0 {
+                    //                                // right
+                    //                                print("swipe down")
+                    //                            }
+                    //                            if value.translation.height < 0 {
+                    //                                // up
+                    //                                print("swipe down")
+                    //                            }
+                    //
+                    //                            if value.translation.height > 0 {
+                    //                                // down
+                    //                                print("swipe down")
+                    //                                showSurvey = false
+                    //                                isComfyVote = false
+                    //                            }
+                    //                        }))
+                }else{
+                    WatchSurveyQuestionView(showSurvey: $showSurvey)
                 }
-//                .gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local)
-//                        .onEnded({ value in
-//                            if value.translation.width < 0 {
-//                                // left
-//                                print("swipe down")
-//                            }
-//
-//                            if value.translation.width > 0 {
-//                                // right
-//                                print("swipe down")
-//                            }
-//                            if value.translation.height < 0 {
-//                                // up
-//                                print("swipe down")
-//                            }
-//
-//                            if value.translation.height > 0 {
-//                                // down
-//                                print("swipe down")
-//                                showSurvey = false
-//                                isComfyVote = false
-//                            }
-//                        }))
-            }else{
-                WatchSurveyQuestionView(showSurvey: $showSurvey)
             }
         }
         .onAppear{

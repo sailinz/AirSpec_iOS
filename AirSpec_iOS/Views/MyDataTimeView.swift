@@ -34,6 +34,7 @@ struct MyDataTimeView: View {
 
     @State var flags = Array(repeating: false, count: sensorSettingList.count)
     @State var user_id: String = ""
+    @State var isTodayData: Bool = true
     
     
     private let columns = [
@@ -65,19 +66,51 @@ struct MyDataTimeView: View {
                     .font(.system(size: 12) .weight(.light))
                     .fixedSize(horizontal: false, vertical: false)
             }
-            .padding()
+            .padding(.horizontal)
             
             Spacer()
-            
-            
+            ZStack{
+                HStack(alignment: .center){
+                    Spacer()
+                    Text("All days")
+                        .font(.system(.subheadline) .weight(.semibold))
+                    /// Toggle credit: https://toddhamilton.medium.com/prototype-a-custom-toggle-in-swiftui-d324941dac40
+                    ZStack {
+                        Capsule()
+                            .frame(width:66,height:30)
+                            .foregroundColor(Color(isTodayData ? #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.1028798084) : #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.6039008336)))
+                        ZStack{
+                            Circle()
+                                .frame(width:26, height:26)
+                                .foregroundColor(.white)
+                            Image(systemName: isTodayData ? "clock.arrow.circlepath" : "calendar")
+                        }
+                        .shadow(color: .black.opacity(0.14), radius: 4, x: 0, y: 2)
+                        .offset(x:isTodayData ? 18 : -18)
+                        .animation(.spring())
+                    }
+                    .onTapGesture {
+                        self.isTodayData.toggle()
+                    }
+                    Text("Today")
+                        .font(.system(.subheadline) .weight(.semibold))
+                    Spacer()
+                }
+                
+                
+            }
             chartEnv
-                .padding()
+                .padding(.horizontal)
+            
+            
+            
+            
 
 
             LazyVGrid(columns: columns, spacing: 8){
                 ForEach(flags.indices) { j in
                     VStack{
-                        ToggleItem(storage: self.$flags, selectedElement: self.$selectedElement, data: self.$data, checkTogglekImage: sensorSettingList[j].icon, checkToggleText:sensorSettingList[j].name, tag: j, label: "")
+                        ToggleItem(storage: self.$flags, isTodayData: self.$isTodayData, data: self.$data, checkTogglekImage: sensorSettingList[j].icon, checkToggleText:sensorSettingList[j].name, tag: j, label: "")
 
                     }
 
@@ -232,7 +265,7 @@ struct MyDataTimeView: View {
 
 struct ToggleItem: View {
     @Binding var storage: [Bool]
-    @Binding var selectedElement: temp?
+    @Binding var isTodayData: Bool
     @Binding var data: [(minutes: Date, values: Double)]
 
     var checkTogglekImage:String
@@ -250,7 +283,6 @@ struct ToggleItem: View {
 
 
         if(self.storage[self.tag]){
-            selectedElement = nil
             startQueries(i:self.tag)
         
 
@@ -272,31 +304,63 @@ struct ToggleItem: View {
             var err: Error?
 
             
-            let selectedSensorData = longTermData.filter { $0.1 == sensorSettingList[i].name}
             
             
-            let convertedSensorData = selectedSensorData.compactMap { tuple -> (Date, Double)? in
-                let date = tuple.0
-                let dateString = "\(date)"
-                let valuesString = "\(tuple.2)"
-                return convertToData(dateString: dateString, valuesString: valuesString)
-            }
+            if(self.isTodayData){
+                let calendar = Calendar.current
+                let selectedSensorData = longTermData.filter { $0.1 == sensorSettingList[i].name && calendar.isDate($0.0, equalTo: Date(), toGranularity: .day)}
+                let convertedSensorData = selectedSensorData.compactMap { tuple -> (Date, Double)? in
+                    
+                    let date = tuple.0
+                    let dateString = "\(date)"
+                    let valuesString = "\(tuple.2)"
+                    return convertToData(dateString: dateString, valuesString: valuesString)
+                }
 
-            if convertedSensorData.isEmpty {
-                print("No matching tuples found")
-            } else {
-                DispatchQueue.main.async {
-                    self.data = convertedSensorData
+                if convertedSensorData.isEmpty {
+                    print("No matching tuples found")
+                } else {
+                    DispatchQueue.main.async {
+                        self.data = convertedSensorData
+                        
+                    }
                     
                 }
                 
+                if let err = err {
+                    throw err
+                } else {
+                    try onComplete()
+                }
+            }else{
+                let selectedSensorData = longTermData.filter { $0.1 == sensorSettingList[i].name}
+                let convertedSensorData = selectedSensorData.compactMap { tuple -> (Date, Double)? in
+                    
+                    let date = tuple.0
+                    let dateString = "\(date)"
+                    let valuesString = "\(tuple.2)"
+                    return convertToData(dateString: dateString, valuesString: valuesString)
+                }
+
+                if convertedSensorData.isEmpty {
+                    print("No matching tuples found")
+                } else {
+                    DispatchQueue.main.async {
+                        self.data = convertedSensorData
+                        
+                    }
+                    
+                }
+                
+                if let err = err {
+                    throw err
+                } else {
+                    try onComplete()
+                }
             }
             
-            if let err = err {
-                throw err
-            } else {
-                try onComplete()
-            }
+            
+            
         } catch {
             print("no long term data: \(error)")
         }
