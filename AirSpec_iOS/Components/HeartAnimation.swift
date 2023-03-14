@@ -64,6 +64,7 @@ struct HeartAnimation: View {
                         isClickedAirQuality = false
                         isClickedVisual = true
                         isClickedNoise = false
+                        RawDataViewModel.addMetaDataToRawData(payload: "Visual clicked on phone", timestampUnix: Date(), type: 1)
                             }) {
                                 Image("heart_visual")
                                     .resizable()
@@ -78,6 +79,8 @@ struct HeartAnimation: View {
                         isClickedAirQuality = false
                         isClickedVisual = false
                         isClickedNoise = true
+                        
+                        RawDataViewModel.addMetaDataToRawData(payload: "Noise clicked on phone", timestampUnix: Date(), type: 1)
                             }) {
                                 Image("heart_noise")
                                     .resizable()
@@ -93,6 +96,8 @@ struct HeartAnimation: View {
                         isClickedAirQuality = true
                         isClickedVisual = false
                         isClickedNoise = false
+                        
+                        RawDataViewModel.addMetaDataToRawData(payload: "Air Quality clicked on phone", timestampUnix: Date(), type: 1)
                             }) {
                                 Image("heart_aq")
                                     .resizable()
@@ -108,6 +113,8 @@ struct HeartAnimation: View {
                         isClickedAirQuality = false
                         isClickedVisual = false
                         isClickedNoise = false
+                        
+                        RawDataViewModel.addMetaDataToRawData(payload: "Thermal clicked on phone", timestampUnix: Date(), type: 1)
                             }) {
                                 Image("heart_thermal")
                                     .resizable()
@@ -161,7 +168,7 @@ struct HeartAnimation: View {
                                 radius:2)
                     }.buttonStyle(PlainButtonStyle())
                     
-                    NavigationLink(destination: AcousticsView()) {
+                    NavigationLink(destination: AcousticsView(dataReceivedWatch: dataReceivedWatch)) {
                         Image("heart_noise")
                             .resizable()
                             .aspectRatio(contentMode: .fit)

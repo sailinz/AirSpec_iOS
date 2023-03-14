@@ -19,62 +19,54 @@ struct AcousticsView: View {
         GridItem(.flexible()),
     ]
     
-    @State private var AcousticsData = Array(repeating: -1.0, count: SensorIconConstants.sensorAcoustics.count)
     @State private var AcousticsDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorAcoustics.count)
-//    var user_id:String = "9067133"
+
 
     let updateFrequence = 10 /// seconds
-//    @ObservedObject var dataReceivedWatch: SensorData
+    @ObservedObject var dataReceivedWatch: SensorData
     
     var body: some View {
         VStack (alignment: .leading) {
             Text("Acoustics")
                 .font(.system(.caption2) .weight(.heavy))
                 .padding()
-//            ScrollView {
-                LazyVGrid(columns: columns, alignment: .center, spacing: 3) {
-                    ForEach(0..<SensorIconConstants.sensorAcoustics.count){i in
-                        VStack{
-//                            Text("\(Int(AcousticsData[i]))")
-//                                .font(.system(size: 10, design: .rounded) .weight(.heavy))
-//                                .foregroundColor(Color.white)
-                            OpenCircularGauge(
-                                current: AcousticsData[i], //ataReceivedWatch.sensorValueNew[3][i]
-                                minValue: SensorIconConstants.sensorAcoustics[i].minValue,
-                                maxValue: SensorIconConstants.sensorAcoustics[i].maxValue,
-                                color1: SensorIconConstants.sensorAcoustics[i].color1,
-                                color2: SensorIconConstants.sensorAcoustics[i].color2,
-                                color3: SensorIconConstants.sensorAcoustics[i].color3,
-                                color1Position: SensorIconConstants.sensorAcoustics[i].color1Position,
-                                color3Position: SensorIconConstants.sensorAcoustics[i].color3Position,
-                                // color1Position: dataReceivedWatch.sensorValueNew[9][i],
-                                // color3Position: dataReceivedWatch.sensorValueNew[10][i],
-                                valueTrend: AcousticsDataTrend[i],
-                                icon: SensorIconConstants.sensorAcoustics[i].icon){
-                                }
-                            
+            LazyVGrid(columns: columns, alignment: .center, spacing: 3) {
+                ForEach(0..<SensorIconConstants.sensorAcoustics.count){i in
+                    VStack{
+                        OpenCircularGauge(
+                            current: dataReceivedWatch.sensorValueNew[3][i], //AcousticsData[i],
+                            minValue: SensorIconConstants.sensorAcoustics[i].minValue,
+                            maxValue: SensorIconConstants.sensorAcoustics[i].maxValue,
+                            color1: SensorIconConstants.sensorAcoustics[i].color1,
+                            color2: SensorIconConstants.sensorAcoustics[i].color2,
+                            color3: SensorIconConstants.sensorAcoustics[i].color3,
+                            color1Position: dataReceivedWatch.sensorValueNew[9][i],
+                            color3Position: dataReceivedWatch.sensorValueNew[10][i],
+                            valueTrend: AcousticsDataTrend[i],
+                            icon: SensorIconConstants.sensorAcoustics[i].icon){
+                            }
+                        
 
-                                Text(SensorIconConstants.sensorAcoustics[i].name)
-                                    .foregroundColor(Color.white)
-                                    .font(.system(size: 10))
-//                                    .scaledToFit()
-//                                    .minimumScaleFactor(0.01)
-//                                    .lineLimit(1)
-                        }
+                            Text(SensorIconConstants.sensorAcoustics[i].name)
+                                .foregroundColor(Color.white)
+                                .font(.system(size: 10))
                     }
                 }
-                .padding(.horizontal)
-//            }
+            }
+            .padding(.horizontal)
+        }
+        .onAppear{
+            RawDataViewModel.addMetaDataToRawData(payload: "Noise clicked on watch", timestampUnix: Date(), type: 1)
         }
     }
 }
 
 
-struct AcousticsView_Previews: PreviewProvider {
-    static var previews: some View {
-        AcousticsView()
-    }
-}
+//struct AcousticsView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        AcousticsView()
+//    }
+//}
 
 
 

@@ -20,60 +20,45 @@ struct ThermalView: View {
         GridItem(.flexible()),
     ]
     
-//    @ObservedObject var viewModel : ProgramViewModel
-//    @State var sensorValues : ProgramObject
-    
-//    @State private var thermalData = Array(repeating: -1.0, count: SensorIconConstants.sensorThermal.count)
     @State private var thermalDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorThermal.count)
-//    var user_id:String = "9067133"
-
-//    let updateFrequence = 10 /// seconds
     
     /// -- watch connectivity
-//    @StateObject var dataReceivedWatch = SensorData()  /// need to find more efficient ways to receive these data
     @ObservedObject var dataReceivedWatch: SensorData
     
     var body: some View {
         VStack (alignment: .leading) {
-            
             Text("Thermal")
                 .font(.system(.caption2) .weight(.heavy))
                 .padding()
-//            ScrollView {
-                LazyVGrid(columns: columns, alignment: .center, spacing: 3) {
-                    ForEach(0..<SensorIconConstants.sensorThermal.count){i in
-                        VStack{
-//                            Text(Int(dataReceivedWatch.sensorValueNew[0][i]) == -1 ? "" : "\(Int(dataReceivedWatch.sensorValueNew[0][i]))")
-//                                .font(.system(size: 10, design: .rounded) .weight(.heavy))
-//                                .foregroundColor(Color.white)
-                            OpenCircularGauge(
-                                current: dataReceivedWatch.sensorValueNew[0][i],
-                                minValue: SensorIconConstants.sensorThermal[i].minValue,
-                                maxValue: SensorIconConstants.sensorThermal[i].maxValue,
-                                color1: SensorIconConstants.sensorThermal[i].color1,
-                                color2: SensorIconConstants.sensorThermal[i].color2,
-                                color3: SensorIconConstants.sensorThermal[i].color3,
-                                color1Position: dataReceivedWatch.sensorValueNew[5][i],
-                                color3Position: dataReceivedWatch.sensorValueNew[6][i],
-                                valueTrend: thermalDataTrend[i],
-                                icon: SensorIconConstants.sensorThermal[i].icon){
-                                }
-                            
+            LazyVGrid(columns: columns, alignment: .center, spacing: 3) {
+                ForEach(0..<SensorIconConstants.sensorThermal.count){i in
+                    VStack{
+                        OpenCircularGauge(
+                            current: dataReceivedWatch.sensorValueNew[0][i],
+                            minValue: SensorIconConstants.sensorThermal[i].minValue,
+                            maxValue: SensorIconConstants.sensorThermal[i].maxValue,
+                            color1: SensorIconConstants.sensorThermal[i].color1,
+                            color2: SensorIconConstants.sensorThermal[i].color2,
+                            color3: SensorIconConstants.sensorThermal[i].color3,
+                            color1Position: dataReceivedWatch.sensorValueNew[5][i],
+                            color3Position: dataReceivedWatch.sensorValueNew[6][i],
+                            valueTrend: thermalDataTrend[i],
+                            icon: SensorIconConstants.sensorThermal[i].icon){
+                            }
+                        
 
-                                Text(SensorIconConstants.sensorThermal[i].name)
-                                    .foregroundColor(Color.white)
-                                    .font(.system(size: 10))
-                        }
-                            
+                            Text(SensorIconConstants.sensorThermal[i].name)
+                                .foregroundColor(Color.white)
+                                .font(.system(size: 10))
                     }
+                        
                 }
-                .padding(.horizontal)
-//            }
+            }
+            .padding(.horizontal)
         }
-//        .onAppear(){
-//            viewModel.connectivityProvider.connect()
-//            self.sensorValues = viewModel.connectivityProvider.receivedPrograms!
-//        }
+        .onAppear(){
+            RawDataViewModel.addMetaDataToRawData(payload: "Thermal clicked on watch", timestampUnix: Date(), type: 1)
+        }
     }
     
 }

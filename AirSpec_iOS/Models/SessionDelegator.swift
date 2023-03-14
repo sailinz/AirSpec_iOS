@@ -20,7 +20,7 @@ import ClockKit
 //extension Notification.Name {
 //    static let dataDidFlow = Notification.Name("DataDidFlow")
 //    static let activationDidComplete = Notification.Name("ActivationDidComplete")
-//    static let reachabilityDidChange = Notification.Name("ReachabilityDidChange")
+//    static let reachabilityDidChange = Notåification.Name("ReachabilityDidChange")
 //}
 
 // Implement WCSessionDelegate methods to receive Watch Connectivity data and notify clients.
@@ -31,6 +31,7 @@ class SessionDelegator: NSObject, WCSessionDelegate {
 //    @Published var receivedValue: String?
     let sensorReading: PassthroughSubject<[[Double]], Never>
     let surveyStatus: PassthroughSubject<Bool, Never>
+    let eyeCalibrationStatus: PassthroughSubject<Bool, Never>
     var sensorValueNew: [[Double]] = [Array(repeating: -1.0, count: SensorIconConstants.sensorThermal.count),
                                       Array(repeating: -1.0, count: SensorIconConstants.sensorAirQuality.count),
                                       Array(repeating: -1.0, count: SensorIconConstants.sensorVisual.count),
@@ -44,10 +45,12 @@ class SessionDelegator: NSObject, WCSessionDelegate {
                                       SensorIconConstants.sensorAcoustics.map { $0.maxValue } ///10
                                       ]
     var isSurveyDone: Bool = false
+    var isEyeCalibrationDone: Bool = false
     
-    init(sensorReading: PassthroughSubject<[[Double]], Never>, surveyStatus: PassthroughSubject<Bool, Never>) {
+    init(sensorReading: PassthroughSubject<[[Double]], Never>, surveyStatus: PassthroughSubject<Bool, Never>, eyeCalibrationStatus: PassthroughSubject<Bool, Never>) {
         self.sensorReading = sensorReading
         self.surveyStatus = surveyStatus
+        self.eyeCalibrationStatus = eyeCalibrationStatus
         super.init()
     }
     
@@ -142,7 +145,10 @@ class SessionDelegator: NSObject, WCSessionDelegate {
             if let isSurveyDone = message["isSurveyDone"] as? Bool {
                 self.isSurveyDone = true
                 self.surveyStatus.send(isSurveyDone)
-                print("survey status received")
+//                print("survey status received")
+            } else if let isEyeCalibrationDone = message["isEyeCalibrationDone"] as? Bool{
+                self.isEyeCalibrationDone = true
+                self.eyeCalibrationStatus.send(isEyeCalibrationDone)
             } else {
                 print("There was an error")
             }
@@ -168,4 +174,5 @@ class SessionDelegator: NSObject, WCSessionDelegate {
     
     
 }
+
 

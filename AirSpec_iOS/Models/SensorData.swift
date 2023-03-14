@@ -34,9 +34,12 @@ final class SensorData: ObservableObject {
     let surveyStatus = PassthroughSubject<Bool, Never>()
     @Published var surveyDone: Bool = false
     
+    let eyeCalibrationStatus = PassthroughSubject<Bool, Never>()
+    @Published var isEyeCalibrationDone: Bool = false
+    
     
     init(session: WCSession = .default) {
-        self.delegate = SessionDelegator(sensorReading: sensorReading, surveyStatus:surveyStatus)
+        self.delegate = SessionDelegator(sensorReading: sensorReading, surveyStatus:surveyStatus, eyeCalibrationStatus: eyeCalibrationStatus)
         self.session = session
         self.session.delegate = self.delegate
         self.session.activate()
@@ -47,6 +50,10 @@ final class SensorData: ObservableObject {
         surveyStatus
             .receive(on: DispatchQueue.main)
             .assign(to: &$surveyDone)
+        
+        eyeCalibrationStatus
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$isEyeCalibrationDone)
         
     }
 
@@ -61,15 +68,17 @@ final class SensorData: ObservableObject {
     
     
     func updateSurveyStatus(isSurveyDone: Bool){
-//        do {
-//            try session.updateApplicationContext(["isSurveyDone": isSurveyDone])
-//        } catch {
-//            print(error.localizedDescription)
-//        }
         session.sendMessage(["isSurveyDone": isSurveyDone], replyHandler: nil) { error in
+                    print(error.localizedDescription)
+                }
+    }
+    
+    func updateEyeCalibrationStatus(isEyeCalibrationDone: Bool){
+        session.sendMessage(["isEyeCalibrationDone": isEyeCalibrationDone], replyHandler: nil) { error in
                     print(error.localizedDescription)
                 }
     }
 
 }
+
 

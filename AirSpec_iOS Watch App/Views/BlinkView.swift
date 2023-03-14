@@ -6,76 +6,48 @@
 //
 
 import SwiftUI
-import WatchKit
-import HealthKit
+//import WatchKit÷
 import Foundation
 
 struct BlinkView: View {
     @State var whereToLook:String = "left"
     @Binding var eyeCalibration:Bool
-    @State(initialValue: WorkoutDataStore())
-    private var backgroundSession: WorkoutDataStore
-    
-    let healthStore = HKHealthStore()
-    let session = HKWorkoutSession(activityType: .running, locationType: .outdoor)
-    var blinkTimer: DispatchSourceTimer? = DispatchSource.makeTimerSource()
+
     
     var body: some View {
-        ZStack{
+        VStack{
             LookWhereView(whereToLook: $whereToLook)
-//            Button(action:{
-//                withAnimation{
-//                    eyeCalibration = false
-//                }
-//            }){
-//                Image(systemName: "xmark.circle")
-//                    .font(.system(size:20, weight:.bold))
-//                    .foregroundColor(.pink)
-//            }
-//            .clipShape(Circle())
-        }
-        .onAppear {
-                self.backgroundSession.startWorkoutSession()
-                // Start the animation look
-                blinkTimer?.schedule(deadline: .now() + 18, repeating: 18)
-                blinkTimer?.setEventHandler {
-                    WKInterfaceDevice.current().play(.success)
-
-                    switch whereToLook {
-                    case "left":
-                        whereToLook = "right"
-                    case "right":
-                        whereToLook = "up"
-                    case "up":
-                        whereToLook = "down"
-                    case "down":
-                        whereToLook = "blink"
-                    case "blink":
-                        blinkTimer?.cancel()
-                        self.backgroundSession.stopWorkoutSession()
-                        eyeCalibration = false
-                        break
-                    default:
-                        break
-                    }
+            Button(action:{
+                switch whereToLook {
+                case "left":
+                    whereToLook = "right"
+                case "right":
+                    whereToLook = "up"
+                case "up":
+                    whereToLook = "down"
+                case "down":
+                    whereToLook = "blink"
+                case "blink":
+                    eyeCalibration = false
+                    break
+                default:
+                    break
                 }
-                blinkTimer?.resume()
-
+            }){
+                Image(systemName: "chevron.right.circle")
+                    .font(.system(size:20, weight:.bold))
+                    .foregroundColor(.mint)
             }
-        .onDisappear{
-            self.backgroundSession.stopWorkoutSession()
-            blinkTimer?.cancel()
-
+            .clipShape(Circle())
         }
-        
     }
    
 }
 
 struct LookWhereView: View{
     let width: CGFloat = 5 // width of the ring
-    let radius: CGFloat = 80 // radius of the ring
-    let circleDiameter: CGFloat = 40 // diameter of the circle
+    let radius: CGFloat = 70 // radius of the ring
+    let circleDiameter: CGFloat = 30 // diameter of the circle
     var circleOffset: CGFloat = -20// offset of the circle from the left edge
     @State private var isCircleOffset = false
     @Binding var whereToLook: String
@@ -180,24 +152,20 @@ struct LookWhereView: View{
             }
             if isCircleOffset{
                 if(whereToLook != "blink"){
-                    Text("Look **\(whereToLook)** when you feel the **vibration**.")
+                    Text("Look **\(whereToLook)**")
                         .fixedSize(horizontal: false, vertical: false)
                 }else{
-                    Text("Then **open** your eyes when you feel the **vibration** again.")
+                    Text("**Open** eyes")
                         .fixedSize(horizontal: false, vertical: false)
                 }
-                
-                
             }else{
                 if(whereToLook != "blink"){
-                    Text("Then go back to **center** when you feel the **vibration** again.")
+                    Text("Back to **center**")
                         .fixedSize(horizontal: false, vertical: false)
                 }else{
-                    Text("**Close** your eyes when you feel the **vibration**.")
+                    Text("**Close** eyes")
                         .fixedSize(horizontal: false, vertical: false)
-                    
                 }
-                
             }
            
                 
@@ -210,6 +178,32 @@ struct LookWhereView: View{
                     self.isCircleOffset.toggle()
                 }
                 WKInterfaceDevice.current().play(.notification)
+                
+                if isCircleOffset{
+                    if(whereToLook == "left"){
+                        RawDataViewModel.addMetaDataToRawData(payload: "left", timestampUnix: Date(), type: 5)
+                    }else if(whereToLook == "right"){
+                        RawDataViewModel.addMetaDataToRawData(payload: "right", timestampUnix: Date(), type: 5)
+                    }else if(whereToLook == "up"){
+                        RawDataViewModel.addMetaDataToRawData(payload: "up", timestampUnix: Date(), type: 5)
+                    }else if(whereToLook == "down"){
+                        RawDataViewModel.addMetaDataToRawData(payload: "down", timestampUnix: Date(), type: 5)
+                    }else if(whereToLook == "blink"){
+                        RawDataViewModel.addMetaDataToRawData(payload: "blink eye open", timestampUnix: Date(), type: 5)
+                    }
+                }else{
+                    if(whereToLook == "left"){
+                        RawDataViewModel.addMetaDataToRawData(payload: "left to center", timestampUnix: Date(), type: 5)
+                    }else if(whereToLook == "right"){
+                        RawDataViewModel.addMetaDataToRawData(payload: "right to center", timestampUnix: Date(), type: 5)
+                    }else if(whereToLook == "up"){
+                        RawDataViewModel.addMetaDataToRawData(payload: "up to center", timestampUnix: Date(), type: 5)
+                    }else if(whereToLook == "down"){
+                        RawDataViewModel.addMetaDataToRawData(payload: "down to center", timestampUnix: Date(), type: 5)
+                    }else if(whereToLook == "blink"){
+                        RawDataViewModel.addMetaDataToRawData(payload: "blink eye close", timestampUnix: Date(), type: 5)
+                    }
+                }
             }
             lookTimer?.resume()
             

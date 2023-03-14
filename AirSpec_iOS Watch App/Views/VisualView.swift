@@ -19,11 +19,9 @@ struct VisualView: View {
         GridItem(.flexible()),
     ]
     
-//    @State private var VisualData = Array(repeating: -1.0, count: SensorIconConstants.sensorVisual.count)
     @State private var VisualDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorVisual.count)
     
     
-//    @StateObject var dataReceivedWatch = SensorData()
     @ObservedObject var dataReceivedWatch: SensorData
         
     var body: some View {
@@ -31,7 +29,7 @@ struct VisualView: View {
             Text("Visual")
                 .font(.system(.caption2) .weight(.heavy))
                 .padding()
-//            ScrollView {
+            ScrollView {
                 LazyVGrid(columns: columns, alignment: .center, spacing: 3) {
                     
                     ForEach(0..<SensorIconConstants.sensorVisual.count){i in
@@ -44,9 +42,6 @@ struct VisualView: View {
                                     .font(.system(size: 30))
                             }
                             VStack{
-    //                            Text(Int(dataReceivedWatch.sensorValueNew[2][i]) == -1 ? "" : "\(Int(dataReceivedWatch.sensorValueNew[2][i]))")
-    //                                .font(.system(size: 10, design: .rounded) .weight(.heavy))
-    //                                .foregroundColor(Color.white)
                                 OpenCircularGauge(
                                     current: dataReceivedWatch.sensorValueNew[2][i],
                                     minValue: SensorIconConstants.sensorVisual[i].minValue,
@@ -70,7 +65,10 @@ struct VisualView: View {
                     }
                 }
                 .padding(.horizontal)
-//            }
+            }
+        }
+        .onAppear{
+            RawDataViewModel.addMetaDataToRawData(payload: "Visual clicked on watch", timestampUnix: Date(), type: 1)
         }
     }
 }

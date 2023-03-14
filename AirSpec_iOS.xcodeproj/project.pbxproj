@@ -83,7 +83,6 @@
 		03A9F61D296CB94800BC9100 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03F21BEA292AE866001D4D8E /* Assets.xcassets */; };
 		03AF9927297BA71A00C465C5 /* BlurView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AF9926297BA71A00C465C5 /* BlurView.swift */; };
 		03B031AF29BFC61F0070C1D3 /* BlinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B031AE29BFC61F0070C1D3 /* BlinkView.swift */; };
-		03B031B229C017970070C1D3 /* WorkOutDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B031B129C017970070C1D3 /* WorkOutDataStore.swift */; };
 		03BC95C32950D3B300AD89BE /* HeartAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC95C22950D3B300AD89BE /* HeartAnimation.swift */; };
 		03BC95C42950D3B300AD89BE /* HeartAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC95C22950D3B300AD89BE /* HeartAnimation.swift */; };
 		03BC95CA2951075F00AD89BE /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03BC95C92951075F00AD89BE /* HealthKit.framework */; };
@@ -263,7 +262,6 @@
 		03A9F619296CB69A00BC9100 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		03AF9926297BA71A00C465C5 /* BlurView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurView.swift; sourceTree = "<group>"; };
 		03B031AE29BFC61F0070C1D3 /* BlinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkView.swift; sourceTree = "<group>"; };
-		03B031B129C017970070C1D3 /* WorkOutDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkOutDataStore.swift; sourceTree = "<group>"; };
 		03BC95C22950D3B300AD89BE /* HeartAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartAnimation.swift; sourceTree = "<group>"; };
 		03BC95C52951022C00AD89BE /* AirSpec_iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AirSpec_iOS.entitlements; sourceTree = "<group>"; };
 		03BC95C62951046000AD89BE /* AirSpec_iOS Watch App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "AirSpec_iOS Watch App.entitlements"; sourceTree = "<group>"; };
@@ -496,14 +494,6 @@
 			path = "AirSpec_iOS Watch Complication";
 			sourceTree = "<group>";
 		};
-		03B031B029C0177C0070C1D3 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				03B031B129C017970070C1D3 /* WorkOutDataStore.swift */,
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
 		03BC95C82951075F00AD89BE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -646,7 +636,6 @@
 		03F21BE5292AE863001D4D8E /* AirSpec_iOS Watch App */ = {
 			isa = PBXGroup;
 			children = (
-				03B031B029C0177C0070C1D3 /* Models */,
 				03BC95C72951046D00AD89BE /* AirSpec-iOS-Watch-App-Info.plist */,
 				03BC95C62951046000AD89BE /* AirSpec_iOS Watch App.entitlements */,
 				038C4DB0292AF5FD00699753 /* Views */,
@@ -1088,7 +1077,6 @@
 				034D16DF294A7FD7005BE966 /* OpenCircularGauge.swift in Sources */,
 				03B031AF29BFC61F0070C1D3 /* BlinkView.swift in Sources */,
 				03D53E9229900D330008B74D /* CommandStatus.swift in Sources */,
-				03B031B229C017970070C1D3 /* WorkOutDataStore.swift in Sources */,
 				038AA941295915FD0086EC1B /* AcousticsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

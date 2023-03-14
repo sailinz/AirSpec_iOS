@@ -273,7 +273,7 @@ struct HomeView: View {
     //                                .padding(.trailing)
                                 LazyVGrid(columns: columns, spacing: 1) {
                                     ForEach(0..<SensorIconConstants.sensorAcoustics.count){i in
-                                        let dummyValue = Double.random(in: 50.0 ..< 80.0)
+//                                        let dummyValue = Double.random(in: 50.0 ..< 80.0)
                                         ZStack{
                                             Image(acousticsBgImageAssets[i])
                                                 .renderingMode(.template)
@@ -284,7 +284,7 @@ struct HomeView: View {
                                             
                                             VStack{
                                                 OpenCircularGauge(
-                                                    current: dummyValue,
+                                                    current: receiver.acoutsticsData[i],//dummyValue,
                                                     minValue: SensorIconConstants.sensorAcoustics[i].minValue,
                                                     maxValue: SensorIconConstants.sensorAcoustics[i].maxValue,
                                                     color1: SensorIconConstants.sensorAcoustics[i].color1,

@@ -37,7 +37,7 @@ struct WatchSurveyComfyView: View {
                                 print("isSurvey: \(showSurvey)")
                                 do{
                                     //                        try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-2), choice: "not comfy")
-                                    try RawDataViewModel.addSurveyDataToRawData(qIndex: -2, qChoice: "not comfy", qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
+                                    RawDataViewModel.addSurveyDataToRawData(qIndex: -2, qChoice: "not comfy", qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
                                     
                                     surveyStatusToPhone.updateSurveyStatus(isSurveyDone: true)
                                     
@@ -75,7 +75,7 @@ struct WatchSurveyComfyView: View {
                                 do{
                                     
                                     //                        try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-2), choice: "comfy")
-                                    try RawDataViewModel.addSurveyDataToRawData(qIndex: -2, qChoice: "comfy", qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
+                                    RawDataViewModel.addSurveyDataToRawData(qIndex: -2, qChoice: "comfy", qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
                                     surveyStatusToPhone.updateSurveyStatus(isSurveyDone: true)
                                     isComfyVote = false
                                 }catch{
@@ -111,8 +111,10 @@ struct WatchSurveyComfyView: View {
                             
                             Button(action:{
                                 withAnimation{
+                                    RawDataViewModel.addMetaDataToRawData(payload: "go to main view on watch", timestampUnix: Date(), type: 1) 
                                     showSurvey = false
                                     isComfyVote = false
+                                    
                                 }
                             }){
                                 Image(systemName: "xmark.circle")
@@ -123,11 +125,28 @@ struct WatchSurveyComfyView: View {
                             
                             Spacer()
                                 .frame(width: 10)
+                           
+//                            Button(action:{
+//
+//                                do{
+//
+//                                    surveyStatusToPhone.updateEyeCalibrationStatus(isEyeCalibrationDone: true)
+//
+//
+//                                }catch{
+//                                    print("Error triggering eye calibration: \(error.localizedDescription)")
+//                                }
+//
+//                            }){
+//                                Image(systemName: "eyeglasses")
+//                                    .font(.system(size:20, weight:.bold))
+//                                    .foregroundColor(.white)
+//                            }
+//                            .clipShape(Circle())
                             
                             Button(action:{
-                                withAnimation{
-                                    eyeCalibration = true
-                                }
+                                surveyStatusToPhone.updateEyeCalibrationStatus(isEyeCalibrationDone: true)
+                                eyeCalibration = true
                             }){
                                 Image(systemName: "eye.circle")
                                     .font(.system(size:20, weight:.bold))

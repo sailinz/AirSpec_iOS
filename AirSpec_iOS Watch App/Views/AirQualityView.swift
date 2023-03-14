@@ -21,11 +21,8 @@ struct AirQualityView: View {
     ]
     
     
-//    @State private var AirQualityData = Array(repeating: -1.0, count: SensorIconConstants.sensorAirQuality.count)
     @State private var AirQualityDataTrend = Array(repeating: -1, count: SensorIconConstants.sensorAirQuality.count)
-//    var user_id:String = "9067133"
-    
-//    @StateObject var dataReceivedWatch = SensorData()
+
     @ObservedObject var dataReceivedWatch: SensorData
     
     var body: some View {
@@ -45,9 +42,6 @@ struct AirQualityView: View {
                                     .font(.system(size: 30))
                             }
                             VStack{
-    //                            Text(Int(dataReceivedWatch.sensorValueNew[1][i]) == -1 ? "" : "\(Int(dataReceivedWatch.sensorValueNew[1][i]))")
-    //                                .font(.system(size: 10, design: .rounded) .weight(.heavy))
-    //                                .foregroundColor(Color.white)
                                 OpenCircularGauge(
                                     current: dataReceivedWatch.sensorValueNew[1][i],
                                     minValue: SensorIconConstants.sensorAirQuality[i].minValue,
@@ -73,6 +67,9 @@ struct AirQualityView: View {
                 }
                 .padding(.horizontal)
             }
+        }
+        .onAppear{
+            RawDataViewModel.addMetaDataToRawData(payload: "Air Quality clicked on watch", timestampUnix: Date(), type: 1)
         }
     }
 }
