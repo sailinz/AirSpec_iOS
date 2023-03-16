@@ -29,6 +29,7 @@ struct SettingView: View {
     @State private var minValueNoise: Float = Float(SensorIconConstants.sensorAcoustics[0].color1Position) * sliderWidth
     @State private var maxValueNoise: Float = Float(SensorIconConstants.sensorAcoustics[0].color3Position) * sliderWidth
 
+    @State private var isCelsius = UserDefaults.standard.bool(forKey: "isCelsius")
 
     
     var body: some View {
@@ -202,14 +203,14 @@ struct SettingView: View {
                         
                         }
                         
-//                        HStack() {
-//                            Image(systemName: "lightbulb.led.wide.fill")
-//                                .frame(width: 30, height: 20)
-//                            Text("Test light")
-//                                .font(.system(.subheadline))
-//                            Spacer()
+                        HStack() {
+                            Image(systemName: "lightbulb.led.wide.fill")
+                                .frame(width: 30, height: 20)
+                            Text("Test light")
+                                .font(.system(.subheadline))
+                            Spacer()
 //
-//                            Button(action: receiver.testLight) {
+//                            Button(action: {receiver.blueGreenLight(isEnable: true)}) {
 //                                Text("Reset")
 //                                .font(.system(.subheadline) .weight(.semibold))
 //                                .foregroundColor(.white)
@@ -217,28 +218,22 @@ struct SettingView: View {
 //                            .padding(.all,5)
 //                            .background(.gray.opacity(0.5))
 //                            .clipShape(Capsule())
-//                            
-//                            Button(action:
-//                                    {
-//                                        print("testBlueGreenLight")
-//                                        receiver.blueGreenLight(isEnable: true)
-////                                        Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { timer in
-//////                                            print("test light with timer")
-//////                                            receiver.testLightReset()
-////                                            receiver.testLight()
-////                                        }
-//                                    }
-//                                    
-//                                ) {
-//                                Text("Test")
-//                                .font(.system(.subheadline) .weight(.semibold))
-//                                .foregroundColor(.white)
-//                            }
-//                            .padding(.all,5)
-//                            .background(.pink.opacity(0.5))
-//                            .clipShape(Capsule())
-//                            
-//                        }
+                            
+                            Button(action:
+                                    {
+                                        receiver.blueGreenLight(isEnable: true)
+                                    }
+                                    
+                                ) {
+                                Text("Test")
+                                .font(.system(.subheadline) .weight(.semibold))
+                                .foregroundColor(.white)
+                            }
+                            .padding(.all,5)
+                            .background(.pink.opacity(0.5))
+                            .clipShape(Capsule())
+                            
+                        }
                         
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -279,7 +274,9 @@ struct SettingView: View {
                                 UserDefaults.standard.set(self.maxValueLightIntensity/sliderWidth, forKey: "maxValueLightIntensity")
                                 UserDefaults.standard.set(self.minValueNoise/sliderWidth, forKey: "minValueNoise")
                                 UserDefaults.standard.set(self.maxValueNoise/sliderWidth, forKey: "maxValueNoise")
-                                print("\(self.minValueTemp/sliderWidth)")
+//                                print("celsius: \(self.isCelsius)")
+//                                UserDefaults.standard.set(self.isCelsius ,forKey: "isCelcius")
+//                                print(UserDefaults.standard.bool(forKey: "isCelcius"))
                                 
                                 RawDataViewModel.addMetaDataToRawData(payload: "minValueTemp : \(self.minValueTemp/sliderWidth) C", timestampUnix: Date(), type: 1)
                                 RawDataViewModel.addMetaDataToRawData(payload: "maxValueTemp : \(self.minValueTemp/sliderWidth) C", timestampUnix: Date(), type: 1)
@@ -317,8 +314,8 @@ struct SettingView: View {
                                         maxValue: self.$maxValueTemp, // maximum value
     //                                    minLabel: "0", // mimimum Label text
     //                                    maxLabel: "100", // maximum Label text
-                                        minLabelBound: Float(SensorIconConstants.sensorThermal[0].minValue),
-                                        maxLabelBound: Float(SensorIconConstants.sensorThermal[0].maxValue),
+                                        minLabelBound: isCelsius ? Float(SensorIconConstants.sensorThermal[0].minValue) : (Float(SensorIconConstants.sensorThermal[0].minValue) * 1.8 + 34),
+                                        maxLabelBound: isCelsius ? Float(SensorIconConstants.sensorThermal[0].maxValue) : (Float(SensorIconConstants.sensorThermal[0].maxValue) * 1.8 + 34),
                                         sliderWidth: sliderWidth, // set slider width
                                         sliderHeight: CGFloat(30.0),
                                         //                            backgroundTrackColor: Color.pink.opacity(0.5), // track color
@@ -330,11 +327,20 @@ struct SettingView: View {
                                         sliderMinMaxValuesColor: Color.black // all text label color
                                     )
                                     .frame(maxWidth: .infinity, alignment: .center)
-                                    Text(SensorIconConstants.sensorThermal[0].unit)
-                                        .font(.system(.subheadline))
-                                        .frame(maxWidth: .infinity, alignment: .trailing)
-                                        .frame(maxWidth: .infinity, alignment: .trailing)
-                                        .foregroundColor(Color.black)
+                                    
+                                    Button(action: {
+                                        UserDefaults.standard.set(!self.isCelsius ,forKey: "isCelcius")
+                                        isCelsius.toggle()
+
+                                            }) {
+                                                Text(isCelsius ? "°C" : "°F")
+                                                    .font(.system(.subheadline))
+                                                    .frame(maxWidth: .infinity, alignment: .trailing)
+                                                    .frame(maxWidth: .infinity, alignment: .trailing)
+                                                    .foregroundColor(Color.black)
+                                            }
+//                                            .buttonStyle(PlainButtonStyle())
+                                   
                                     
                                 }
                                 
@@ -461,6 +467,8 @@ struct SettingView: View {
         }
         
         .onAppear{
+//            isCelsius = UserDefaults.standard.bool(forKey: "isCelsius")
+            print("isCelcius: \(UserDefaults.standard.bool(forKey: "isCelsius"))")
             
             if UserDefaults.standard.string(forKey: "user_id") != ""{
                 self.user_id = UserDefaults.standard.string(forKey: "user_id") ?? ""
@@ -476,6 +484,8 @@ struct SettingView: View {
                 }
 
             }
+            
+            
             
             if UserDefaults.standard.float(forKey: "minValueTemp") == 0 {
                 UserDefaults.standard.set(SensorIconConstants.sensorThermal[0].color1Position, forKey: "minValueTemp")

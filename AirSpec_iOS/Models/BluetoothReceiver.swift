@@ -66,10 +66,10 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     /// maybe the sampling frequency is high enough that the location information is not needed
 //    let locationManager = CLLocationManager()
 //    var previousLocation: CLLocation?
-    var prevNotificationTime: Date = Date()
-    var randomNextNotificationGap: Int = 15 /// minute
+    var prevNotificationTime: Date = Date().addingTimeInterval(-60*60)
+    var randomNextNotificationGap: Int = 10 /// minute
     var notificationTimer:DispatchSourceTimer?
-    let greenHoldTime = 60 * 15 /// sec
+    let greenHoldTime = 60 * 10 /// sec
     var disconnectionTimer:DispatchSourceTimer?
     
     /// -- PUSH TO THE SERVER
@@ -289,7 +289,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     dataToWatch.surveyDone = false
                     notificationTimer?.cancel()
                     notificationTimer = nil
-                    RawDataViewModel.addMetaDataToRawData(payload: "survey received; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                    RawDataViewModel.addMetaDataToRawData(payload: "survey received from watch; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
                 }
                 
                 if(dataToWatch.isEyeCalibrationDone){
@@ -300,6 +300,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     RawDataViewModel.addMetaDataToRawData(payload: "eye calibration started", timestampUnix: Date(), type: 2)
                 }
 
+                
 
                 switch packet.payload{
                     case .some(.sgpPacket(_)):
@@ -342,7 +343,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     case .some(.shtPacket(_)):
                         for sensorPayload in packet.shtPacket.payload {
                             if(sensorPayload.temperature != nil && sensorPayload.humidity != nil){
-                                self.visualData[1] = Double(sensorPayload.temperature) /// temperature
+                                self.visualData[1] = UserDefaults.standard.bool(forKey: "isCelcius") ? Double(sensorPayload.temperature) : (Double(sensorPayload.temperature) * 1.8 + 34) /// temperature
                                 dataToWatch.updateValue(sensorValue: self.visualData[1], sensorName: "temperatureData")
                                 self.visualData[2] = Double(sensorPayload.humidity) /// humidity
                                 dataToWatch.updateValue(sensorValue: self.visualData[2], sensorName: "humidityData")
@@ -412,8 +413,12 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     case .some(.imuPacket(_)):
                         break
                     case .some(.micPacket(_)):
+                        print("mic")
+                        print(packet)
                         break
                     case .some(.micLevelPacket(_)):
+                        print("micLevelPacket")
+                        print(packet)
                         for sensorPayload in packet.micLevelPacket.payload {
                             if(sensorPayload.soundSplDb != nil){
                                 self.acoutsticsData[0] = Double(sensorPayload.soundSplDb)
@@ -424,7 +429,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                                 try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAcoustics[0].name, value: Float(self.acoutsticsData[0]))
                             }
                         }
-                        break
+                    
                     case .some(.blinkPacket(_)):
                         print("blink packet")
 //                        isBlink = true
@@ -438,9 +443,11 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
                 }
                 
-
+                
                 let data = try packet.serializedData()
                 try RawDataViewModel.addRawData(record: data)
+                
+                
 
             } catch {
                 logger.error("packet decode/send problems: \(error).")
@@ -606,7 +613,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     if minuteDifference > randomNextNotificationGap {
 //                        print("(led notification) notification gap: \(randomNextNotificationGap), minuteDifference: \(minuteDifference), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom), flagcoefficientVariationWho: \(flagcoefficientVariationWho), flagcoefficientVariationValue: \(flagcoefficientVariationValue), flagMeanWho: \(flagMeanWho), flagMeanValue: \(flagMeanValue)")
                         blueGreenLight(isEnable: true)
-                        randomNextNotificationGap = Int.random(in: 5...10)
+                        prevNotificationTime = Date()
+                        randomNextNotificationGap = Int.random(in: 5...7)
                         RawDataViewModel.addMetaDataToRawData(payload: "(LED notification triggered) notification gap: \(randomNextNotificationGap), minuteDifference: \(minuteDifference), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom), flagcoefficientVariationWho: \(flagcoefficientVariationWho), flagcoefficientVariationValue: \(flagcoefficientVariationValue), flagMeanWho: \(flagMeanWho), flagMeanValue: \(flagMeanValue)", timestampUnix: Date(), type: 3)
                     }else{
                         print("(no LED notification)  notification gap: \(randomNextNotificationGap), minuteDifference: \(minuteDifference), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom)")

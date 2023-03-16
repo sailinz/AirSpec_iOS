@@ -45,17 +45,7 @@ struct MyDataTimeView: View {
     ]
 
     var body: some View {
-        
-//
         VStack(alignment: .leading){
-//            Text("Comfort votes")
-//                .font(.system(.caption).weight(.semibold))
-//
-//            chartComfort
-//            Text("Sensor readings")
-//                .font(.system(.caption).weight(.semibold))
-//            Spacer()
-//                .frame(height: 100)
             VStack{
                 HStack{
                     Image(systemName: "info.circle")
@@ -104,10 +94,6 @@ struct MyDataTimeView: View {
             chartEnv
                 .padding(.horizontal)
             
-            
-            
-            
-
 
             LazyVGrid(columns: columns, spacing: 8){
                 ForEach(flags.indices) { j in
@@ -162,85 +148,11 @@ struct MyDataTimeView: View {
             .lineStyle(StrokeStyle(lineWidth: lineWidth))
             .foregroundStyle(chartColor.gradient)
             .cornerRadius(5)
-//            LineMark(
-//                x: .value("Date", $0.minutes),
-//                y: .value("values", $0.values)
-//            )
-//            .lineStyle(StrokeStyle(lineWidth: lineWidth))
-//            .foregroundStyle(chartColor.gradient)
-//            .interpolationMethod(interpolationMethod.mode)
-//            .symbol(Circle().strokeBorder(lineWidth: lineWidth))
-//            .symbolSize(showSymbols ? 10 : 0)
+
         }
-//        .chartOverlay { proxy in
-//            GeometryReader { geo in
-//                Rectangle().fill(.clear).contentShape(Rectangle())
-//                    .gesture(
-//                        SpatialTapGesture()
-//                            .onEnded { value in
-//                                let element = findElement(location: value.location, proxy: proxy, geometry: geo)
-//                                if selectedElement?.minutes == element?.minutes {
-//                                    /// If tapping the same element, clear the selection.
-//                                    selectedElement = nil
-//                                } else {
-//                                    selectedElement = element
-//                                }
-//                            }
-//                            .exclusively(
-//                                before: DragGesture()
-//                                    .onChanged { value in
-//                                        selectedElement = findElement(location: value.location, proxy: proxy, geometry: geo)
-//                                    }
-//                            )
-//                    )
-//            }
-//        }
-//        .chartBackground { proxy in
-//            ZStack(alignment: .topLeading) {
-//                GeometryReader { geo in
-//                    if showLollipop{
-//                        if let selectedElement = self.selectedElement {
-//                            let dateInterval = Calendar.current.dateInterval(of: .minute, for: selectedElement.minutes)!
-//                            let startPositionX1 = proxy.position(forX: dateInterval.start) ?? 0
-//
-//                            let lineX = startPositionX1 + geo[proxy.plotAreaFrame].origin.x
-//                            let lineHeight = geo[proxy.plotAreaFrame].maxY
-//                            let boxWidth: CGFloat = 50
-//                            let boxOffset = max(0, min(geo.size.width - boxWidth, lineX - boxWidth / 2))
-//
-//                            Rectangle()
-//                                .fill(.black)
-//                                .frame(width: 2, height: lineHeight)
-//                                .position(x: lineX, y: lineHeight / 2)
-//
-//                            VStack(alignment: .center) {
-//                                Text("\(selectedElement.minutes, format: .dateTime.hour().minute())")
-//                                    .font(.caption)
-//                                    .foregroundStyle(.secondary)
-//                                Text("\(selectedElement.values, format: .number)")
-//                                    .font(.body.bold())
-//                                    .foregroundColor(.primary)
-//                            }
-//                            .frame(width: boxWidth, alignment: .leading)
-//                            .background {
-//                                ZStack {
-//                                    RoundedRectangle(cornerRadius: 8)
-//                                        .fill(.background)
-//                                    RoundedRectangle(cornerRadius: 8)
-//                                        .fill(.quaternary.opacity(0.7))
-//                                }
-//                                .padding(.horizontal, -8)
-//                                .padding(.vertical, -4)
-//                            }
-//                            .offset(x: boxOffset, y:-50)
-//                        }
-//                    }
-//                }
-//            }
-//        }
         .chartXAxis(.automatic)
         .chartYAxis(.automatic)
-        .frame(height: Constants.detailChartHeight) /// :Constants.detailChartHeight
+        .frame(height: Constants.detailChartHeight)
     }
 
     private func findElement(location: CGPoint, proxy: ChartProxy, geometry: GeometryProxy) -> temp? {
@@ -278,9 +190,9 @@ struct ToggleItem: View {
     var body: some View {
         let isOn = Binding (get: { self.storage[self.tag] },
             set: { value in
-                withAnimation {
-                    self.storage = self.storage.enumerated().map { $0.0 == self.tag }
-                }
+//                withAnimation {
+                self.storage = self.storage.enumerated().map { $0.0 == self.tag }
+//                }
             })
 
 
@@ -322,10 +234,15 @@ struct ToggleItem: View {
                 if convertedSensorData.isEmpty {
                     print("No matching tuples found")
                 } else {
-                    DispatchQueue.main.async {
-                        self.data = convertedSensorData
+                    if(i != UserDefaults.standard.integer(forKey: "longTermDataSensor")){
+                        print("queried data")
+                        UserDefaults.standard.set(self.tag, forKey: "longTermDataSensor")
+                        DispatchQueue.main.async  {
+                            self.data = convertedSensorData
+                        }
                         
                     }
+                    
                     
                 }
                 

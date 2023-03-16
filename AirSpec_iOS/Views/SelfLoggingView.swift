@@ -18,6 +18,7 @@ struct SelfLoggingView: View {
     @State var surveyRecordIndex: Int = 0
 //    @StateObject var surveyData = SurveyDataViewModel()
 //    @EnvironmentObject var surveyData: SurveyDataViewModel
+    @EnvironmentObject private var receiver: BluetoothReceiver
     
     
     var body: some View {
@@ -41,8 +42,17 @@ struct SelfLoggingView: View {
                                     do{
                                         try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-2), choice: "not comfy")
                                         RawDataViewModel.addSurveyDataToRawData(qIndex: -2, qChoice: "not comfy", qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
+                                        
+                                        
+                                        receiver.blueGreenLight(isEnable: false)
+                                        receiver.setBlue()
+//                                        receiver.testLight(leftBlue: 20, leftGreen: 150, leftRed: 0, rightBlue: 20, rightGreen: 150, rightRed: 0)
+                                        receiver.notificationTimer?.cancel()
+                                        receiver.notificationTimer = nil
+                                        RawDataViewModel.addMetaDataToRawData(payload: "survey received from phone; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                                        
                                     }catch{
-                                        RawDataViewModel.addMetaDataToRawData(payload: "Error saving survey data: \(error.localizedDescription)", timestampUnix: Date(), type: 2)
+                                        RawDataViewModel.addMetaDataToRawData(payload: "Error saving survey data from phone: \(error.localizedDescription)", timestampUnix: Date(), type: 2)
                                         print("Error saving survey data: \(error.localizedDescription)")
                                     }
                                 }){
@@ -72,8 +82,15 @@ struct SelfLoggingView: View {
                                     do{
                                         try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-2), choice: "comfy")
                                         RawDataViewModel.addSurveyDataToRawData(qIndex: -2, qChoice: "comfy", qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
+                                        
+                                        receiver.blueGreenLight(isEnable: false)
+                                        receiver.setBlue()
+//                                        receiver.testLight(leftBlue: 20, leftGreen: 150, leftRed: 0, rightBlue: 20, rightGreen: 150, rightRed: 0)
+                                        receiver.notificationTimer?.cancel()
+                                        receiver.notificationTimer = nil
+                                        RawDataViewModel.addMetaDataToRawData(payload: "survey received from phone; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
                                     }catch{
-                                        RawDataViewModel.addMetaDataToRawData(payload: "Error saving survey data: \(error.localizedDescription)", timestampUnix: Date(), type: 2)
+                                        RawDataViewModel.addMetaDataToRawData(payload: "Error saving survey data from phone: \(error.localizedDescription)", timestampUnix: Date(), type: 2)
                                         print("Error saving survey data: \(error.localizedDescription)")
                                     }
                                 }){

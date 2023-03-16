@@ -62,12 +62,15 @@ struct OpenCircularGauge<Content>: View where Content: View {
         } currentValueLabel: {
 //                Image(systemName: trendIcon)
 //                    .foregroundColor(labelColor(for: current, minValue: minValue, maxValue: maxValue))
-                Text(Int(current) == -1 ? "" : "\(Int(current))")
-                    .foregroundColor(labelColor(for: current, minValue: minValue, maxValue: maxValue))
-                    .font(.system(size: 28, design: .rounded) .weight(.heavy))
-//                    .shadow(
-//                        color:.white.opacity(0.5),
-//                        radius:1)
+                if (!current.isInfinite && !current.isNaN){
+                    Text(Int(current) == -1 ? "" : "\(Int(current))")
+                        .foregroundColor(labelColor(for: current, minValue: minValue, maxValue: maxValue))
+                        .font(.system(size: 28, design: .rounded) .weight(.heavy))
+                }else{
+                    Text("")
+                        .foregroundColor(labelColor(for: current, minValue: minValue, maxValue: maxValue))
+                        .font(.system(size: 28, design: .rounded) .weight(.heavy))
+                }
             }
             .gaugeStyle(.accessoryCircular)
             .tint(gradientColors)

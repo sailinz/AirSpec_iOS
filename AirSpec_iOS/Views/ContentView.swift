@@ -91,7 +91,7 @@ struct ContentView: View {
             
             
             if feedbackButton{
-                SelfLoggingView(show: $feedbackButton)
+                SelfLoggingView(show: $feedbackButton).environmentObject(delegate.bluetoothReceiver)
             }
         }
         
