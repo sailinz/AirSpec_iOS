@@ -64,8 +64,14 @@ struct SettingView: View {
                             HStack{
                                 
                             }
+                            
                             Text(receiver.GLASSNAME == "" ? "AirSpec" : receiver.GLASSNAME)
                                 .font(.system(.subheadline))
+                            Image(systemName: receiver.isFound ? "checkmark.circle.fill" : "x.circle.fill")
+                                .foregroundColor(receiver.isFound ? .green : .red)
+                            
+                            
+                            
                             
                             if let peripheral = receiver.connectedPeripheral {
                                 if(peripheral.name!.contains(receiver.GLASSNAME)){

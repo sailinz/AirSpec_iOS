@@ -44,6 +44,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     @Published private(set) var connectedPeripheral: CBPeripheral? = nil
     private(set) var knownDisconnectedPeripheral: CBPeripheral? = nil
     @Published private(set) var isScanning: Bool = false
+    @Published private(set) var isFound: Bool = false
     var scanToAlert = false
     var mustDisconnect = false
     @Published var discoveredPeripherals = Set<CBPeripheral>()
@@ -143,6 +144,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
         if device?.contains(GLASSNAME) == true {
             discoveredPeripherals.insert(peripheral)
+            isFound = true
 //            print("device: \(discoveredPeripherals)")
             peripheral.delegate = self
         }
@@ -159,6 +161,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         knownDisconnectedPeripheral = nil
         peripheral.discoverServices([BluetoothConstants.airspecServiceUUID])
         
+        isFound = true
         RawDataViewModel.addMetaDataToRawData(payload: "connected to \(peripheral.name ?? "unnamed peripheral")", timestampUnix: Date(), type: 5)
         disconnectionTimer?.cancel()
         disconnectionTimer = nil
@@ -178,7 +181,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         logger.info("disconnected from \(peripheral.name ?? "unnamed peripheral")")
         connectedPeripheral = nil
-        
+        isFound = false
         RawDataViewModel.addMetaDataToRawData(payload: "disconnected from \(peripheral.name ?? "unnamed peripheral")", timestampUnix: Date(), type: 5)
         
         disconnectionTimer = DispatchSource.makeTimerSource()
