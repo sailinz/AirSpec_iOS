@@ -68,12 +68,12 @@ let questionFlows = [
 //                "happy",
 //                "other"
 //            ],
-            title: "Anything you'd like to change? (Allow multiple answers)",
+            title: "Anything you'd like to change? [Multiple]",
             identifier: "discomfort-kind",
             options: [
                 "Thermal",
                 "Air quality",
-                "Lighting",
+                "Visual",
                 "Noise",
                 "Mood",
                 "Bodily condition (e.g., hungry)",
@@ -85,7 +85,7 @@ let questionFlows = [
                 "air-quality-smelly",
                 "light-bright",
                 "noise-privacy",
-                "entertainmentß",
+                "entertainment",
                 "appearance",
                 "other",
                 "none-1"
@@ -93,7 +93,7 @@ let questionFlows = [
             nextQuestion: [
                 2,
                 2,
-                2,
+                18,
                 2,
                 2,
                 2,
@@ -104,7 +104,7 @@ let questionFlows = [
         ),
         Question(
               currentQuestion: 2,
-              title: "Which one(s) do you have control in your environment? (Allow multiple answers)",
+              title: "Which one(s) do you have control in your environment? [Multiple]",
               identifier: "control",
               options: [
                   "Thermal",
@@ -168,7 +168,7 @@ let questionFlows = [
                   "home",
                   "other",
                   "outdoor-1",
-                  "Transportation"
+                  "transportation"
               ],
               nextQuestion: [
                   5,
@@ -251,7 +251,7 @@ let questionFlows = [
               nextQuestion: [
                   8,
                   9,
-                  9
+                  19
               ],
               multiChoice: false
         ),
@@ -313,7 +313,7 @@ let questionFlows = [
         Question(
               currentQuestion: 11,
               title: "Rate your state of focus just before this survey",
-              identifier: "activity-category",
+              identifier: "flow",
               options: [
                   "Very distracted",
                   "Distracted",
@@ -346,7 +346,7 @@ let questionFlows = [
         Question(
               currentQuestion: 12,
               title: "How much of the time were you in a flow state since your last survey? (show 0-100%)",
-              identifier: "activity-category",
+              identifier: "flow",
               options: [
                   "0%",
                   "10%",
@@ -393,7 +393,7 @@ let questionFlows = [
         Question(
               currentQuestion: 13,
               title: "How long do you think it's been since you last completed a survey?",
-              identifier: "activity-category",
+              identifier: "flow",
               options: [
                   "0-30 min",
                   "30-60 min",
@@ -421,7 +421,7 @@ let questionFlows = [
         Question(
               currentQuestion: 14,
               title: "More detailly, how long do you think it's been since you last completed a survey?",
-              identifier: "activity-category",
+              identifier: "flow",
               options: [
                   "Less than 10 min",
                   "10-15 min",
@@ -449,7 +449,7 @@ let questionFlows = [
         Question(
               currentQuestion: 15,
               title: "More detailly, how long do you think it's been since you last completed a survey?",
-              identifier: "activity-category",
+              identifier: "flow",
               options: [
                   "31-35 min",
                   "36-40 min",
@@ -481,7 +481,7 @@ let questionFlows = [
         Question(
               currentQuestion: 16,
               title: "More detailly, how long do you think it's been since you last completed a survey?",
-              identifier: "activity-category",
+              identifier: "flow",
               options: [
                   "61-65 min",
                   "66-70 min",
@@ -513,7 +513,7 @@ let questionFlows = [
         Question(
               currentQuestion: 17,
               title: "More detailly, how long do you think it's been since you last completed a survey?",
-              identifier: "activity-category",
+              identifier: "flow",
               options: [
                   "91-95 min",
                   "96-100 min",
@@ -541,6 +541,66 @@ let questionFlows = [
               ],
               multiChoice: false
         ),
+        
+        Question(
+              currentQuestion: 18,
+              title: "Do you experience any of the following? [Multiple]",
+              identifier: "visual-comfort",
+              options: [
+                  "Eye fatigue",
+                  "Dry eye",
+                  "Physical fatigue",
+                  "Shouder/neck pain",
+                  "Visually demand tasks",
+                  "Glare",
+                  "Flicker",
+                  "Insufficient light",
+                  "Others"
+                  
+              ],
+              icons: [
+                  "visual-privacy",
+                  "visual-privacy",
+                  "appearance",
+                  "appearance",
+                  "glare-privacy",
+                  "glare-privacy",
+                  "glare-privacy",
+                  "glare-privacy",
+                  "other"
+              ],
+              nextQuestion: [
+                  2,
+                  2,
+                  2,
+                  2,
+                  2,
+                  2,
+                  2,
+                  2,
+                  2
+              ],
+              multiChoice: true
+        ),
+        
+        Question(
+              currentQuestion: 19,
+              title: "Is your camera on?",
+              identifier: "visual-comfort1",
+              options: [
+                "Yes",
+                "No"
+              ],
+              icons: [
+                "noise-no-change",
+                "never"
+              ],
+              nextQuestion: [
+                  9,
+                  9,
+              ],
+              multiChoice: false
+        )
         
     ])
 ]

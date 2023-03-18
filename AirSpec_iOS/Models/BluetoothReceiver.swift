@@ -56,7 +56,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     @Published var acoutsticsData = Array(repeating: -1.0, count: SensorIconConstants.sensorAcoustics.count)
 
     @Published var cogIntensity = 3 /// must scale to a int
-    let cogLoadOffset: Double = 3
+    let cogLoadOffset: Double = 2
     let cogLoadMultiFactor: Double = 5
 
     /// -- WATCH CONNECTIVITY
@@ -67,8 +67,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     /// maybe the sampling frequency is high enough that the location information is not needed
 //    let locationManager = CLLocationManager()
 //    var previousLocation: CLLocation?
-    var prevNotificationTime: Date = Date().addingTimeInterval(-60*60)
-    var randomNextNotificationGap: Int = 10 /// minute
+//    var prevNotificationTime: Date = Date().addingTimeInterval(-60*60)
+    var randomNextNotificationGap: Int = 20 /// minute
     var notificationTimer:DispatchSourceTimer?
     let greenHoldTime = 60 * 10 /// sec
     var disconnectionTimer:DispatchSourceTimer?
@@ -168,7 +168,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
         
         timer = DispatchSource.makeTimerSource()
-        timer?.schedule(deadline: .now() + .seconds(updateFrequence), repeating: .seconds(updateFrequence))
+        timer?.schedule(deadline: .now() + .seconds(10), repeating: .seconds(updateFrequence))
         timer?.setEventHandler {
             self.uploadToServer()
             self.storeLongTermData()
@@ -252,8 +252,12 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 let thisCharacteristic = characteristic as CBCharacteristic
                 sendCharacteristic = thisCharacteristic
                 logger.info("found write characteristics")
+
+                /// set initial blue color and set timestamp to the latest
                 
-                setBlue() /// set initial blue color and set timestamp to the latest
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
+                    self.setBlue()
+                }
 
             }
 
@@ -287,7 +291,10 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 
                 if(dataToWatch.surveyDone){
                     blueGreenLight(isEnable: false)
-                    setBlue()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
+                        self.setBlue()
+                    }
+                    
 //                    testLight(leftBlue: 20, leftGreen: 150, leftRed: 0, rightBlue: 20, rightGreen: 150, rightRed: 0)
                     dataToWatch.surveyDone = false
                     notificationTimer?.cancel()
@@ -308,15 +315,28 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 switch packet.payload{
                     case .some(.sgpPacket(_)):
                         for sensorPayload in packet.sgpPacket.payload {
-                            if(sensorPayload.vocIndexValue != nil && sensorPayload.noxIndexValue != nil){
-                                self.airQualityData[3] = Double(sensorPayload.vocIndexValue) /// voc index nose
-                                dataToWatch.updateValue(sensorValue: self.airQualityData[3], sensorName: "vocIndexData")
-                                self.airQualityData[4] = Double(sensorPayload.noxIndexValue) /// nox index nose
-                                dataToWatch.updateValue(sensorValue: self.airQualityData[4], sensorName: "noxIndexData")
-                                
-                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[3].name, value: Float(self.airQualityData[3]))
-                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[4].name, value: Float(self.airQualityData[4]))
+                            if packet.sgpPacket.sensorID == 0 {
+                                if(sensorPayload.vocIndexValue != nil && sensorPayload.noxIndexValue != nil){
+                                    self.airQualityData[3] = Double(sensorPayload.vocIndexValue) /// voc index nose
+                                    dataToWatch.updateValue(sensorValue: self.airQualityData[3], sensorName: "vocIndexData")
+                                    self.airQualityData[4] = Double(sensorPayload.noxIndexValue) /// nox index nose
+                                    dataToWatch.updateValue(sensorValue: self.airQualityData[4], sensorName: "noxIndexData")
+                                    
+                                    try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[3].name, value: Float(self.airQualityData[3]))
+                                    try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[4].name, value: Float(self.airQualityData[4]))
+                                }
+                            }else{
+                                if(sensorPayload.vocIndexValue != nil && sensorPayload.noxIndexValue != nil){
+                                    self.airQualityData[0] = Double(sensorPayload.vocIndexValue) /// voc index nose
+                                    dataToWatch.updateValue(sensorValue: self.airQualityData[0], sensorName: "vocIndexAmbientData")
+                                    self.airQualityData[1] = Double(sensorPayload.noxIndexValue) /// nox index nose
+                                    dataToWatch.updateValue(sensorValue: self.airQualityData[1], sensorName: "noxIndexAmbientData")
+                                    
+                                    try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[0].name, value: Float(self.airQualityData[0]))
+                                    try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[1].name, value: Float(self.airQualityData[1]))
+                                }
                             }
+                            
                         }
 
                     case .some(.bmePacket(_)):
@@ -345,21 +365,40 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                         }
                     case .some(.shtPacket(_)):
                         for sensorPayload in packet.shtPacket.payload {
-                            if(sensorPayload.temperature != nil && sensorPayload.humidity != nil){
-                                self.visualData[1] = UserDefaults.standard.bool(forKey: "isCelcius") ? Double(sensorPayload.temperature) : (Double(sensorPayload.temperature) * 1.8 + 34) /// temperature
-                                dataToWatch.updateValue(sensorValue: self.visualData[1], sensorName: "temperatureData")
-                                self.visualData[2] = Double(sensorPayload.humidity) /// humidity
-                                dataToWatch.updateValue(sensorValue: self.visualData[2], sensorName: "humidityData")
-                                
-                                dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueTemp")), sensorName: "minValueTemp")
-                                dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueTemp")), sensorName: "maxValueTemp")
-                                
-                                dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueHum")), sensorName: "minValueHum")
-                                dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueHum")), sensorName: "maxValueHum")
-                                
-                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[1].name, value: Float(self.visualData[1]))
-                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[2].name, value: Float(self.visualData[2]))
+                            if packet.shtPacket.sensorID == 0 {
+                                if(sensorPayload.temperature != nil && sensorPayload.humidity != nil){
+                                    self.visualData[1] = Double(sensorPayload.temperature) /// temperature
+                                    dataToWatch.updateValue(sensorValue: self.visualData[1], sensorName: "temperatureData")
+                                    self.visualData[2] = Double(sensorPayload.humidity) /// humidity
+                                    dataToWatch.updateValue(sensorValue: self.visualData[2], sensorName: "humidityData")
+                                    
+                                    dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueTemp")), sensorName: "minValueTemp")
+                                    dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueTemp")), sensorName: "maxValueTemp")
+                                    
+                                    dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueHum")), sensorName: "minValueHum")
+                                    dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueHum")), sensorName: "maxValueHum")
+                                    
+                                    try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[1].name, value: Float(self.visualData[1]))
+                                    try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[2].name, value: Float(self.visualData[2]))
+                                }
+                            }else{
+                                if(sensorPayload.temperature != nil && sensorPayload.humidity != nil){
+                                    self.thermalData[0] = Double(sensorPayload.temperature) /// temperature
+                                    dataToWatch.updateValue(sensorValue: self.thermalData[0], sensorName: "temperatureAmbientData")
+                                    self.thermalData[1] = Double(sensorPayload.humidity) /// humidity
+                                    dataToWatch.updateValue(sensorValue: self.thermalData[1], sensorName: "humidityAmbientData")
+
+                                    dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueTemp")), sensorName: "minValueTemp")
+                                    dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueTemp")), sensorName: "maxValueTemp")
+
+                                    dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueHum")), sensorName: "minValueHum")
+                                    dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueHum")), sensorName: "maxValueHum")
+
+                                    try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[0].name, value: Float(self.thermalData[0]))
+                                    try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[1].name, value: Float(self.thermalData[1]))
+                                }
                             }
+                            
                         }
                     case .some(.specPacket(_)):
                         break
@@ -397,13 +436,14 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                         print(thermTempleRear)
                     }else{
                         
-                        if(Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - 4) * cogLoadMultiFactor - cogLoadOffset) > 0){
+                        if(Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - cogLoadOffset) * cogLoadMultiFactor) > 0){
                            
                             cogIntensity = Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - cogLoadOffset) * cogLoadMultiFactor  + 3)
-//                            print("cogload baseline: \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
-//                            print("cogload est: \(cogIntensity)")
+                            print("cogload baseline: \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
+                            print("cogload est: \(cogIntensity)")
                             dataToWatch.updateValue(sensorValue: Double(cogIntensity), sensorName: "cogLoadData")
                         }else{
+                            cogIntensity = 3
 //                            print("cogload baseline (neg): \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
 //                            print("cogload est (neg): \(Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - cogLoadOffset) * cogLoadMultiFactor  + 3))")
                         }
@@ -610,21 +650,29 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             
             if( (flagcoefficientVariation || flagMean || flagRandom)){
                 let calendar = Calendar.current
-                let components = calendar.dateComponents([.minute], from: prevNotificationTime, to: Date())
-
-                if let minuteDifference = components.minute {
-                    if minuteDifference > randomNextNotificationGap {
-//                        print("(led notification) notification gap: \(randomNextNotificationGap), minuteDifference: \(minuteDifference), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom), flagcoefficientVariationWho: \(flagcoefficientVariationWho), flagcoefficientVariationValue: \(flagcoefficientVariationValue), flagMeanWho: \(flagMeanWho), flagMeanValue: \(flagMeanValue)")
-                        blueGreenLight(isEnable: true)
-                        prevNotificationTime = Date()
-                        randomNextNotificationGap = Int.random(in: 5...7)
-                        RawDataViewModel.addMetaDataToRawData(payload: "(LED notification triggered) notification gap: \(randomNextNotificationGap), minuteDifference: \(minuteDifference), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom), flagcoefficientVariationWho: \(flagcoefficientVariationWho), flagcoefficientVariationValue: \(flagcoefficientVariationValue), flagMeanWho: \(flagMeanWho), flagMeanValue: \(flagMeanValue)", timestampUnix: Date(), type: 3)
-                    }else{
-                        print("(no LED notification)  notification gap: \(randomNextNotificationGap), minuteDifference: \(minuteDifference), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom)")
-                        
-                        RawDataViewModel.addMetaDataToRawData(payload: "(no LED notification: too short to prev survey) notification gap: \(randomNextNotificationGap), minuteDifference: \(minuteDifference), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom), flagcoefficientVariationWho: \(flagcoefficientVariationWho), flagcoefficientVariationValue: \(flagcoefficientVariationValue), flagMeanWho: \(flagMeanWho), flagMeanValue: \(flagMeanValue)", timestampUnix: Date(), type: 3)
+                if let prevNotificationTime = UserDefaults.standard.object(forKey: "prevNotificationTime") as? Date{
+                    let components = calendar.dateComponents([.minute], from: prevNotificationTime, to: Date())
+                    
+                    if let minuteDifference = components.minute {
+                        if minuteDifference > randomNextNotificationGap {
+                            blueGreenLight(isEnable: true)
+                            UserDefaults.standard.set(Date(), forKey: "prevNotificationTime")
+                            randomNextNotificationGap = Int.random(in: 15...20              )
+                            RawDataViewModel.addMetaDataToRawData(payload: "(LED notification triggered) notification gap: \(randomNextNotificationGap), minuteDifference: \(minuteDifference), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom), flagcoefficientVariationWho: \(flagcoefficientVariationWho), flagcoefficientVariationValue: \(flagcoefficientVariationValue), flagMeanWho: \(flagMeanWho), flagMeanValue: \(flagMeanValue)", timestampUnix: Date(), type: 3)
+                        }else{
+                            print("(no LED notification)  notification gap: \(randomNextNotificationGap), minuteDifference: \(minuteDifference), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom)")
+                            
+                            RawDataViewModel.addMetaDataToRawData(payload: "(no LED notification: too short to prev survey) notification gap: \(randomNextNotificationGap), minuteDifference: \(minuteDifference), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom), flagcoefficientVariationWho: \(flagcoefficientVariationWho), flagcoefficientVariationValue: \(flagcoefficientVariationValue), flagMeanWho: \(flagMeanWho), flagMeanValue: \(flagMeanValue)", timestampUnix: Date(), type: 3)
+                        }
                     }
+                }else{
+                    /// first time of notification
+                    UserDefaults.standard.set(Date(), forKey: "prevNotificationTime")
+                    RawDataViewModel.addMetaDataToRawData(payload: "set initial first notification time reference from bluetoothReceiver", timestampUnix: Date(), type: 3)
+                    print("set initial first notification time reference")
                 }
+
+                
             }else{
                 print("(no LED notification)  notification gap: \(randomNextNotificationGap), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom)")
                 RawDataViewModel.addMetaDataToRawData(payload: "(no LED notification: not much changes in the environments & random flag decided no)  notification gap: \(randomNextNotificationGap), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom), flagcoefficientVariationWho: \(flagcoefficientVariationWho), flagcoefficientVariationValue: \(flagcoefficientVariationValue), flagMeanWho: \(flagMeanWho), flagMeanValue: \(flagMeanValue)", timestampUnix: Date(), type: 3)
@@ -713,13 +761,13 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         blueGreenTransition.header.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
 
         blueGreenTransition.blueGreenTransition.enable = isEnable /// true for enable the transition; false for turning off the high sampling rate
-        blueGreenTransition.blueGreenTransition.blueMinIntensity = 60
-        blueGreenTransition.blueGreenTransition.blueMaxIntensity = 60
-        blueGreenTransition.blueGreenTransition.greenMaxIntensity = 60
+        blueGreenTransition.blueGreenTransition.blueMinIntensity = 80
+        blueGreenTransition.blueGreenTransition.blueMaxIntensity = 80
+        blueGreenTransition.blueGreenTransition.greenMaxIntensity = 80
         blueGreenTransition.blueGreenTransition.stepSize = 2
-        blueGreenTransition.blueGreenTransition.stepDurationMs = 100
+        blueGreenTransition.blueGreenTransition.stepDurationMs = 200
         blueGreenTransition.blueGreenTransition.greenHoldLengthSeconds = UInt32(greenHoldTime)
-        blueGreenTransition.blueGreenTransition.transitionDelaySeconds = 2
+        blueGreenTransition.blueGreenTransition.transitionDelaySeconds = 10
 
         blueGreenTransition.payload = .blueGreenTransition(blueGreenTransition.blueGreenTransition)
 

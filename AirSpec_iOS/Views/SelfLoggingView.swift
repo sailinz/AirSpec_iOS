@@ -13,6 +13,9 @@ struct SelfLoggingView: View {
     let uncomfyColor:Color = .pink
     @State private var comments: String = ""
     @State var surveyButton: Bool = false
+    @State var isComfySelected:Bool = false
+    @State var isUncomfySelected:Bool = false
+    
     
 //    let userID = UserDefaults.standard.double(forKey: "user_id")
     @State var surveyRecordIndex: Int = 0
@@ -39,13 +42,18 @@ struct SelfLoggingView: View {
                                 .frame(height: 20)
                             HStack{
                                 Button(action:{
+                                    isComfySelected = false
+                                    isUncomfySelected = true
                                     do{
                                         try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-2), choice: "not comfy")
                                         RawDataViewModel.addSurveyDataToRawData(qIndex: -2, qChoice: "not comfy", qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
                                         
-                                        
                                         receiver.blueGreenLight(isEnable: false)
-                                        receiver.setBlue()
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
+                                            receiver.setBlue()
+                                        }
+                                        
+                                        
 //                                        receiver.testLight(leftBlue: 20, leftGreen: 150, leftRed: 0, rightBlue: 20, rightGreen: 150, rightRed: 0)
                                         receiver.notificationTimer?.cancel()
                                         receiver.notificationTimer = nil
@@ -69,6 +77,8 @@ struct SelfLoggingView: View {
                                                     .foregroundColor(.white)
                                                     .frame(width: 20, height:20)
                                             }
+                                            .scaleEffect(isUncomfySelected ? 1.2 : 1)
+                                            
                                             Text("Not comfy")
                                                 .font(.system(.subheadline) .weight(.semibold))
                                         }
@@ -79,12 +89,17 @@ struct SelfLoggingView: View {
                                     .frame(width: 20)
                                 
                                 Button(action:{
+                                    isComfySelected = true
+                                    isComfySelected = true
+                                    isUncomfySelected = false
                                     do{
                                         try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-2), choice: "comfy")
                                         RawDataViewModel.addSurveyDataToRawData(qIndex: -2, qChoice: "comfy", qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
                                         
                                         receiver.blueGreenLight(isEnable: false)
-                                        receiver.setBlue()
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
+                                            receiver.setBlue()
+                                        }
 //                                        receiver.testLight(leftBlue: 20, leftGreen: 150, leftRed: 0, rightBlue: 20, rightGreen: 150, rightRed: 0)
                                         receiver.notificationTimer?.cancel()
                                         receiver.notificationTimer = nil
@@ -107,6 +122,8 @@ struct SelfLoggingView: View {
                                                     .foregroundColor(.white)
                                                     .frame(width: 20, height:20)
                                             }
+                                            .scaleEffect(isComfySelected ? 1.2 : 1)
+                                            
                                             Text("comfy")
                                                 .font(.system(.subheadline) .weight(.semibold))
                                                 .foregroundColor(comfyColor)
@@ -218,6 +235,8 @@ struct SelfLoggingView: View {
         )
         
         .onAppear{
+            isComfySelected = false
+            isUncomfySelected = false
             print("survey appear")
             if UserDefaults.standard.integer(forKey: "survey_record_index") == 0 {
                 UserDefaults.standard.set(1, forKey: "survey_record_index")

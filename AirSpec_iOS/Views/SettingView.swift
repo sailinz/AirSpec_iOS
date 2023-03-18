@@ -285,13 +285,13 @@ struct SettingView: View {
 //                                print(UserDefaults.standard.bool(forKey: "isCelcius"))
                                 
                                 RawDataViewModel.addMetaDataToRawData(payload: "minValueTemp : \(self.minValueTemp/sliderWidth) C", timestampUnix: Date(), type: 1)
-                                RawDataViewModel.addMetaDataToRawData(payload: "maxValueTemp : \(self.minValueTemp/sliderWidth) C", timestampUnix: Date(), type: 1)
-                                RawDataViewModel.addMetaDataToRawData(payload: "minValueHum : \(self.minValueTemp/sliderWidth) %", timestampUnix: Date(), type: 1)
-                                RawDataViewModel.addMetaDataToRawData(payload: "maxValueHum : \(self.minValueTemp/sliderWidth) %", timestampUnix: Date(), type: 1)
-                                RawDataViewModel.addMetaDataToRawData(payload: "minValueLightIntensity : \(self.minValueTemp/sliderWidth) lux", timestampUnix: Date(), type: 1)
-                                RawDataViewModel.addMetaDataToRawData(payload: "maxValueLightIntensity : \(self.minValueTemp/sliderWidth) lux", timestampUnix: Date(), type: 1)
-                                RawDataViewModel.addMetaDataToRawData(payload: "minValueNoise : \(self.minValueTemp/sliderWidth) dBA", timestampUnix: Date(), type: 1)
-                                RawDataViewModel.addMetaDataToRawData(payload: "maxValueNoise : \(self.minValueTemp/sliderWidth) dBA", timestampUnix: Date(), type: 1)
+                                RawDataViewModel.addMetaDataToRawData(payload: "maxValueTemp : \(self.maxValueTemp/sliderWidth) C", timestampUnix: Date(), type: 1)
+                                RawDataViewModel.addMetaDataToRawData(payload: "minValueHum : \(self.minValueHum/sliderWidth) %", timestampUnix: Date(), type: 1)
+                                RawDataViewModel.addMetaDataToRawData(payload: "maxValueHum : \(self.maxValueHum/sliderWidth) %", timestampUnix: Date(), type: 1)
+                                RawDataViewModel.addMetaDataToRawData(payload: "minValueLightIntensity : \(self.minValueLightIntensity/sliderWidth) lux", timestampUnix: Date(), type: 1)
+                                RawDataViewModel.addMetaDataToRawData(payload: "maxValueLightIntensity : \(self.maxValueLightIntensity/sliderWidth) lux", timestampUnix: Date(), type: 1)
+                                RawDataViewModel.addMetaDataToRawData(payload: "minValueNoise : \(self.minValueNoise/sliderWidth) dBA", timestampUnix: Date(), type: 1)
+                                RawDataViewModel.addMetaDataToRawData(payload: "maxValueNoise : \(self.maxValueNoise/sliderWidth) dBA", timestampUnix: Date(), type: 1)
                             }) {
                                 Text("Update")
                                     .foregroundColor(.white)
@@ -490,6 +490,15 @@ struct SettingView: View {
                 }
 
             }
+            
+            if let prevNotificationTime = UserDefaults.standard.object(forKey: "prevNotificationTime") as? Date{
+                
+            }else{
+                UserDefaults.standard.set(Date(), forKey: "prevNotificationTime")
+                print("set initial first notification time reference")
+                RawDataViewModel.addMetaDataToRawData(payload: "set initial first notification time reference from Settings", timestampUnix: Date(), type: 3)
+            }
+            
             
             
             

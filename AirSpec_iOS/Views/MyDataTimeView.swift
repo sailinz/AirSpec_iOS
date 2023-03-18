@@ -35,6 +35,7 @@ struct MyDataTimeView: View {
     @State var flags = Array(repeating: false, count: sensorSettingList.count)
     @State var user_id: String = ""
     @State var isTodayData: Bool = true
+    @State var isTodayDataToggled: Bool = false
     
     
     private let columns = [
@@ -80,7 +81,9 @@ struct MyDataTimeView: View {
                         .animation(.spring())
                     }
                     .onTapGesture {
+                        
                         self.isTodayData.toggle()
+                        UserDefaults.standard.set(true, forKey: "isTodayDataToggled")
                         RawDataViewModel.addMetaDataToRawData(payload: "Long term data of today is checked: \(self.isTodayData) (true: today; false: all days)", timestampUnix: Date(), type: 1)
 
                     }
@@ -233,9 +236,19 @@ struct ToggleItem: View {
 
                 if convertedSensorData.isEmpty {
                     print("No matching tuples found")
+                   
+                    if !self.data.isEmpty {
+                        DispatchQueue.main.async  {
+                            self.data = []
+                        }
+                    }
+                    
+                        
+                    
                 } else {
                     if(i != UserDefaults.standard.integer(forKey: "longTermDataSensor")){
-                        print("queried data")
+                        print("queried data because of changed sensor")
+                        var _ = true
                         UserDefaults.standard.set(self.tag, forKey: "longTermDataSensor")
                         DispatchQueue.main.async  {
                             self.data = convertedSensorData
@@ -244,6 +257,15 @@ struct ToggleItem: View {
                     }
                     
                     
+                    if UserDefaults.standard.bool(forKey: "isTodayDataToggled"){
+                        print("queried data because of change time duration")
+                        var _ = true
+                        UserDefaults.standard.set(false, forKey: "isTodayDataToggled")
+                        DispatchQueue.main.async  {
+                            self.data = convertedSensorData
+                        }
+                        
+                    }
                 }
                 
                 if let err = err {
@@ -263,10 +285,29 @@ struct ToggleItem: View {
 
                 if convertedSensorData.isEmpty {
                     print("No matching tuples found")
+                    if !self.data.isEmpty {
+                        DispatchQueue.main.async  {
+                            self.data = []
+                        }
+                    }
                 } else {
-                    DispatchQueue.main.async {
-                        self.data = convertedSensorData
-                        
+                    if(i != UserDefaults.standard.integer(forKey: "longTermDataSensor")){
+                        print("queried data because of changed sensor")
+                        var _ = true
+                        UserDefaults.standard.set(self.tag, forKey: "longTermDataSensor")
+                        DispatchQueue.main.async  {
+                            self.data = convertedSensorData
+                        }
+                    }
+                    
+                    
+                    if UserDefaults.standard.bool(forKey: "isTodayDataToggled"){
+                        print("queried data because of change time duration")
+                        var _ = true
+                        UserDefaults.standard.set(false, forKey: "isTodayDataToggled")
+                        DispatchQueue.main.async  {
+                            self.data = convertedSensorData
+                        }
                     }
                     
                 }

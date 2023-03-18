@@ -63,9 +63,23 @@ struct OpenCircularGauge<Content>: View where Content: View {
 //                Image(systemName: trendIcon)
 //                    .foregroundColor(labelColor(for: current, minValue: minValue, maxValue: maxValue))
                 if (!current.isInfinite && !current.isNaN){
-                    Text(Int(current) == -1 ? "" : "\(Int(current))")
-                        .foregroundColor(labelColor(for: current, minValue: minValue, maxValue: maxValue))
-                        .font(.system(size: 28, design: .rounded) .weight(.heavy))
+                    if(icon.contains("thermometer")){
+                        if UserDefaults.standard.bool(forKey: "isCelcius") {
+                            Text(Int(current) == -1 ? "" : "\(Int(current))")
+                                .foregroundColor(labelColor(for: current, minValue: minValue, maxValue: maxValue))
+                                .font(.system(size: 28, design: .rounded) .weight(.heavy))
+                        }else{
+                            Text(Int(current) == -1 ? "" : "\(Int(current * 1.8 + 34))")
+                                .foregroundColor(labelColor(for: current, minValue: minValue, maxValue: maxValue))
+                                .font(.system(size: 28, design: .rounded) .weight(.heavy))                            
+                        }
+                    }else{
+                        Text(Int(current) == -1 ? "" : "\(Int(current))")
+                            .foregroundColor(labelColor(for: current, minValue: minValue, maxValue: maxValue))
+                            .font(.system(size: 28, design: .rounded) .weight(.heavy))
+                    }
+                    
+                    
                 }else{
                     Text("")
                         .foregroundColor(labelColor(for: current, minValue: minValue, maxValue: maxValue))

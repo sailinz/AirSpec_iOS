@@ -115,6 +115,13 @@ struct SurveyQuestionView: View {
                         print("Error saving survey data: \(error.localizedDescription)")
                     }
                     
+                    /// something hardcoded - but the logic should be done properly!!!!
+                    if nextQuestion == 1{ /// the question about change
+                        if currentAnswers.contains(2) { /// visual comfort
+                            currentAnswer = 2
+                        }
+                    }
+                    
                     
                     self.currentQuestion = currentQuestionItem.currentQuestion
                     self.nextQuestion = currentQuestionItem.nextQuestion[currentAnswer]

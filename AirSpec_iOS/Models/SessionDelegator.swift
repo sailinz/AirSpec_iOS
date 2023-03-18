@@ -63,10 +63,10 @@ class SessionDelegator: NSObject, WCSessionDelegate {
     func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
         DispatchQueue.main.async {
             if let sensorReadingValue = applicationContext["temperatureAmbientData"] as? Double {
-                self.sensorValueNew[2][1] = sensorReadingValue
+                self.sensorValueNew[0][0] = sensorReadingValue
                 self.sensorReading.send(self.sensorValueNew)
             }else if let sensorReadingValue = applicationContext["humidityAmbientData"] as? Double {
-                self.sensorValueNew[2][2] = sensorReadingValue
+                self.sensorValueNew[0][1] = sensorReadingValue
                 self.sensorReading.send(self.sensorValueNew)
             }else if let sensorReadingValue = applicationContext["vocIndexAmbientData"] as? Double {
                 self.sensorValueNew[1][0] = sensorReadingValue

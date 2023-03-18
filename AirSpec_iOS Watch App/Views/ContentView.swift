@@ -16,6 +16,7 @@ struct ContentView: View {
     @State var showSurvey: Bool
     @State var user_id:String = ""
     @State var eyeCalibration:Bool
+    @State var isCelsius:Bool = false
     
     var body: some View {
         if let user_id = UserDefaults.standard.string(forKey: "user_id"){
@@ -57,19 +58,78 @@ struct ContentView: View {
                     
                 }
             }else{
+                HStack{
+                    Button(action:{
+                        isCelsius = true
+                        UserDefaults.standard.set(true, forKey: "isCelcius")
+                    }) {
+                        Text("°C")
+                        .font(.system(.subheadline) .weight(.semibold))
+                        .foregroundColor(.white)
+                    }
+                    .background(isCelsius ? .pink.opacity(0.5) : .gray.opacity(0.5))
+                    .clipShape(Capsule())
+                    Button(action:{
+                        UserDefaults.standard.set(false, forKey: "isCelcius")
+                        isCelsius = false
+                    }) {
+                        
+                        Text("°F")
+                        .font(.system(.subheadline) .weight(.semibold))
+                        .foregroundColor(.white)
+                    }
+                    .background(isCelsius ? .gray.opacity(0.5) : .pink.opacity(0.5))
+                    .clipShape(Capsule())
+                }
+                    
+                    
+                    
                 TextField("Enter ID", text: $user_id, onCommit: {
                     UserDefaults.standard.set(self.user_id, forKey: "user_id")
                 })
                 .multilineTextAlignment(.trailing)
                 .font(.system(.subheadline))
+               
+                
+                
             }
             
         }else{
+            
+            HStack{
+                Button(action:{
+                    isCelsius = true
+                    UserDefaults.standard.set(true, forKey: "isCelcius")
+                }) {
+                    Text("°C")
+                    .font(.system(.subheadline) .weight(.semibold))
+                    .foregroundColor(.white)
+                }
+                .background(isCelsius ? .pink.opacity(0.5) : .gray.opacity(0.5))
+                .clipShape(Capsule())
+                Button(action:{
+                    UserDefaults.standard.set(false, forKey: "isCelcius")
+                    isCelsius = false
+                }) {
+                    
+                    Text("°F")
+                    .font(.system(.subheadline) .weight(.semibold))
+                    .foregroundColor(.white)
+                }
+                .background(isCelsius ? .gray.opacity(0.5) : .pink.opacity(0.5))
+                .clipShape(Capsule())
+            }
+                
+                
+                
             TextField("Enter ID", text: $user_id, onCommit: {
                 UserDefaults.standard.set(self.user_id, forKey: "user_id")
             })
             .multilineTextAlignment(.trailing)
             .font(.system(.subheadline))
+            
+//            Text("Selected unit for temperature: \(UserDefaults.standard.bool(forKey: "isCelcius") ? "°C" : "°F")")
+            
         }
     }
 }
