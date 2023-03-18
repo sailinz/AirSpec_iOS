@@ -45,20 +45,31 @@ struct SelfLoggingView: View {
                                     isComfySelected = false
                                     isUncomfySelected = true
                                     do{
-                                        let timeDiff = Date().timeIntervalSinceReferenceDate - receiver.blueGreenTransitionStartTime.timeIntervalSinceReferenceDate
+                                        var secondsBetweenDates = Double(receiver.greenHoldTime + 12)
+                                        if let prevNotificationTime = UserDefaults.standard.object(forKey: "prevNotificationTime") as? Date{
+                                            secondsBetweenDates = Date().timeIntervalSince(prevNotificationTime)
+                                        }
+                                        
                                         try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-2), choice: "not comfy")
                                         RawDataViewModel.addSurveyDataToRawData(qIndex: -2, qChoice: "not comfy", qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
                                         
-                                        receiver.blueGreenLight(isEnable: false)
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
-                                            receiver.setBlue()
-                                        }
-                                        
-                                        
-//                                        receiver.testLight(leftBlue: 20, leftGreen: 150, leftRed: 0, rightBlue: 20, rightGreen: 150, rightRed: 0)
                                         receiver.notificationTimer?.cancel()
                                         receiver.notificationTimer = nil
-                                        RawDataViewModel.addMetaDataToRawData(payload: "Reaction time: \(timeDiff); survey received from phone; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                                        
+                                        if secondsBetweenDates > Double(receiver.greenHoldTime) {
+                                            if(!receiver.isBlueGreenSurveyDone){
+                                                RawDataViewModel.addMetaDataToRawData(payload: "Reaction time: \(secondsBetweenDates); survey received from phone; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                                                
+                                                receiver.blueGreenLight(isEnable: false)
+                                                DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
+                                                    receiver.setBlue()
+                                                }
+                                            }else{
+                                                RawDataViewModel.addMetaDataToRawData(payload: "Survey received from phone (without blue-green transition); reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                                            }
+                                        } else {
+                                            RawDataViewModel.addMetaDataToRawData(payload: "Survey received from phone (without blue-green transition); reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                                        }
                                         
                                     }catch{
                                         RawDataViewModel.addMetaDataToRawData(payload: "Error saving survey data from phone: \(error.localizedDescription)", timestampUnix: Date(), type: 2)
@@ -94,18 +105,33 @@ struct SelfLoggingView: View {
                                     isComfySelected = true
                                     isUncomfySelected = false
                                     do{
-                                        let timeDiff = Date().timeIntervalSinceReferenceDate - receiver.blueGreenTransitionStartTime.timeIntervalSinceReferenceDate
+                                        var secondsBetweenDates = Double(receiver.greenHoldTime + 12)
+                                        if let prevNotificationTime = UserDefaults.standard.object(forKey: "prevNotificationTime") as? Date{
+                                            secondsBetweenDates = Date().timeIntervalSince(prevNotificationTime)
+                                        }
+                                        
                                         try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-2), choice: "comfy")
                                         RawDataViewModel.addSurveyDataToRawData(qIndex: -2, qChoice: "comfy", qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
                                         
-                                        receiver.blueGreenLight(isEnable: false)
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
-                                            receiver.setBlue()
-                                        }
-//                                        receiver.testLight(leftBlue: 20, leftGreen: 150, leftRed: 0, rightBlue: 20, rightGreen: 150, rightRed: 0)
                                         receiver.notificationTimer?.cancel()
                                         receiver.notificationTimer = nil
-                                        RawDataViewModel.addMetaDataToRawData(payload: "Reaction time: \(timeDiff); survey received from phone; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                                        
+                                        if secondsBetweenDates > Double(receiver.greenHoldTime) {
+                                            if(!receiver.isBlueGreenSurveyDone){
+                                                RawDataViewModel.addMetaDataToRawData(payload: "Reaction time: \(secondsBetweenDates); survey received from phone; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                                                
+                                                receiver.blueGreenLight(isEnable: false)
+                                                DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
+                                                    receiver.setBlue()
+                                                }
+                                            }else{
+                                                RawDataViewModel.addMetaDataToRawData(payload: "Survey received from phone (without blue-green transition); reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                                            }
+                                           
+                                            
+                                        } else {
+                                            RawDataViewModel.addMetaDataToRawData(payload: "Survey received from phone (without blue-green transition); reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                                        }
                                     }catch{
                                         RawDataViewModel.addMetaDataToRawData(payload: "Error saving survey data from phone: \(error.localizedDescription)", timestampUnix: Date(), type: 2)
                                         print("Error saving survey data: \(error.localizedDescription)")

@@ -246,8 +246,11 @@ struct SettingView: View {
                                 .frame(width: 30, height: 20)
                             Text("Last Survey")
                                 .font(.system(.subheadline))
-                            Text("\(receiver.blueGreenTransitionStartTime)")
-                                .font(.system(.subheadline))
+                            if let prevNotificationTime = UserDefaults.standard.object(forKey: "prevNotificationTime") as? Date{
+                                Text("\(prevNotificationTime)")
+                                    .font(.system(.subheadline))
+                            }
+                            
                             
                                 
                         }

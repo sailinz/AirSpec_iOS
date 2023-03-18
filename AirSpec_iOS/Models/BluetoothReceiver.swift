@@ -61,8 +61,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
     /// -- WATCH CONNECTIVITY
     @Published var dataToWatch = SensorData()
-    @Published var blueGreenTransitionStartTime = Date()
-//    var surveyStatusFromWatch = SensorData()
+    @Published var isBlueGreenSurveyDone = false
+    //    var surveyStatusFromWatch = SensorData()
     
     /// -- NOTIFICATION MECHENISM
     /// maybe the sampling frequency is high enough that the location information is not needed
@@ -71,7 +71,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //    var prevNotificationTime: Date = Date().addingTimeInterval(-60*60)
     var randomNextNotificationGap: Int = 20 /// minute
     var notificationTimer:DispatchSourceTimer?
-    let greenHoldTime = 60 * 10 /// sec
+    @Published var greenHoldTime = 60 * 10 /// sec
     var disconnectionTimer:DispatchSourceTimer?
     
     /// -- PUSH TO THE SERVER
@@ -291,18 +291,35 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //                print(packet)
                 
                 if(dataToWatch.surveyDone){
-                    
-                    let timeDiff = Date().timeIntervalSinceReferenceDate - blueGreenTransitionStartTime.timeIntervalSinceReferenceDate
-                    blueGreenLight(isEnable: false)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
-                        self.setBlue()
+                    var secondsBetweenDates = Double(greenHoldTime + 12)
+                    if let prevNotificationTime = UserDefaults.standard.object(forKey: "prevNotificationTime") as? Date{
+                        secondsBetweenDates = Date().timeIntervalSince(prevNotificationTime)
                     }
                     
-//                    testLight(leftBlue: 20, leftGreen: 150, leftRed: 0, rightBlue: 20, rightGreen: 150, rightRed: 0)
+
                     dataToWatch.surveyDone = false
                     notificationTimer?.cancel()
                     notificationTimer = nil
-                    RawDataViewModel.addMetaDataToRawData(payload: "Reaction time: \(timeDiff); survey received from watch; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+
+                    if secondsBetweenDates < Double(greenHoldTime + 11) { /// 11 wait time + transition time 0.2 round up
+                        if(!isBlueGreenSurveyDone){
+                            blueGreenLight(isEnable: false)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
+                                self.setBlue()
+                            }
+                            
+                            RawDataViewModel.addMetaDataToRawData(payload: "Reaction time: \(secondsBetweenDates); survey received from watch; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                            isBlueGreenSurveyDone = true
+                            
+                        }else{
+                            RawDataViewModel.addMetaDataToRawData(payload: "Survey received from watch (without blue-green transition); reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                        }
+                        
+                    } else {
+                        RawDataViewModel.addMetaDataToRawData(payload: "Survey received from watch (without blue-green transition); reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                    }
+                    
+                    
                 }
                 
                 if(dataToWatch.isEyeCalibrationDone){
@@ -659,8 +676,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     if let minuteDifference = components.minute {
                         if minuteDifference > randomNextNotificationGap {
                             blueGreenLight(isEnable: true)
-                            blueGreenTransitionStartTime = Date()
                             UserDefaults.standard.set(Date(), forKey: "prevNotificationTime")
+                            isBlueGreenSurveyDone = false
                             randomNextNotificationGap = Int.random(in: 15...20              )
                             RawDataViewModel.addMetaDataToRawData(payload: "(LED notification triggered) notification gap: \(randomNextNotificationGap), minuteDifference: \(minuteDifference), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom), flagcoefficientVariationWho: \(flagcoefficientVariationWho), flagcoefficientVariationValue: \(flagcoefficientVariationValue), flagMeanWho: \(flagMeanWho), flagMeanValue: \(flagMeanValue)", timestampUnix: Date(), type: 3)
                         }else{
@@ -688,18 +705,17 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
     /// storeLongTermData
     func storeLongTermData() {
-        var isNotifiedNoSensorData = false
+        var counter = 0
         while true {
             do {
                 let (data, onComplete) = try TempDataViewModel.fetchData()
                 if data.isEmpty {
                     print("no new data")
-                    if !isNotifiedNoSensorData{
+                    if counter == 0{
                         LocalNotification.setLocalNotification(title: "No Sensor data",
                                                                subtitle: "Please check glasses status",
                                                                body: "Open AirSpec App on phone, reboot the glasses if needed.",
                                                                when: 1) /// now
-                        isNotifiedNoSensorData = true
                     }
                     
                     RawDataViewModel.addMetaDataToRawData(payload: "Glasses status check notification (vibration) triggered", timestampUnix: Date(), type: 4)
@@ -761,6 +777,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 print("cannot push data to the Long Term Data Container: \(error)")
                 RawDataViewModel.addMetaDataToRawData(payload: "[App issue] cannot push data to the Long Term Data Container: \(error)", timestampUnix: Date(), type: 2)
             }
+            
+            counter += 1
         }
 
     }
