@@ -61,6 +61,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
     /// -- WATCH CONNECTIVITY
     @Published var dataToWatch = SensorData()
+    @Published var blueGreenTransitionStartTime = Date()
 //    var surveyStatusFromWatch = SensorData()
     
     /// -- NOTIFICATION MECHENISM
@@ -187,7 +188,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         disconnectionTimer = DispatchSource.makeTimerSource()
         disconnectionTimer?.schedule(deadline: .now() + .seconds(180), repeating: .seconds(updateFrequence))
         disconnectionTimer?.setEventHandler {
-            LocalNotification.setLocalNotification(title: "No sensor data",
+            LocalNotification.setLocalNotification(title: "Is glasses connected?",
                                                    subtitle: "Please check glasses connectivity",
                                                    body: "Open AirSpec App on phone, reboot the glasses if needed.",
                                                    when: 1) /// now
@@ -290,6 +291,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //                print(packet)
                 
                 if(dataToWatch.surveyDone){
+                    
+                    let timeDiff = Date().timeIntervalSinceReferenceDate - blueGreenTransitionStartTime.timeIntervalSinceReferenceDate
                     blueGreenLight(isEnable: false)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
                         self.setBlue()
@@ -299,7 +302,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     dataToWatch.surveyDone = false
                     notificationTimer?.cancel()
                     notificationTimer = nil
-                    RawDataViewModel.addMetaDataToRawData(payload: "survey received from watch; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                    RawDataViewModel.addMetaDataToRawData(payload: "Reaction time: \(timeDiff); survey received from watch; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
                 }
                 
                 if(dataToWatch.isEyeCalibrationDone){
@@ -656,6 +659,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     if let minuteDifference = components.minute {
                         if minuteDifference > randomNextNotificationGap {
                             blueGreenLight(isEnable: true)
+                            blueGreenTransitionStartTime = Date()
                             UserDefaults.standard.set(Date(), forKey: "prevNotificationTime")
                             randomNextNotificationGap = Int.random(in: 15...20              )
                             RawDataViewModel.addMetaDataToRawData(payload: "(LED notification triggered) notification gap: \(randomNextNotificationGap), minuteDifference: \(minuteDifference), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom), flagcoefficientVariationWho: \(flagcoefficientVariationWho), flagcoefficientVariationValue: \(flagcoefficientVariationValue), flagMeanWho: \(flagMeanWho), flagMeanValue: \(flagMeanValue)", timestampUnix: Date(), type: 3)
@@ -684,11 +688,19 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
     /// storeLongTermData
     func storeLongTermData() {
+        var isNotifiedNoSensorData = false
         while true {
             do {
                 let (data, onComplete) = try TempDataViewModel.fetchData()
                 if data.isEmpty {
                     print("no new data")
+                    if !isNotifiedNoSensorData{
+                        LocalNotification.setLocalNotification(title: "No Sensor data",
+                                                               subtitle: "Please check glasses status",
+                                                               body: "Open AirSpec App on phone, reboot the glasses if needed.",
+                                                               when: 1) /// now
+                        isNotifiedNoSensorData = true
+                    }
                     
                     RawDataViewModel.addMetaDataToRawData(payload: "Glasses status check notification (vibration) triggered", timestampUnix: Date(), type: 4)
                     try onComplete()

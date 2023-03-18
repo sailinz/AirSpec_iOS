@@ -241,6 +241,18 @@ struct SettingView: View {
                             
                         }
                         
+                        HStack() {
+                            Image(systemName: "timer")
+                                .frame(width: 30, height: 20)
+                            Text("Last Survey")
+                                .font(.system(.subheadline))
+                            Text("\(receiver.blueGreenTransitionStartTime)")
+                                .font(.system(.subheadline))
+                            
+                                
+                        }
+                        
+                        
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding()

@@ -76,7 +76,7 @@ let questionFlows = [
                 "Visual",
                 "Noise",
                 "Mood",
-                "Bodily condition (e.g., hungry)",
+                "Bodily condition",
                 "Others",
                 "None"
             ],
