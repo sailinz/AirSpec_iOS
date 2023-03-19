@@ -15,7 +15,7 @@ The app is equipped with survey logic modified from on Cozie (an app that allows
 
 **Survey tabs** : Comfort survey modified from Cozie app
 
-<img src="https://user-images.githubusercontent.com/16971026/226205534-a22dd9d5-c6b8-4c70-8345-85fa2bdd09da.jpg" width="150">
+<img src="https://user-images.githubusercontent.com/16971026/226205445-e00f2b90-8333-475e-a48e-1b9f5697563b.jpg" width="150">
 
 
 **Eye blink calibration** : Eye exercise to match with high resolution blink data from the glasses to understand eye movement behaviours
@@ -34,8 +34,7 @@ The app is equipped with survey logic modified from on Cozie (an app that allows
 
 **Survey** : Survey (iOS version)
 
-<img src="https://user-images.githubusercontent.com/16971026/226205606-1077bec8-64b5-4d1a-9383-5ddb4bcbff11.PNG" width="250">
-<img src="https://user-images.githubusercontent.com/16971026/226205610-05ee9c3f-d942-4904-900f-f392f349e143.PNG" width="250">
+<img src="https://user-images.githubusercontent.com/16971026/226205606-1077bec8-64b5-4d1a-9383-5ddb4bcbff11.PNG" width="250"><img src="https://user-images.githubusercontent.com/16971026/226205610-05ee9c3f-d942-4904-900f-f392f349e143.PNG" width="250">
 
 
 **Setting tab** : allows to input a random user id to connect to the glasses 
