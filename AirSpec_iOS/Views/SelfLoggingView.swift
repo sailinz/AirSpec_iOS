@@ -56,20 +56,18 @@ struct SelfLoggingView: View {
                                         receiver.notificationTimer?.cancel()
                                         receiver.notificationTimer = nil
                                         
-                                        if secondsBetweenDates > Double(receiver.greenHoldTime) {
-                                            if(!receiver.isBlueGreenSurveyDone){
-                                                RawDataViewModel.addMetaDataToRawData(payload: "Reaction time: \(secondsBetweenDates); survey received from phone; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
-                                                
-                                                receiver.blueGreenLight(isEnable: false)
-                                                DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
-                                                    receiver.setBlue()
-                                                }
-                                            }else{
-                                                RawDataViewModel.addMetaDataToRawData(payload: "Survey received from phone (without blue-green transition); reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                                        
+                                        if(!receiver.isBlueGreenSurveyDone){
+                                            RawDataViewModel.addMetaDataToRawData(payload: "Reaction time: \(secondsBetweenDates); Time now: \(Date()); PrevNotification: \(UserDefaults.standard.object(forKey: "prevNotificationTime")); survey received from watch; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                                            
+                                            receiver.blueGreenLight(isEnable: false)
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
+                                                receiver.setBlue()
                                             }
-                                        } else {
+                                        }else{
                                             RawDataViewModel.addMetaDataToRawData(payload: "Survey received from phone (without blue-green transition); reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
                                         }
+                                        
                                         
                                     }catch{
                                         RawDataViewModel.addMetaDataToRawData(payload: "Error saving survey data from phone: \(error.localizedDescription)", timestampUnix: Date(), type: 2)
@@ -116,22 +114,20 @@ struct SelfLoggingView: View {
                                         receiver.notificationTimer?.cancel()
                                         receiver.notificationTimer = nil
                                         
-                                        if secondsBetweenDates > Double(receiver.greenHoldTime) {
-                                            if(!receiver.isBlueGreenSurveyDone){
-                                                RawDataViewModel.addMetaDataToRawData(payload: "Reaction time: \(secondsBetweenDates); survey received from phone; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
-                                                
-                                                receiver.blueGreenLight(isEnable: false)
-                                                DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
-                                                    receiver.setBlue()
-                                                }
-                                            }else{
-                                                RawDataViewModel.addMetaDataToRawData(payload: "Survey received from phone (without blue-green transition); reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
-                                            }
-                                           
+                                     
+                                        if(!receiver.isBlueGreenSurveyDone){
+                                            RawDataViewModel.addMetaDataToRawData(payload: "Reaction time: \(secondsBetweenDates); Time now: \(Date()); PrevNotification: \(UserDefaults.standard.object(forKey: "prevNotificationTime")); survey received from watch; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
                                             
-                                        } else {
+                                            receiver.blueGreenLight(isEnable: false)
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
+                                                receiver.setBlue()
+                                            }
+                                        }else{
                                             RawDataViewModel.addMetaDataToRawData(payload: "Survey received from phone (without blue-green transition); reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
                                         }
+                                           
+                                            
+                                        
                                     }catch{
                                         RawDataViewModel.addMetaDataToRawData(payload: "Error saving survey data from phone: \(error.localizedDescription)", timestampUnix: Date(), type: 2)
                                         print("Error saving survey data: \(error.localizedDescription)")

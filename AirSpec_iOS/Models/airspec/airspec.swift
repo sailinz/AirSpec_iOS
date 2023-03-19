@@ -41,6 +41,7 @@ public class Airspec {
         request.httpMethod = "POST"
         request.setValue("application/protobuf", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(auth_token)", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(auth_token)", forHTTPHeaderField: "Authorization")
         let session = URLSession(configuration: URLSessionConfiguration.ephemeral)
         
         /// unfortunately can't test because non-darwin platforms only have uploadTask. hacked it to async

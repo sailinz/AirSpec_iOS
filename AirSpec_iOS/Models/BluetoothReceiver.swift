@@ -69,14 +69,14 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //    let locationManager = CLLocationManager()
 //    var previousLocation: CLLocation?
 //    var prevNotificationTime: Date = Date().addingTimeInterval(-60*60)
-    var randomNextNotificationGap: Int = 20 /// minute
+    var randomNextNotificationGap: Int = 30 /// minute
     var notificationTimer:DispatchSourceTimer?
     @Published var greenHoldTime = 60 * 10 /// sec
     var disconnectionTimer:DispatchSourceTimer?
     
     /// -- PUSH TO THE SERVER
     private var timer: DispatchSourceTimer?
-    let updateFrequence = 60 * 5 /// seconds
+    let updateFrequence = 60 * 6 /// seconds
 //    let batchSize = 50
 //    private var reconstructedData:[SensorPacket] = [] /// for testing only
 
@@ -169,10 +169,13 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
         
         timer = DispatchSource.makeTimerSource()
-        timer?.schedule(deadline: .now() + .seconds(10), repeating: .seconds(updateFrequence))
+        timer?.schedule(deadline: .now() + .seconds(60), repeating: .seconds(updateFrequence))
         timer?.setEventHandler {
             self.uploadToServer()
-            self.storeLongTermData()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 90)  { /// wait for 3 sec
+                self.storeLongTermData()
+            }
+            
         }
         timer?.resume()
     }
@@ -301,25 +304,20 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     notificationTimer?.cancel()
                     notificationTimer = nil
 
-                    if secondsBetweenDates < Double(greenHoldTime + 11) { /// 11 wait time + transition time 0.2 round up
-                        if(!isBlueGreenSurveyDone){
-                            blueGreenLight(isEnable: false)
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
-                                self.setBlue()
-                            }
-                            
-                            RawDataViewModel.addMetaDataToRawData(payload: "Reaction time: \(secondsBetweenDates); survey received from watch; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
-                            isBlueGreenSurveyDone = true
-                            
-                        }else{
-                            RawDataViewModel.addMetaDataToRawData(payload: "Survey received from watch (without blue-green transition); reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                    
+                    if(!isBlueGreenSurveyDone){
+                        blueGreenLight(isEnable: false)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
+                            self.setBlue()
                         }
                         
-                    } else {
+                        RawDataViewModel.addMetaDataToRawData(payload: "Reaction time: \(secondsBetweenDates); Time now: \(Date()); PrevNotification: \(UserDefaults.standard.object(forKey: "prevNotificationTime")); survey received from watch; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                        
+                        
+                    }else{
                         RawDataViewModel.addMetaDataToRawData(payload: "Survey received from watch (without blue-green transition); reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
                     }
-                    
-                    
+  
                 }
                 
                 if(dataToWatch.isEyeCalibrationDone){
@@ -414,8 +412,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                                     dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueHum")), sensorName: "minValueHum")
                                     dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueHum")), sensorName: "maxValueHum")
 
-                                    try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[0].name, value: Float(self.thermalData[0]))
-                                    try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[1].name, value: Float(self.thermalData[1]))
+                                    try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorThermal[0].name, value: Float(self.thermalData[0]))
+                                    try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorThermal[1].name, value: Float(self.thermalData[1]))
                                 }
                             }
                             
@@ -534,6 +532,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                         let (data, onComplete) = try RawDataViewModel.fetchData()
                         if data.isEmpty {
                             print("sent all packets")
+                            RawDataViewModel.addMetaDataToRawData(payload: "Sent all packets", timestampUnix: Date(), type: 7)
                             try onComplete()
                             return
                         }
@@ -571,7 +570,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         var flagMean = false
         var flagMeanWho = ""
         var flagMeanValue = 0.0
-        var flagRandom = Double.random(in: 0...1) < 0.8 /// 80% chance of being true
+        var flagRandom = Double.random(in: 0...1) < 0.7 /// 70% chance of being true
         
         
         let coefficientVariationBenchmark: Float = 1.0
@@ -752,9 +751,12 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     let value = mean1
                     // Call your function here with the timestamp, sensor, and value
                     try LongTermDataViewModel.addLongTermData(timestamp: timestamp, sensor: sensor, value: value)
+                    
                 }
-                print("long term data length:")
-                print(try LongTermDataViewModel.count())
+//                print("long term data length:")
+//                print(try LongTermDataViewModel.count())
+                try RawDataViewModel.addMetaDataToRawData(payload: "Long term data length: \(LongTermDataViewModel.count())", timestampUnix: Date(), type: 7)
+                
                 
                 triggerLEDNotification(tempData: data, means: means)
                 notificationTimer = DispatchSource.makeTimerSource()
@@ -791,9 +793,9 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         blueGreenTransition.header.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
 
         blueGreenTransition.blueGreenTransition.enable = isEnable /// true for enable the transition; false for turning off the high sampling rate
-        blueGreenTransition.blueGreenTransition.blueMinIntensity = 80
-        blueGreenTransition.blueGreenTransition.blueMaxIntensity = 80
-        blueGreenTransition.blueGreenTransition.greenMaxIntensity = 80
+        blueGreenTransition.blueGreenTransition.blueMinIntensity = 70
+        blueGreenTransition.blueGreenTransition.blueMaxIntensity = 70
+        blueGreenTransition.blueGreenTransition.greenMaxIntensity = 70
         blueGreenTransition.blueGreenTransition.stepSize = 2
         blueGreenTransition.blueGreenTransition.stepDurationMs = 200
         blueGreenTransition.blueGreenTransition.greenHoldLengthSeconds = UInt32(greenHoldTime)
@@ -820,11 +822,11 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         var singleLED = AirSpecConfigPacket()
         singleLED.header.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
 
-        singleLED.ctrlIndivLed.left.eye.blue = 60
+        singleLED.ctrlIndivLed.left.eye.blue = 70
         singleLED.ctrlIndivLed.left.eye.green = 0
         singleLED.ctrlIndivLed.left.eye.red = 0
 
-        singleLED.ctrlIndivLed.right.eye.blue = 60
+        singleLED.ctrlIndivLed.right.eye.blue = 70
         singleLED.ctrlIndivLed.right.eye.green = 0
         singleLED.ctrlIndivLed.right.eye.red = 0
 

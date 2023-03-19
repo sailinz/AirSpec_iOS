@@ -228,6 +228,7 @@ struct SettingView: View {
                             Button(action:
                                     {
                                         receiver.blueGreenLight(isEnable: true)
+                                        receiver.isBlueGreenSurveyDone = false
                                     }
                                     
                                 ) {
