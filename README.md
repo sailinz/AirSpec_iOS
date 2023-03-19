@@ -7,11 +7,8 @@ The app is equipped with survey logic modified from on Cozie (an app that allows
 
 **Home tab** : receive data from the iOS app via WatchConnectivity, Tap the 4 IEQ dimensions to detailed data. 
 
-<img src="https://user-images.githubusercontent.com/16971026/226206095-25089548-4ed4-4f53-93a6-643e4051deee.jpg" width="150">
+<img src="https://user-images.githubusercontent.com/16971026/226206095-25089548-4ed4-4f53-93a6-643e4051deee.jpg" width="150"><img src="https://user-images.githubusercontent.com/16971026/226205428-89b640c1-235c-4189-818c-1792759e4ce7.jpg" width="150">
 
-**Sensor data tabs** : display data from the iOS app via WatchConnectivity
-
-<img src="https://user-images.githubusercontent.com/16971026/226205428-89b640c1-235c-4189-818c-1792759e4ce7.jpg" width="150">
 
 **Survey tabs** : Comfort survey modified from Cozie app
 
