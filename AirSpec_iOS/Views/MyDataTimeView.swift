@@ -69,7 +69,7 @@ struct MyDataTimeView: View {
                     ZStack {
                         Capsule()
                             .frame(width:66,height:30)
-                            .foregroundColor(Color(isTodayData ? #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.1028798084) : #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.6039008336)))
+                            .foregroundColor(isTodayData ? .pink.opacity(0.2) : .pink.opacity(0.7))
                         ZStack{
                             Circle()
                                 .frame(width:26, height:26)
@@ -153,9 +153,56 @@ struct MyDataTimeView: View {
             .cornerRadius(5)
 
         }
-        .chartXAxis(.automatic)
+        .chartXAxis {
+            if isTodayData {
+                AxisMarks(values: .stride(by: .hour, count: 3)) { value in
+                    if let date = value.as(Date.self) {
+                        let hour = Calendar.current.component(.hour, from: date)
+                        switch hour {
+                            case 0, 12:
+                                AxisValueLabel(format: .dateTime.hour())
+                            default:
+                                AxisValueLabel(format: .dateTime.hour(.defaultDigits(amPM: .omitted)))
+                            }
+                        }
+                    
+                    AxisGridLine()
+                    AxisTick()
+                }
+            }else{
+                ///https://developer.apple.com/documentation/charts/customizing-axes-in-swift-charts?language=_2
+                AxisMarks(values: .stride(by: .hour, count: 6)) { value in
+                    if let date = value.as(Date.self) {
+                        let hour = Calendar.current.component(.hour, from: date)
+                        AxisValueLabel {
+                            VStack(alignment: .leading) {
+                                switch hour {
+                                    case 0, 12:
+                                        Text(date, format: .dateTime.hour())
+                                    default:
+                                        Text(date, format: .dateTime.hour(.defaultDigits(amPM: .omitted)))
+                                    }
+                                    if value.index == 0 || hour == 0 {
+                                        Text(date, format: .dateTime.month().day())
+                                    }
+                            }
+                        }
+
+                        if hour == 0 {
+                            AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5))
+                            AxisTick(stroke: StrokeStyle(lineWidth: 0.5))
+                        } else {
+                            AxisGridLine()
+                            AxisTick()
+                        }
+                    }
+                }
+            }
+            
+        }
         .chartYAxis(.automatic)
         .frame(height: Constants.detailChartHeight)
+        
     }
 
     private func findElement(location: CGPoint, proxy: ChartProxy, geometry: GeometryProxy) -> temp? {
@@ -328,6 +375,12 @@ struct ToggleItem: View {
         
     }
 
+}
+
+func formatLabel(date: Date) -> String {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "MMM dd, h a"
+    return dateFormatter.string(from: date)
 }
 
 func convertToData(dateString: String, valuesString: String) -> (minutes: Date, values: Double)? {
