@@ -7,7 +7,7 @@ The app is equipped with survey logic modified from on Cozie (an app that allows
 
 **Home tab** : receive data from the iOS app via WatchConnectivity, Tap the 4 IEQ dimensions to detailed data. 
 
-<img src="https://user-images.githubusercontent.com/16971026/226205618-9dd81064-af3b-451e-a811-06b35b526fb2.jpg" width="150">
+<img src="https://user-images.githubusercontent.com/16971026/226206095-25089548-4ed4-4f53-93a6-643e4051deee.jpg" width="150">
 
 **Sensor data tabs** : display data from the iOS app via WatchConnectivity
 
@@ -15,7 +15,7 @@ The app is equipped with survey logic modified from on Cozie (an app that allows
 
 **Survey tabs** : Comfort survey modified from Cozie app
 
-<img src="https://user-images.githubusercontent.com/16971026/226205445-e00f2b90-8333-475e-a48e-1b9f5697563b.jpg" width="150">
+<img src="https://user-images.githubusercontent.com/16971026/226205618-9dd81064-af3b-451e-a811-06b35b526fb2.jpg" width="150"><img src="https://user-images.githubusercontent.com/16971026/226205445-e00f2b90-8333-475e-a48e-1b9f5697563b.jpg" width="150">
 
 
 **Eye blink calibration** : Eye exercise to match with high resolution blink data from the glasses to understand eye movement behaviours
