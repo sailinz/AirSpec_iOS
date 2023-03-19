@@ -69,9 +69,9 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //    let locationManager = CLLocationManager()
 //    var previousLocation: CLLocation?
 //    var prevNotificationTime: Date = Date().addingTimeInterval(-60*60)
-    var randomNextNotificationGap: Int = 30 /// minute
+    var randomNextNotificationGap: Int = 40 /// minute
     var notificationTimer:DispatchSourceTimer?
-    @Published var greenHoldTime = 60 * 10 /// sec
+    @Published var greenHoldTime = 60 * 15 /// sec
     var disconnectionTimer:DispatchSourceTimer?
     
     /// -- PUSH TO THE SERVER
@@ -793,9 +793,9 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         blueGreenTransition.header.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
 
         blueGreenTransition.blueGreenTransition.enable = isEnable /// true for enable the transition; false for turning off the high sampling rate
-        blueGreenTransition.blueGreenTransition.blueMinIntensity = 70
-        blueGreenTransition.blueGreenTransition.blueMaxIntensity = 70
-        blueGreenTransition.blueGreenTransition.greenMaxIntensity = 70
+        blueGreenTransition.blueGreenTransition.blueMinIntensity = 60
+        blueGreenTransition.blueGreenTransition.blueMaxIntensity = 60
+        blueGreenTransition.blueGreenTransition.greenMaxIntensity = 60
         blueGreenTransition.blueGreenTransition.stepSize = 2
         blueGreenTransition.blueGreenTransition.stepDurationMs = 200
         blueGreenTransition.blueGreenTransition.greenHoldLengthSeconds = UInt32(greenHoldTime)
@@ -822,11 +822,11 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         var singleLED = AirSpecConfigPacket()
         singleLED.header.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
 
-        singleLED.ctrlIndivLed.left.eye.blue = 70
+        singleLED.ctrlIndivLed.left.eye.blue = 60
         singleLED.ctrlIndivLed.left.eye.green = 0
         singleLED.ctrlIndivLed.left.eye.red = 0
 
-        singleLED.ctrlIndivLed.right.eye.blue = 70
+        singleLED.ctrlIndivLed.right.eye.blue = 60
         singleLED.ctrlIndivLed.right.eye.green = 0
         singleLED.ctrlIndivLed.right.eye.red = 0
 
