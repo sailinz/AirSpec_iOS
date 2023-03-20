@@ -270,7 +270,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     }
 
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        guard error == nil else {
+        guard error == nil else {1
             logger.error("\(peripheral.name ?? "unnamed peripheral") failed to update value: \(error!.localizedDescription)")
             delegate?.didFailWithError(.failedToReceiveCharacteristicUpdate)
             return
@@ -472,14 +472,16 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     
 
                     case .some(.imuPacket(_)):
+                        print("imu")
+                        print(packet)
                         break
                     case .some(.micPacket(_)):
-                        print("mic")
-                        print(packet)
+//                        print("mic")
+//                        print(packet)
                         break
                     case .some(.micLevelPacket(_)):
-                        print("micLevelPacket")
-                        print(packet)
+//                        print("micLevelPacket")
+//                        print(packet)
                         for sensorPayload in packet.micLevelPacket.payload {
                             if(sensorPayload.soundSplDb != nil){
                                 self.acoutsticsData[0] = Double(sensorPayload.soundSplDb)
@@ -493,6 +495,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     
                     case .some(.blinkPacket(_)):
                         print("blink packet")
+                        print(packet)
 //                        isBlink = true
                         break
                     case .some(.surveyPacket(_)):

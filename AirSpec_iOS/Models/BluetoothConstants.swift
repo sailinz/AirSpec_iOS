@@ -61,7 +61,7 @@ enum BluetoothConstants {
     
     
     
-    static let glassesNames = ["_000000", "AirSpec_01ad6fa1", "AirSpec_01ad6d72", "AirSpec_01ad6e65", "AirSpec_01ad743c", "AirSpec_01ad6e652", "AirSpec_01ad71de", "AirSpec_01ad7855" ] /// now glasses 2 is for development, glasses 1 is for testing
+    static let glassesNames = ["_000000", "AirSpec_01ad6fa1", "AirSpec_01ad6d72", "AirSpec_01ad6e65", "AirSpec_01ad743c", "AirSpec_01ad6e652", "AirSpec_01ad71de", "AirSpec_01ad7855","AirSpec_01ad6cff" ] /// now glasses 2 is for development, glasses 1 is for testing
     
     
     /// The maximum normal temperature, above which the app displays an alert.
