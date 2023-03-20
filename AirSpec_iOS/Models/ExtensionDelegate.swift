@@ -11,9 +11,7 @@ import os.log
 import BackgroundTasks
 import UIKit
 
-
-class ExtensionDelegate: NSObject, UIApplicationDelegate, BluetoothReceiverDelegate {
-    
+class ExtensionDelegate: NSObject, UIApplicationDelegate {
     private let logger = Logger(
         subsystem: AirSpec_iOSApp.name,
         category: String(describing: ExtensionDelegate.self)
@@ -32,17 +30,9 @@ class ExtensionDelegate: NSObject, UIApplicationDelegate, BluetoothReceiverDeleg
 
 //        notificationHandler = NotificationHandler()
 
-        bluetoothReceiver = BluetoothReceiver(
-            service: BluetoothConstants.airspecServiceUUID,
-            characteristic: BluetoothConstants.airspecTXCharacteristicUUID
-        )
-        bluetoothReceiver.delegate = self
+        bluetoothReceiver = BluetoothReceiver()
+        setBtFromUserDefaults(bluetoothReceiver)
     }
-    
-//    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-////        print("Your code here")
-//        return true
-//    }
     
 //    func handle(_ backgroundTasks: Set<BGAppRefreshTask>) {
         
@@ -92,55 +82,4 @@ class ExtensionDelegate: NSObject, UIApplicationDelegate, BluetoothReceiverDeleg
         logger.info("setting background app refresh task as complete")
 //        task.setTaskCompletedWithSnapshot(false)
     }
-    
-    // MARK: BluetoothReceiverDelegate
-    
-    func didCompleteDisconnection(from peripheral: CBPeripheral, mustDisconnect: Bool) {
-        /// If the peripheral completes its disconnection and you're handling a background refresh task, complete the task.
-        if let refreshTask = currentRefreshTask {
-            completeRefreshTask(refreshTask)
-            currentRefreshTask = nil
-        } else {
-            if !mustDisconnect && bluetoothReceiver.knownDisconnectedPeripheral != nil {
-                bluetoothReceiver.connect(to: bluetoothReceiver.knownDisconnectedPeripheral!)
-            }
-            /// Clear the complication value to demonstrate disconnect/reconnect actions.
-            UserDefaults.standard.setValue(-1, forKey: BluetoothConstants.receivedDataKey)
-//                ComplicationController.updateAllActiveComplications()
-        }
-    }
-    
-    func didFailWithError(_ error: BluetoothReceiverError) {
-        /// If the `BluetoothReceiver` fails and you're handling a background refresh task, complete the task.
-        if let refreshTask = currentRefreshTask {
-            completeRefreshTask(refreshTask)
-            currentRefreshTask = nil
-        }
-    }
-    
-    func didReceiveData(_ data: Data) -> Int {
-//        guard let value = try? JSONDecoder().decode(Int.self, from: data) else {
-//            logger.error("failed to decode float from data")
-//            return -1
-//        }
-        
-        logger.info("received value from peripheral") //: \(value)
-//        UserDefaults.standard.setValue(value, forKey: BluetoothConstants.receivedDataKey)
-        
-//        ComplicationController.updateAllActiveComplications()
-        
-        /// When you're handling a background refresh task and are done interacting with the peripheral,
-        /// disconnect from it as soon as possible if not in watchOS 9 or later.
-        /// watchOS 9 adds the capability to continue scanning and to maintain connections in the background.
-//        if #unavailable(watchOS 9.0) {
-        if currentRefreshTask != nil, let peripheral = bluetoothReceiver.connectedPeripheral {
-            bluetoothReceiver.disconnect(from: peripheral, mustDisconnect: true)
-        }
-//        }
-        
-//        return value
-        return 2
-    }
 }
-
-

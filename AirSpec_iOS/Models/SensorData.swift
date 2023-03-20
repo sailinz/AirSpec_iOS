@@ -60,6 +60,12 @@ final class SensorData: ObservableObject {
     
     func updateValue(sensorValue: Double, sensorName: String){
         do {
+            #if os(iOS)
+            if !session.isWatchAppInstalled {
+                return
+            }
+            #endif
+
             try session.updateApplicationContext([sensorName: sensorValue])
         } catch {
             print(error.localizedDescription)

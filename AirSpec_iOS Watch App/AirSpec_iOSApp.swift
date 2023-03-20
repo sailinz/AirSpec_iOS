@@ -12,7 +12,7 @@ import UserNotifications
 struct AirSpec_iOSApp: App {
     static let name: String = "AirSpec Bluetooth"
     
-    init() {
+    init() {    
         RawDataViewModel.init_container()
         SurveyDataViewModel.init_container()
     }
@@ -20,7 +20,6 @@ struct AirSpec_iOSApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView(isComfyVote: true, showSurvey: true, eyeCalibration: false)
-            
         }
     }
 }

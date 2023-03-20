@@ -34,7 +34,7 @@ enum BluetoothConstants {
 
     /// An identifier for the characteristic for read data from AirSpec.
     static let airspecTXCharacteristicUUID = CBUUID(string: "0000fe81-0000-1000-8000-00805f9b34fb") /// short FE81
-    /// An identifier for the characteristic for write data from AirSpec.
+    /// An identifier for the characteristic for write data to the AirSpec.
     static let airspecRXCharacteristicUUID = CBUUID(string: "0000fe82-0000-1000-8000-00805f9b34fb")
     
     

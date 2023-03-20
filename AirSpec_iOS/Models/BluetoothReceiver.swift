@@ -9,12 +9,6 @@ import os.log
 import CoreData
 import CoreLocation
 
-protocol BluetoothReceiverDelegate: AnyObject {
-    func didReceiveData(_ message: Data) -> Int
-    func didCompleteDisconnection(from peripheral: CBPeripheral, mustDisconnect: Bool)
-    func didFailWithError(_ error: BluetoothReceiverError)
-}
-
 enum BluetoothReceiverError: Error {
     case failedToConnect
     case failedToDiscoverCharacteristics
@@ -27,27 +21,25 @@ let AUTH_TOKEN = "4129a31152b56fccfb8b39cab3637706aa5e5f4ded601c45313cd4f7170fc7
 /// A listener to subscribe to a Bluetooth LE peripheral and get characteristic updates the data to a TCP server.
 ///
 class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
-
+    enum State {
+        case connected
+        case scanning
+        case disconnectedWithPeripheral
+        case disconnectedWithoutPeripheral
+    }
+    
     private var logger = Logger(
         subsystem: AirSpec_iOSApp.name,
         category: String(describing: BluetoothReceiver.self)
     )
 
-
     /// -- BLE CONNNECTION VARIABLES
-    weak var delegate: BluetoothReceiverDelegate? = nil
     var centralManager: CBCentralManager!
-    private var serviceUUID: CBUUID!
-    private var TXcharacteristicUUID: CBUUID!
     var sendCharacteristic: CBCharacteristic!
-    @Published var GLASSNAME =  ""
-    @Published private(set) var connectedPeripheral: CBPeripheral? = nil
-    private(set) var knownDisconnectedPeripheral: CBPeripheral? = nil
-    @Published private(set) var isScanning: Bool = false
-    @Published private(set) var isFound: Bool = false
+    @Published var GLASSNAME: String?
+    @Published private(set) var peripheral: CBPeripheral? = nil
+
     var scanToAlert = false
-    var mustDisconnect = false
-    @Published var discoveredPeripherals = Set<CBPeripheral>()
 
     /// -- REAL-TIME SENSOR DATA
     @Published var thermalData = Array(repeating: -1.0, count: SensorIconConstants.sensorThermal.count)
@@ -58,7 +50,28 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     @Published var cogIntensity = 3 /// must scale to a int
     let cogLoadOffset: Double = 2
     let cogLoadMultiFactor: Double = 5
+    
+    @Published var cmDirty: Bool = false
+    
+    var state: State {
+        get {
+            if (peripheral == nil) {
+                return .disconnectedWithoutPeripheral
+            }
+            
+            let connected = centralManager.retrieveConnectedPeripherals(withServices: [BluetoothConstants.airspecServiceUUID])
+            if (connected.contains(where: {$0 == peripheral})) {
+                return .connected
+            }
 
+            if (centralManager.isScanning) {
+                return .scanning
+            }
+                        
+            return .disconnectedWithPeripheral
+        }
+    }
+    
     /// -- WATCH CONNECTIVITY
     @Published var dataToWatch = SensorData()
     @Published var isBlueGreenSurveyDone = false
@@ -79,94 +92,112 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     let updateFrequence = 60 * 6 /// seconds
 //    let batchSize = 50
 //    private var reconstructedData:[SensorPacket] = [] /// for testing only
-
     
-    
-    init(service: CBUUID, characteristic: CBUUID) {
-        
+    override init() {
         super.init()
-        self.serviceUUID = service
-        self.TXcharacteristicUUID = characteristic
         self.centralManager = CBCentralManager(delegate: self, queue: nil)
-        let user_id_int = Int(UserDefaults.standard.string(forKey: "user_id") ?? "") ?? 0
-        if( user_id_int != 0){
-            self.GLASSNAME = BluetoothConstants.glassesNames[user_id_int]
-            print("glass name (init): \(GLASSNAME)")
-        }
+    }
     
-    }
-
-    /// -- BLE connection
-    func startScanning() {
-        logger.info("scanning for new peripherals with service") // \(self.serviceUUID)
-        centralManager.scanForPeripherals(withServices: nil, options: nil)
-
-        discoveredPeripherals.removeAll()
-        isScanning = true
-    }
-
-    func stopScanning() {
-        logger.info("stopped scanning for new peripherals")
-        centralManager.stopScan()
-        isScanning = false
-    }
-
-    func connect(to peripheral: CBPeripheral) {
-        if let connectedPeripheral = connectedPeripheral {
-            disconnect(from: connectedPeripheral, mustDisconnect: true)
+    func setTargetId(_ glasses_id: String) {
+        GLASSNAME = glasses_id
+        
+        if let peripheral = peripheral {
+            centralManager.cancelPeripheralConnection(peripheral)
         }
-        print("try to connect")
-
-        logger.info("connecting to \(peripheral.name ?? "unnamed peripheral")")
-        peripheral.delegate = self
-        centralManager.connect(peripheral, options: nil)
-
+        
+        peripheral = nil
+        scan()
+    }
+    
+    func toggle() {
+        let periphs = centralManager.retrieveConnectedPeripherals(withServices: [BluetoothConstants.airspecServiceUUID])
+        
+        if centralManager.isScanning || periphs.contains(where: { $0 == peripheral }) {
+            disconnect()
+        } else {
+            start_connect()
+        }
+    }
+    
+    func invalidateId() {
+        disconnect()
+        peripheral = nil
+    }
+    
+    func start_connect() {
+        if let peripheral = peripheral {
+            centralManager.connect(peripheral)
+            return
+        }
+        
+        scan()
+    }
+    
+    func scan() {
+        logger.info("scanning for new peripherals")
+        centralManager.scanForPeripherals(withServices: [BluetoothConstants.airspecServiceUUID], options: nil)
     }
 
-    func disconnect(from peripheral: CBPeripheral, mustDisconnect: Bool) {
+    func disconnect() {
+        centralManager.stopScan()
+
+        guard let peripheral = self.peripheral else {
+            logger.warning("trying to disconnect from nonexistent peripheral")
+            return
+        }
+        
         logger.info("disconnecting from \(peripheral.name ?? "unnamed peripheral")")
-        self.mustDisconnect = mustDisconnect
         centralManager.cancelPeripheralConnection(peripheral)
     }
 
     // MARK: CBCentralManagerDelegate
-
+    
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        let state = central.state
-        logger.log("central state is: \(state.rawValue)")
-
-        if state == .poweredOn {
-            startScanning()
+        defer { cmDirty.toggle() }
+        
+        if central.state == .poweredOn {
+            start_connect()
         }
     }
 
-    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi RSSI: NSNumber ) {
-        let device = (advertisementData as NSDictionary).object(forKey: CBAdvertisementDataLocalNameKey) as? NSString
-
-        if device?.contains(GLASSNAME) == true {
-            discoveredPeripherals.insert(peripheral)
-            isFound = true
-//            print("device: \(discoveredPeripherals)")
-            peripheral.delegate = self
+    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi RSSI: NSNumber) {
+        defer { cmDirty.toggle() }
+        
+        guard let device = (advertisementData as NSDictionary).object(forKey: CBAdvertisementDataLocalNameKey) as? NSString else {
+            return
         }
+
+        guard let glassname = GLASSNAME else {
+            return
+        }
+        
+        if !device.contains(glassname) {
+            return
+        }
+        
+        centralManager.stopScan()
+        
+        logger.info("BLE connected")
+        
+        self.peripheral = peripheral
+        peripheral.delegate = self
+        
+        centralManager.connect(peripheral)
     }
 
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
+        defer { cmDirty.toggle() }
         logger.error("failed to connect to \(peripheral.name ?? "unnamed peripheral")")
     }
 
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+        defer { cmDirty.toggle() }
         logger.info("connected to \(peripheral.name ?? "unnamed peripheral")")
-        discoveredPeripherals.remove(peripheral)
-        connectedPeripheral = peripheral
-        knownDisconnectedPeripheral = nil
         peripheral.discoverServices([BluetoothConstants.airspecServiceUUID])
         
-        isFound = true
         RawDataViewModel.addMetaDataToRawData(payload: "connected to \(peripheral.name ?? "unnamed peripheral")", timestampUnix: Date(), type: 5)
         disconnectionTimer?.cancel()
         disconnectionTimer = nil
-
         
         timer = DispatchSource.makeTimerSource()
         timer?.schedule(deadline: .now() + .seconds(60), repeating: .seconds(updateFrequence))
@@ -183,9 +214,9 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     /// If the app wakes up to handle a background refresh task, the system calls this method if
     /// a peripheral disconnects when the app transitions to the background.
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+        defer { cmDirty.toggle() }
         logger.info("disconnected from \(peripheral.name ?? "unnamed peripheral")")
-        connectedPeripheral = nil
-        isFound = false
+
         RawDataViewModel.addMetaDataToRawData(payload: "disconnected from \(peripheral.name ?? "unnamed peripheral")", timestampUnix: Date(), type: 5)
         
         disconnectionTimer = DispatchSource.makeTimerSource()
@@ -198,18 +229,11 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         }
         disconnectionTimer?.resume()
         
-        
-        
-
-        /// Keep track of the last known peripheral.
-        knownDisconnectedPeripheral = peripheral
-
-        delegate?.didCompleteDisconnection(from: peripheral, mustDisconnect: self.mustDisconnect)
-        self.mustDisconnect = false
-        
         /// stop data stream to the server
         timer?.cancel()
         timer = nil
+        
+        scan()
     }
 
     // MARK: CBPeripheralDelegate
@@ -217,307 +241,288 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         if let error = error {
             logger.error("error discovering service: \(error.localizedDescription)")
-            delegate?.didFailWithError(.failedToDiscoverServices)
             return
         }
 
-        guard let service = peripheral.services?.first(where: { $0.uuid == serviceUUID }) else {
+        guard let service = peripheral.services?.first(where: { $0.uuid == BluetoothConstants.airspecServiceUUID }) else {
             logger.info("no valid services on \(peripheral.name ?? "unnamed peripheral")")
-            delegate?.didFailWithError(.failedToDiscoverServices)
             return
         }
 
         logger.info("discovered service \(service.uuid) on \(peripheral.name ?? "unnamed peripheral")")
-//        peripheral.discoverCharacteristics([TXcharacteristicUUID, ], for: service)
-        peripheral.discoverCharacteristics(nil, for: service)
+        peripheral.discoverCharacteristics([BluetoothConstants.airspecTXCharacteristicUUID, BluetoothConstants.airspecRXCharacteristicUUID], for: service)
     }
 
     func peripheral(_ peripheral: CBPeripheral, didModifyServices invalidatedServices: [CBService]) {
-        if invalidatedServices.contains(where: { $0.uuid == serviceUUID }) {
-            logger.info("\(peripheral.name ?? "unnamed peripheral") did invalidate service \(self.serviceUUID)")
-            disconnect(from: peripheral, mustDisconnect: true)
+        if !invalidatedServices.contains(where: { $0.uuid == BluetoothConstants.airspecServiceUUID }) {
+            return
         }
+
+        logger.info("\(peripheral.name ?? "unnamed peripheral") did invalidate service")
+        disconnect()
     }
 
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error? ) {
         logger.info("service UUID: \(service.uuid)")
         logger.info("total no. of characteristics: \(service.characteristics!.count)")
 
-
-        for characteristic in service.characteristics! {
-            logger.info("characteristic:  \(characteristic.uuid)")
-            if characteristic.uuid == BluetoothConstants.airspecTXCharacteristicUUID{
-                logger.info("discovered characteristic \(characteristic.uuid) on \(peripheral.name ?? "unnamed peripheral")")
-                peripheral.readValue(for: characteristic) /// Immediately read the characteristic's value.
-                /// Subscribe to the characteristic.
-                peripheral.setNotifyValue(true, for: characteristic)
-                logger.info("setNotifyValue for \(characteristic.uuid) on \(peripheral.name ?? "unnamed peripheral")")
-            } else if (characteristic.uuid == BluetoothConstants.airspecRXCharacteristicUUID) {
-                let thisCharacteristic = characteristic as CBCharacteristic
-                sendCharacteristic = thisCharacteristic
-                logger.info("found write characteristics")
-
-                /// set initial blue color and set timestamp to the latest
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
-                    self.setBlue()
-                }
-
-            }
-
+        if let txchar = service.characteristics?.first(where: { $0.uuid == BluetoothConstants.airspecTXCharacteristicUUID }) {
+            peripheral.setNotifyValue(true, for: txchar)
+            logger.info("set notify for tx characteristic")
         }
+        
+        if let rxchar = service.characteristics?.first(where: { $0.uuid == BluetoothConstants.airspecRXCharacteristicUUID }) {
+            logger.info("got rx characteristic")
 
+            sendCharacteristic = rxchar
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
+                self.setBlue()
+            }
+        }
     }
 
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        guard error == nil else {1
+        guard error == nil else {
             logger.error("\(peripheral.name ?? "unnamed peripheral") failed to update value: \(error!.localizedDescription)")
-            delegate?.didFailWithError(.failedToReceiveCharacteristicUpdate)
             return
         }
 
         guard let data = characteristic.value else {
             logger.warning("characteristic value from \(peripheral.name ?? "unnamed peripheral") is nil")
-            delegate?.didFailWithError(.failedToReceiveCharacteristicUpdate)
             return
         }
 
-        if characteristic.uuid == TXcharacteristicUUID {
-
-
-            do {
-                guard let packet = try? Airspec.decode_packet(data) else {
-                    print("failed parsing packet: \(error)")
-                    RawDataViewModel.addMetaDataToRawData(payload: "failed parsing packet: \(error) ", timestampUnix: Date(), type: 2)
-                    return
-                }
+        if characteristic.uuid != BluetoothConstants.airspecTXCharacteristicUUID {
+            return
+        }
+        do {
+            guard let packet = try? Airspec.decode_packet(data) else {
+                print("failed parsing packet: \(error)")
+                RawDataViewModel.addMetaDataToRawData(payload: "failed parsing packet: \(error) ", timestampUnix: Date(), type: 2)
+                return
+            }
 //                print(packet)
-                
-                if(dataToWatch.surveyDone){
-                    var secondsBetweenDates = Double(greenHoldTime + 12)
-                    if let prevNotificationTime = UserDefaults.standard.object(forKey: "prevNotificationTime") as? Date{
-                        secondsBetweenDates = Date().timeIntervalSince(prevNotificationTime)
-                    }
-                    
-
-                    dataToWatch.surveyDone = false
-                    notificationTimer?.cancel()
-                    notificationTimer = nil
-
-                    
-                    if(!isBlueGreenSurveyDone){
-                        blueGreenLight(isEnable: false)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
-                            self.setBlue()
-                        }
-                        
-                        RawDataViewModel.addMetaDataToRawData(payload: "Reaction time: \(secondsBetweenDates); Time now: \(Date()); PrevNotification: \(UserDefaults.standard.object(forKey: "prevNotificationTime")); survey received from watch; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
-                        
-                        
-                    }else{
-                        RawDataViewModel.addMetaDataToRawData(payload: "Survey received from watch (without blue-green transition); reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
-                    }
-  
+            
+            if(dataToWatch.surveyDone){
+                var secondsBetweenDates = Double(greenHoldTime + 12)
+                if let prevNotificationTime = UserDefaults.standard.object(forKey: "prevNotificationTime") as? Date{
+                    secondsBetweenDates = Date().timeIntervalSince(prevNotificationTime)
                 }
                 
-                if(dataToWatch.isEyeCalibrationDone){
-//                    blueGreenLight(isEnable: false)
-                    setBlue()
-//                    testLight(leftBlue: 150, leftGreen: 20, leftRed: 0, rightBlue: 150, rightGreen: 20, rightRed: 0)
-                    dataToWatch.isEyeCalibrationDone = false
-                    RawDataViewModel.addMetaDataToRawData(payload: "eye calibration started", timestampUnix: Date(), type: 2)
-                }
+
+                dataToWatch.surveyDone = false
+                notificationTimer?.cancel()
+                notificationTimer = nil
 
                 
-
-                switch packet.payload{
-                    case .some(.sgpPacket(_)):
-                        for sensorPayload in packet.sgpPacket.payload {
-                            if packet.sgpPacket.sensorID == 0 {
-                                if(sensorPayload.vocIndexValue != nil && sensorPayload.noxIndexValue != nil){
-                                    self.airQualityData[3] = Double(sensorPayload.vocIndexValue) /// voc index nose
-                                    dataToWatch.updateValue(sensorValue: self.airQualityData[3], sensorName: "vocIndexData")
-                                    self.airQualityData[4] = Double(sensorPayload.noxIndexValue) /// nox index nose
-                                    dataToWatch.updateValue(sensorValue: self.airQualityData[4], sensorName: "noxIndexData")
-                                    
-                                    try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[3].name, value: Float(self.airQualityData[3]))
-                                    try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[4].name, value: Float(self.airQualityData[4]))
-                                }
-                            }else{
-                                if(sensorPayload.vocIndexValue != nil && sensorPayload.noxIndexValue != nil){
-                                    self.airQualityData[0] = Double(sensorPayload.vocIndexValue) /// voc index nose
-                                    dataToWatch.updateValue(sensorValue: self.airQualityData[0], sensorName: "vocIndexAmbientData")
-                                    self.airQualityData[1] = Double(sensorPayload.noxIndexValue) /// nox index nose
-                                    dataToWatch.updateValue(sensorValue: self.airQualityData[1], sensorName: "noxIndexAmbientData")
-                                    
-                                    try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[0].name, value: Float(self.airQualityData[0]))
-                                    try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[1].name, value: Float(self.airQualityData[1]))
-                                }
-                            }
-                            
-                        }
-
-                    case .some(.bmePacket(_)):
-                        for sensorPayload in packet.bmePacket.payload {
-                            if(sensorPayload.sensorID == BME680_signal_id.co2Eq){
-                                self.airQualityData[2] = Double(sensorPayload.signal) /// CO2
-                                dataToWatch.updateValue(sensorValue: self.airQualityData[2], sensorName: "co2Data")
-                            }else if(sensorPayload.sensorID == BME680_signal_id.iaq){
-                                self.airQualityData[5] = Double(sensorPayload.signal) /// IAQ
-                                dataToWatch.updateValue(sensorValue: self.airQualityData[5], sensorName: "iaqData")
-                                
-                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[2].name, value: Float(self.airQualityData[2]))
-                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[5].name, value: Float(self.airQualityData[5]))
-                            }
-                        }
-
-                    case .some(.luxPacket(_)):
-                        for sensorPayload in packet.luxPacket.payload {
-                            if(sensorPayload.lux != nil){
-                                self.visualData[0] = Double(sensorPayload.lux) /// lux
-                                dataToWatch.updateValue(sensorValue: self.visualData[0], sensorName: "luxData")
-                                dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueLightIntensity")), sensorName: "minValueLightIntensity")
-                                dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueLightIntensity")), sensorName: "maxValueLightIntensity")
-                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[0].name, value: Float(self.visualData[0]))
-                            }
-                        }
-                    case .some(.shtPacket(_)):
-                        for sensorPayload in packet.shtPacket.payload {
-                            if packet.shtPacket.sensorID == 0 {
-                                if(sensorPayload.temperature != nil && sensorPayload.humidity != nil){
-                                    self.visualData[1] = Double(sensorPayload.temperature) /// temperature
-                                    dataToWatch.updateValue(sensorValue: self.visualData[1], sensorName: "temperatureData")
-                                    self.visualData[2] = Double(sensorPayload.humidity) /// humidity
-                                    dataToWatch.updateValue(sensorValue: self.visualData[2], sensorName: "humidityData")
-                                    
-                                    dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueTemp")), sensorName: "minValueTemp")
-                                    dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueTemp")), sensorName: "maxValueTemp")
-                                    
-                                    dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueHum")), sensorName: "minValueHum")
-                                    dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueHum")), sensorName: "maxValueHum")
-                                    
-                                    try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[1].name, value: Float(self.visualData[1]))
-                                    try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[2].name, value: Float(self.visualData[2]))
-                                }
-                            }else{
-                                if(sensorPayload.temperature != nil && sensorPayload.humidity != nil){
-                                    self.thermalData[0] = Double(sensorPayload.temperature) /// temperature
-                                    dataToWatch.updateValue(sensorValue: self.thermalData[0], sensorName: "temperatureAmbientData")
-                                    self.thermalData[1] = Double(sensorPayload.humidity) /// humidity
-                                    dataToWatch.updateValue(sensorValue: self.thermalData[1], sensorName: "humidityAmbientData")
-
-                                    dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueTemp")), sensorName: "minValueTemp")
-                                    dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueTemp")), sensorName: "maxValueTemp")
-
-                                    dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueHum")), sensorName: "minValueHum")
-                                    dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueHum")), sensorName: "maxValueHum")
-
-                                    try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorThermal[0].name, value: Float(self.thermalData[0]))
-                                    try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorThermal[1].name, value: Float(self.thermalData[1]))
-                                }
-                            }
-                            
-                        }
-                    case .some(.specPacket(_)):
-                        break
-                    case .some(.thermPacket(_)):
-                        var thermNoseTip: Double = 0
-                        var thermNoseBridge: Double = 0
-                        var thermTempleFront: Double = 0
-                        var thermTempleMiddle: Double = 0
-                        var thermTempleRear: Double = 0
-
-                        for sensorPayload in packet.thermPacket.payload {
-                            if(sensorPayload.descriptor == Thermopile_location.tipOfNose){
-                                thermNoseTip = Double(sensorPayload.objectTemp)
-                            }else if(sensorPayload.descriptor == Thermopile_location.noseBridge){
-                                thermNoseBridge = Double(sensorPayload.objectTemp)
-                            }else if(sensorPayload.descriptor == Thermopile_location.frontTemple){
-                                thermTempleFront = Double(sensorPayload.objectTemp)
-                            }else if(sensorPayload.descriptor == Thermopile_location.midTemple){
-                                thermTempleMiddle = Double(sensorPayload.objectTemp)
-                            }else if(sensorPayload.descriptor == Thermopile_location.rearTemple){
-                                thermTempleRear = Double(sensorPayload.objectTemp)
-                            }else{
-
-                            }
-                        }
-
-                    /// estimate cog load:  (temple - face)  (high cog load: low face temp -- https://neurosciencenews.com/stress-nasal-temperature-8579/)
-                    let thermalpileData = thermNoseTip * thermNoseBridge * thermTempleFront * thermTempleMiddle * thermTempleRear
-                    if (thermalpileData.isInfinite || thermalpileData.isNaN){
-                        print("error parsing thermopile value")
-                        print(thermNoseTip)
-                        print(thermNoseBridge)
-                        print(thermTempleFront)
-                        print(thermTempleMiddle)
-                        print(thermTempleRear)
-                    }else{
-                        
-                        if(Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - cogLoadOffset) * cogLoadMultiFactor) > 0){
-                           
-                            cogIntensity = Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - cogLoadOffset) * cogLoadMultiFactor  + 3)
-                            print("cogload baseline: \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
-                            print("cogload est: \(cogIntensity)")
-                            dataToWatch.updateValue(sensorValue: Double(cogIntensity), sensorName: "cogLoadData")
-                        }else{
-                            cogIntensity = 3
-//                            print("cogload baseline (neg): \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
-//                            print("cogload est (neg): \(Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - cogLoadOffset) * cogLoadMultiFactor  + 3))")
-                        }
-                        
-                        
+                if(!isBlueGreenSurveyDone){
+                    blueGreenLight(isEnable: false)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
+                        self.setBlue()
                     }
                     
+                    RawDataViewModel.addMetaDataToRawData(payload: "Reaction time: \(secondsBetweenDates); Time now: \(Date()); PrevNotification: \(UserDefaults.standard.object(forKey: "prevNotificationTime")); survey received from watch; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
                     
-
-                    case .some(.imuPacket(_)):
-                        print("imu")
-                        print(packet)
-                        break
-                    case .some(.micPacket(_)):
-//                        print("mic")
-//                        print(packet)
-                        break
-                    case .some(.micLevelPacket(_)):
-//                        print("micLevelPacket")
-//                        print(packet)
-                        for sensorPayload in packet.micLevelPacket.payload {
-                            if(sensorPayload.soundSplDb != nil){
-                                self.acoutsticsData[0] = Double(sensorPayload.soundSplDb)
-                                dataToWatch.updateValue(sensorValue: self.acoutsticsData[0], sensorName: "noiseData")
-                                dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueNoise")), sensorName: "minValueNoise")
-                                dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueNoise")), sensorName: "maxValueNoise")
-
-                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAcoustics[0].name, value: Float(self.acoutsticsData[0]))
-                            }
-                        }
                     
-                    case .some(.blinkPacket(_)):
-                        print("blink packet")
-                        print(packet)
-//                        isBlink = true
-                        break
-                    case .some(.surveyPacket(_)):
-                        break
-                    case .some(.metaDataPacket(_)):
-                        break
-                    case .none:
-                        print("unknown type")
-
+                }else{
+                    RawDataViewModel.addMetaDataToRawData(payload: "Survey received from watch (without blue-green transition); reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
                 }
-                
-                
-                let data = try packet.serializedData()
-                try RawDataViewModel.addRawData(record: data)
-                
-                
-
-            } catch {
-                logger.error("packet decode/send problems: \(error).")
-                RawDataViewModel.addMetaDataToRawData(payload: "packet decode/send problems: \(error).", timestampUnix: Date(), type: 2)
 
             }
+            
+            if(dataToWatch.isEyeCalibrationDone){
+//                    blueGreenLight(isEnable: false)
+                setBlue()
+//                    testLight(leftBlue: 150, leftGreen: 20, leftRed: 0, rightBlue: 150, rightGreen: 20, rightRed: 0)
+                dataToWatch.isEyeCalibrationDone = false
+                RawDataViewModel.addMetaDataToRawData(payload: "eye calibration started", timestampUnix: Date(), type: 2)
+            }
+
+            
+
+            switch packet.payload{
+                case .some(.sgpPacket(_)):
+                    for sensorPayload in packet.sgpPacket.payload {
+                        if packet.sgpPacket.sensorID == 0 {
+                            if(sensorPayload.vocIndexValue != nil && sensorPayload.noxIndexValue != nil){
+                                self.airQualityData[3] = Double(sensorPayload.vocIndexValue) /// voc index nose
+                                dataToWatch.updateValue(sensorValue: self.airQualityData[3], sensorName: "vocIndexData")
+                                self.airQualityData[4] = Double(sensorPayload.noxIndexValue) /// nox index nose
+                                dataToWatch.updateValue(sensorValue: self.airQualityData[4], sensorName: "noxIndexData")
+                                
+                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[3].name, value: Float(self.airQualityData[3]))
+                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[4].name, value: Float(self.airQualityData[4]))
+                            }
+                        }else{
+                            if(sensorPayload.vocIndexValue != nil && sensorPayload.noxIndexValue != nil){
+                                self.airQualityData[0] = Double(sensorPayload.vocIndexValue) /// voc index nose
+                                dataToWatch.updateValue(sensorValue: self.airQualityData[0], sensorName: "vocIndexAmbientData")
+                                self.airQualityData[1] = Double(sensorPayload.noxIndexValue) /// nox index nose
+                                dataToWatch.updateValue(sensorValue: self.airQualityData[1], sensorName: "noxIndexAmbientData")
+                                
+                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[0].name, value: Float(self.airQualityData[0]))
+                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[1].name, value: Float(self.airQualityData[1]))
+                            }
+                        }
+                        
+                    }
+
+                case .some(.bmePacket(_)):
+                    for sensorPayload in packet.bmePacket.payload {
+                        if(sensorPayload.sensorID == BME680_signal_id.co2Eq){
+                            self.airQualityData[2] = Double(sensorPayload.signal) /// CO2
+                            dataToWatch.updateValue(sensorValue: self.airQualityData[2], sensorName: "co2Data")
+                        }else if(sensorPayload.sensorID == BME680_signal_id.iaq){
+                            self.airQualityData[5] = Double(sensorPayload.signal) /// IAQ
+                            dataToWatch.updateValue(sensorValue: self.airQualityData[5], sensorName: "iaqData")
+                            
+                            try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[2].name, value: Float(self.airQualityData[2]))
+                            try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[5].name, value: Float(self.airQualityData[5]))
+                        }
+                    }
+
+                case .some(.luxPacket(_)):
+                    for sensorPayload in packet.luxPacket.payload {
+                        if(sensorPayload.lux != nil){
+                            self.visualData[0] = Double(sensorPayload.lux) /// lux
+                            dataToWatch.updateValue(sensorValue: self.visualData[0], sensorName: "luxData")
+                            dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueLightIntensity")), sensorName: "minValueLightIntensity")
+                            dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueLightIntensity")), sensorName: "maxValueLightIntensity")
+                            try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[0].name, value: Float(self.visualData[0]))
+                        }
+                    }
+                case .some(.shtPacket(_)):
+                    for sensorPayload in packet.shtPacket.payload {
+                        if packet.shtPacket.sensorID == 0 {
+                            if(sensorPayload.temperature != nil && sensorPayload.humidity != nil){
+                                self.visualData[1] = Double(sensorPayload.temperature) /// temperature
+                                dataToWatch.updateValue(sensorValue: self.visualData[1], sensorName: "temperatureData")
+                                self.visualData[2] = Double(sensorPayload.humidity) /// humidity
+                                dataToWatch.updateValue(sensorValue: self.visualData[2], sensorName: "humidityData")
+                                
+                                dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueTemp")), sensorName: "minValueTemp")
+                                dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueTemp")), sensorName: "maxValueTemp")
+                                
+                                dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueHum")), sensorName: "minValueHum")
+                                dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueHum")), sensorName: "maxValueHum")
+                                
+                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[1].name, value: Float(self.visualData[1]))
+                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[2].name, value: Float(self.visualData[2]))
+                            }
+                        }else{
+                            if(sensorPayload.temperature != nil && sensorPayload.humidity != nil){
+                                self.thermalData[0] = Double(sensorPayload.temperature) /// temperature
+                                dataToWatch.updateValue(sensorValue: self.thermalData[0], sensorName: "temperatureAmbientData")
+                                self.thermalData[1] = Double(sensorPayload.humidity) /// humidity
+                                dataToWatch.updateValue(sensorValue: self.thermalData[1], sensorName: "humidityAmbientData")
+
+                                dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueTemp")), sensorName: "minValueTemp")
+                                dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueTemp")), sensorName: "maxValueTemp")
+
+                                dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueHum")), sensorName: "minValueHum")
+                                dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueHum")), sensorName: "maxValueHum")
+
+                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorThermal[0].name, value: Float(self.thermalData[0]))
+                                try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorThermal[1].name, value: Float(self.thermalData[1]))
+                            }
+                        }
+                        
+                    }
+                case .some(.specPacket(_)):
+                    break
+                case .some(.thermPacket(_)):
+                    var thermNoseTip: Double = 0
+                    var thermNoseBridge: Double = 0
+                    var thermTempleFront: Double = 0
+                    var thermTempleMiddle: Double = 0
+                    var thermTempleRear: Double = 0
+
+                    for sensorPayload in packet.thermPacket.payload {
+                        if(sensorPayload.descriptor == Thermopile_location.tipOfNose){
+                            thermNoseTip = Double(sensorPayload.objectTemp)
+                        }else if(sensorPayload.descriptor == Thermopile_location.noseBridge){
+                            thermNoseBridge = Double(sensorPayload.objectTemp)
+                        }else if(sensorPayload.descriptor == Thermopile_location.frontTemple){
+                            thermTempleFront = Double(sensorPayload.objectTemp)
+                        }else if(sensorPayload.descriptor == Thermopile_location.midTemple){
+                            thermTempleMiddle = Double(sensorPayload.objectTemp)
+                        }else if(sensorPayload.descriptor == Thermopile_location.rearTemple){
+                            thermTempleRear = Double(sensorPayload.objectTemp)
+                        }else{
+
+                        }
+                    }
+
+                /// estimate cog load:  (temple - face)  (high cog load: low face temp -- https://neurosciencenews.com/stress-nasal-temperature-8579/)
+                let thermalpileData = thermNoseTip * thermNoseBridge * thermTempleFront * thermTempleMiddle * thermTempleRear
+                if (thermalpileData.isInfinite || thermalpileData.isNaN){
+                    print("error parsing thermopile value")
+                    print(thermNoseTip)
+                    print(thermNoseBridge)
+                    print(thermTempleFront)
+                    print(thermTempleMiddle)
+                    print(thermTempleRear)
+                }else{
+                    
+                    if(Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - cogLoadOffset) * cogLoadMultiFactor) > 0){
+                       
+                        cogIntensity = Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - cogLoadOffset) * cogLoadMultiFactor  + 3)
+                        print("cogload baseline: \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
+                        print("cogload est: \(cogIntensity)")
+                        dataToWatch.updateValue(sensorValue: Double(cogIntensity), sensorName: "cogLoadData")
+                    }else{
+                        cogIntensity = 3
+//                            print("cogload baseline (neg): \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
+//                            print("cogload est (neg): \(Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - cogLoadOffset) * cogLoadMultiFactor  + 3))")
+                    }
+                    
+                    
+                }
+                
+                
+
+                case .some(.imuPacket(_)):
+                    print("imu")
+                    print(packet)
+                    break
+                case .some(.micPacket(_)):
+//                        print("mic")
+//                        print(packet)
+                    break
+                case .some(.micLevelPacket(_)):
+//                        print("micLevelPacket")
+//                        print(packet)
+                    for sensorPayload in packet.micLevelPacket.payload {
+                        if(sensorPayload.soundSplDb != nil){
+                            self.acoutsticsData[0] = Double(sensorPayload.soundSplDb)
+                            dataToWatch.updateValue(sensorValue: self.acoutsticsData[0], sensorName: "noiseData")
+                            dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueNoise")), sensorName: "minValueNoise")
+                            dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueNoise")), sensorName: "maxValueNoise")
+
+                            try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAcoustics[0].name, value: Float(self.acoutsticsData[0]))
+                        }
+                    }
+                
+                case .some(.blinkPacket(_)):
+                    print("blink packet")
+                    print(packet)
+//                        isBlink = true
+                    break
+                case .some(.surveyPacket(_)):
+                    break
+                case .some(.metaDataPacket(_)):
+                    break
+                case .none:
+                    print("unknown type")
+
+            }
+            
+            let data = try packet.serializedData()
+            try RawDataViewModel.addRawData(record: data)
+        } catch {
+            logger.error("packet decode/send problems: \(error).")
+            RawDataViewModel.addMetaDataToRawData(payload: "packet decode/send problems: \(error).", timestampUnix: Date(), type: 2)
 
         }
     }
@@ -794,6 +799,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         /// blue green transition
         var blueGreenTransition = AirSpecConfigPacket()
         blueGreenTransition.header.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
+        RawDataViewModel.addMetaDataToRawData(payload: "blueGreenLight: \(blueGreenTransition.header.timestampUnix); isEnabled \(isEnable)", timestampUnix: Date(), type: 2)
 
         blueGreenTransition.blueGreenTransition.enable = isEnable /// true for enable the transition; false for turning off the high sampling rate
         blueGreenTransition.blueGreenTransition.blueMinIntensity = 60
@@ -808,7 +814,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
         do {
             let cmd = try blueGreenTransition.serializedData()
-            connectedPeripheral?.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
+            peripheral?.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
             print(cmd)
         } catch {
             //handle error
@@ -824,6 +830,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         /// single LED
         var singleLED = AirSpecConfigPacket()
         singleLED.header.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
+        RawDataViewModel.addMetaDataToRawData(payload: "setblue: \(singleLED.header.timestampUnix)", timestampUnix: Date(), type: 2)
 
         singleLED.ctrlIndivLed.left.eye.blue = 60
         singleLED.ctrlIndivLed.left.eye.green = 0
@@ -837,7 +844,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
         do {
             let cmd = try singleLED.serializedData()
-            connectedPeripheral?.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
+            peripheral?.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
             print(cmd)
         } catch {
             //handle error
@@ -852,12 +859,13 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
         /// dfu
         var dfu = AirSpecConfigPacket()
-        dfu.header.timestampUnix = UInt64(Date().timeIntervalSince1970)
+        dfu.header.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
+        RawDataViewModel.addMetaDataToRawData(payload: "dfu: \(dfu.header.timestampUnix)", timestampUnix: Date(), type: 2)
         dfu.dfuMode.enable = true
 
         do {
             let cmd = try dfu.serializedData()
-            connectedPeripheral?.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
+            peripheral?.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
             print(cmd)
         } catch {
             //handle error
@@ -886,7 +894,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //
 //        / single LED
         var singleLED = AirSpecConfigPacket()
-        singleLED.header.timestampUnix = UInt64(Date().timeIntervalSince1970)
+        singleLED.header.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
+        RawDataViewModel.addMetaDataToRawData(payload: "test single LED\(singleLED.header.timestampUnix)", timestampUnix: Date(), type: 2)
 
         singleLED.ctrlIndivLed.left.eye.blue = leftBlue
         singleLED.ctrlIndivLed.left.eye.green = leftGreen
@@ -917,7 +926,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
         do {
             let cmd = try singleLED.serializedData()
-            connectedPeripheral?.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
+            peripheral?.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
             print(cmd)
         } catch {
             //handle error
@@ -1017,7 +1026,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         print(headerBytes)
 
         let cmd = Data(headerBytes + payloadBytes)
-        connectedPeripheral?.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
+        peripheral?.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
     }
 }
 

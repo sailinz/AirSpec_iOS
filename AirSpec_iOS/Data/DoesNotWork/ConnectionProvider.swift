@@ -40,11 +40,16 @@ class ConnectionProvider: NSObject, WCSessionDelegate{
     
     func send(message: [String : Any]) -> Void{
         do {
+            #if os(iOS)
+            if !WCSession.default.isWatchAppInstalled {
+                return
+            }
+            #endif
+            
             try WCSession.default.updateApplicationContext(message)
         } catch {
             print(error.localizedDescription)
         }
-        
     }
     
     func session(_ session: WCSession, didReceiveMessage message: [String : Any]){

@@ -36,10 +36,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     var window: UIWindow?
     var session: WCSession?
     
-    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         return true
     }
+    
     //No callback in simulator -- must use device to get valid push token
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         print(deviceToken)
