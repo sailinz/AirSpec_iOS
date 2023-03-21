@@ -176,11 +176,11 @@ class RawDataViewModel {
         ctx.performAndWait {
             do {
                 let count = try ctx.count(for: request)
-
+                
                 if count >= MAX_UNSENT_COUNT {
                     let delete_old = NSFetchRequest<NSFetchRequestResult>(entityName: "RawDataEntity")
                     delete_old.fetchLimit = 100
-
+                    RawDataViewModel.addMetaDataToRawData(payload: "maximum raw records reached \(count)", timestampUnix: Date(), type: 2)
                     let del_req = NSBatchDeleteRequest(fetchRequest: delete_old)
                     try ctx.execute(del_req)
                 }

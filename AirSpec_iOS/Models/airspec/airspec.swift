@@ -24,6 +24,39 @@ public class Airspec {
     }
 
     public static func send_packets(packets: [SensorPacket], auth_token: String, endpoint: URL = Airspec.DefaultEndpoint, _ onComplete: @escaping (_ e: Error?) -> Void) throws {
+        for packet in packets{
+            switch packet.payload{
+                case .some(.sgpPacket(_)):
+                    break
+                case .some(.bmePacket(_)):
+                    print(packet)
+                case .some(.luxPacket(_)):
+                    break
+                case .some(.shtPacket(_)):
+                    break
+                case .some(.specPacket(_)):
+                    break
+                case .some(.thermPacket(_)):
+                    break
+                case .some(.imuPacket(_)):
+                    break
+                case .some(.micPacket(_)):
+                    break
+                case .some(.micLevelPacket(_)):
+                    break
+                case .some(.blinkPacket(_)):
+                    break
+                case .some(.surveyPacket(_)):
+                    break
+                case .some(.metaDataPacket(_)):
+                    break
+                case .none:
+                    print("unknown type")
+            }
+        }
+        
+        
+        
         let contents = SubmitPackets.with {
             $0.sensorData = packets
             
@@ -33,6 +66,7 @@ public class Airspec {
             }
             
         }
+        
         
         let data = try contents.serializedData()
 

@@ -46,8 +46,8 @@
             filePath = "AirSpec_iOS/Models/BluetoothReceiver.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "166"
-            endingLineNumber = "166"
+            startingLineNumber = "167"
+            endingLineNumber = "167"
             landmarkName = "centralManager(_:didDiscover:advertisementData:rssi:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -62,8 +62,8 @@
             filePath = "AirSpec_iOS/Models/BluetoothReceiver.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "159"
-            endingLineNumber = "159"
+            startingLineNumber = "160"
+            endingLineNumber = "160"
             landmarkName = "centralManagerDidUpdateState(_:)"
             landmarkType = "7">
          </BreakpointContent>

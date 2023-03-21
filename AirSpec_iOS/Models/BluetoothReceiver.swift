@@ -82,9 +82,10 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //    let locationManager = CLLocationManager()
 //    var previousLocation: CLLocation?
 //    var prevNotificationTime: Date = Date().addingTimeInterval(-60*60)
-    var randomNextNotificationGap: Int = 40 /// minute
+    var randomNextNotificationGap: Int = 30 /// minute
     var notificationTimer:DispatchSourceTimer?
-    @Published var greenHoldTime = 60 * 15 /// sec
+    let greenHoldTime = 60 * 15 /// sec
+    let maxIntensity: UInt32 = 53
     var disconnectionTimer:DispatchSourceTimer?
     
     /// -- PUSH TO THE SERVER
@@ -277,7 +278,9 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             sendCharacteristic = rxchar
 
             DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
-                self.setBlue()
+                self.setBlueInit()
+                self.setBlueInit()
+                
             }
         }
     }
@@ -369,6 +372,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     }
 
                 case .some(.bmePacket(_)):
+//                    print(packet)
                     for sensorPayload in packet.bmePacket.payload {
                         if(sensorPayload.sensorID == BME680_signal_id.co2Eq){
                             self.airQualityData[2] = Double(sensorPayload.signal) /// CO2
@@ -483,8 +487,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 
 
                 case .some(.imuPacket(_)):
-                    print("imu")
-                    print(packet)
+//                    print("imu")
+//                    print(packet)
                     break
                 case .some(.micPacket(_)):
 //                        print("mic")
@@ -505,8 +509,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     }
                 
                 case .some(.blinkPacket(_)):
-                    print("blink packet")
-                    print(packet)
+//                    print("blink packet")
+//                    print(packet)
 //                        isBlink = true
                     break
                 case .some(.surveyPacket(_)):
@@ -685,7 +689,18 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                             blueGreenLight(isEnable: true)
                             UserDefaults.standard.set(Date(), forKey: "prevNotificationTime")
                             isBlueGreenSurveyDone = false
-                            randomNextNotificationGap = Int.random(in: 15...20              )
+                            randomNextNotificationGap = Int.random(in: 30...40)
+                            notificationTimer = DispatchSource.makeTimerSource()
+                            notificationTimer?.schedule(deadline: .now() + .seconds(greenHoldTime), repeating: .never)
+                            notificationTimer?.setEventHandler {
+                                LocalNotification.setLocalNotification(title: "Did you miss the survey?",
+                                                                       subtitle: "",
+                                                                       body: "Kindly answer the survey when you notice the LED light is green",
+                                                                       when: 1)
+                                RawDataViewModel.addMetaDataToRawData(payload: "Survey missing (vibration) triggered", timestampUnix: Date(), type: 3)
+                            }
+                            notificationTimer?.resume()
+                            
                             RawDataViewModel.addMetaDataToRawData(payload: "(LED notification triggered) notification gap: \(randomNextNotificationGap), minuteDifference: \(minuteDifference), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom), flagcoefficientVariationWho: \(flagcoefficientVariationWho), flagcoefficientVariationValue: \(flagcoefficientVariationValue), flagMeanWho: \(flagMeanWho), flagMeanValue: \(flagMeanValue)", timestampUnix: Date(), type: 3)
                         }else{
                             print("(no LED notification)  notification gap: \(randomNextNotificationGap), minuteDifference: \(minuteDifference), flagcoefficientVariation: \(flagcoefficientVariation), flagMean: \(flagMean),  flagRandom: \(flagRandom)")
@@ -767,16 +782,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 
                 
                 triggerLEDNotification(tempData: data, means: means)
-                notificationTimer = DispatchSource.makeTimerSource()
-                notificationTimer?.schedule(deadline: .now() + .seconds(greenHoldTime), repeating: .never)
-                notificationTimer?.setEventHandler {
-                    LocalNotification.setLocalNotification(title: "Did you miss the survey?",
-                                                           subtitle: "",
-                                                           body: "Kindly answer the survey when you notice the LED light is green",
-                                                           when: 1)
-                    RawDataViewModel.addMetaDataToRawData(payload: "Survey missing (vibration) triggered", timestampUnix: Date(), type: 3)
-                }
-                notificationTimer?.resume()
+                
 
                 if let err = err {
                     throw err
@@ -798,15 +804,20 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
         /// blue green transition
         var blueGreenTransition = AirSpecConfigPacket()
-        blueGreenTransition.header.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
+        if isEnable{
+            blueGreenTransition.header.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
+        }else{
+            blueGreenTransition.header.timestampUnix = 0
+        }
+        
         RawDataViewModel.addMetaDataToRawData(payload: "blueGreenLight: \(blueGreenTransition.header.timestampUnix); isEnabled \(isEnable)", timestampUnix: Date(), type: 2)
 
         blueGreenTransition.blueGreenTransition.enable = isEnable /// true for enable the transition; false for turning off the high sampling rate
-        blueGreenTransition.blueGreenTransition.blueMinIntensity = 60
-        blueGreenTransition.blueGreenTransition.blueMaxIntensity = 60
-        blueGreenTransition.blueGreenTransition.greenMaxIntensity = 60
-        blueGreenTransition.blueGreenTransition.stepSize = 2
-        blueGreenTransition.blueGreenTransition.stepDurationMs = 200
+        blueGreenTransition.blueGreenTransition.blueMinIntensity = maxIntensity
+        blueGreenTransition.blueGreenTransition.blueMaxIntensity = maxIntensity
+        blueGreenTransition.blueGreenTransition.greenMaxIntensity = maxIntensity
+        blueGreenTransition.blueGreenTransition.stepSize = 1
+        blueGreenTransition.blueGreenTransition.stepDurationMs = 1000 /// 53 seconds
         blueGreenTransition.blueGreenTransition.greenHoldLengthSeconds = UInt32(greenHoldTime)
         blueGreenTransition.blueGreenTransition.transitionDelaySeconds = 10
 
@@ -824,19 +835,49 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
     }
     
+    func setBlueInit(){
+
+        print("set blue Init")
+        /// single LED
+        var singleLED = AirSpecConfigPacket()
+        singleLED.header.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
+        RawDataViewModel.addMetaDataToRawData(payload: "setblueInit: \(singleLED.header.timestampUnix)", timestampUnix: Date(), type: 2)
+
+        singleLED.ctrlIndivLed.left.eye.blue = maxIntensity
+        singleLED.ctrlIndivLed.left.eye.green = 0
+        singleLED.ctrlIndivLed.left.eye.red = 0
+
+        singleLED.ctrlIndivLed.right.eye.blue = maxIntensity
+        singleLED.ctrlIndivLed.right.eye.green = 0
+        singleLED.ctrlIndivLed.right.eye.red = 0
+
+        singleLED.payload = .ctrlIndivLed(singleLED.ctrlIndivLed)
+
+        do {
+            let cmd = try singleLED.serializedData()
+            peripheral?.writeValue(cmd, for: sendCharacteristic!, type: .withoutResponse)
+            print(cmd)
+        } catch {
+            //handle error
+            print("Fail to set blue")
+            RawDataViewModel.addMetaDataToRawData(payload: "Fail to set LED blue: \(error)", timestampUnix: Date(), type: 2)
+        }
+
+    }
+    
     func setBlue(){
 
         print("set blue")
         /// single LED
         var singleLED = AirSpecConfigPacket()
-        singleLED.header.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
+        singleLED.header.timestampUnix = 0
         RawDataViewModel.addMetaDataToRawData(payload: "setblue: \(singleLED.header.timestampUnix)", timestampUnix: Date(), type: 2)
 
-        singleLED.ctrlIndivLed.left.eye.blue = 60
+        singleLED.ctrlIndivLed.left.eye.blue = maxIntensity
         singleLED.ctrlIndivLed.left.eye.green = 0
         singleLED.ctrlIndivLed.left.eye.red = 0
 
-        singleLED.ctrlIndivLed.right.eye.blue = 60
+        singleLED.ctrlIndivLed.right.eye.blue = maxIntensity
         singleLED.ctrlIndivLed.right.eye.green = 0
         singleLED.ctrlIndivLed.right.eye.red = 0
 
@@ -963,6 +1004,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
     /// older version without the protobuf
 //    func testLight(){
+//        /// https://stackoverflow.com/questions/57985152/how-to-write-a-value-to-characteristc-for-ble-device-in-ios-swift
 //        /// https://stackoverflow.com/questions/57985152/how-to-write-a-value-to-characteristc-for-ble-device-in-ios-swift
 //        /// Bytes are read from right to left, like german language
 ////        var headerBytes: [UInt8] = [0x01, 0x00, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00] ///  first two byptes: 01 - control LED; byte 3-4: 18 - LED payload size; last 4 bytes: timestamp - to be updated below

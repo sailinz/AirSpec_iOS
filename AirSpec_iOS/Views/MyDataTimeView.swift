@@ -155,7 +155,7 @@ struct MyDataTimeView: View {
         }
         .chartXAxis {
             if isTodayData {
-                AxisMarks(values: .stride(by: .hour, count: 3)) { value in
+                AxisMarks(values: .stride(by: .hour, count: 1)) { value in
                     if let date = value.as(Date.self) {
                         let hour = Calendar.current.component(.hour, from: date)
                         switch hour {
