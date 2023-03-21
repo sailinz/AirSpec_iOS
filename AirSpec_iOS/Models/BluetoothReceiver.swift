@@ -18,6 +18,13 @@ enum BluetoothReceiverError: Error {
 
 let AUTH_TOKEN = "4129a31152b56fccfb8b39cab3637706aa5e5f4ded601c45313cd4f7170fc702"
 
+func timestamp_now() -> UInt64 {
+    let now_date = Date()
+    let now = UInt64(now_date.timeIntervalSince1970 * 1000)
+    print("setting ts now: \(now_date): \(now)")
+    return now
+}
+
 /// A listener to subscribe to a Bluetooth LE peripheral and get characteristic updates the data to a TCP server.
 ///
 class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
@@ -306,6 +313,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 return
             }
 //                print(packet)
+        
+            try RawDataViewModel.addRawData(record: data)
             
             if(dataToWatch.surveyDone){
                 var secondsBetweenDates = Double(greenHoldTime + 12)
@@ -372,7 +381,6 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     }
 
                 case .some(.bmePacket(_)):
-//                    print(packet)
                     for sensorPayload in packet.bmePacket.payload {
                         if(sensorPayload.sensorID == BME680_signal_id.co2Eq){
                             self.airQualityData[2] = Double(sensorPayload.signal) /// CO2
@@ -461,14 +469,15 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 /// estimate cog load:  (temple - face)  (high cog load: low face temp -- https://neurosciencenews.com/stress-nasal-temperature-8579/)
                 let thermalpileData = thermNoseTip * thermNoseBridge * thermTempleFront * thermTempleMiddle * thermTempleRear
                 if (thermalpileData.isInfinite || thermalpileData.isNaN){
+                    #if DEBUG_THERMOPILE
                     print("error parsing thermopile value")
                     print(thermNoseTip)
                     print(thermNoseBridge)
                     print(thermTempleFront)
                     print(thermTempleMiddle)
                     print(thermTempleRear)
+                    #endif
                 }else{
-                    
                     if(Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - cogLoadOffset) * cogLoadMultiFactor) > 0){
                        
                         cogIntensity = Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - cogLoadOffset) * cogLoadMultiFactor  + 3)
@@ -509,6 +518,15 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     }
                 
                 case .some(.blinkPacket(_)):
+                    print(packet)
+                    let packet_ts = Date(timeIntervalSince1970: Double(packet.blinkPacket.timestampUnix) / 1000)
+                    let now = Date()
+                
+                if packet_ts > now {
+                    let diff = packet_ts.distance(to: now)
+                    print("packet in future! \(diff), now: \(now), then: \(packet_ts)")
+                }
+                
 //                    print("blink packet")
 //                    print(packet)
 //                        isBlink = true
@@ -521,9 +539,6 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     print("unknown type")
 
             }
-            
-            let data = try packet.serializedData()
-            try RawDataViewModel.addRawData(record: data)
         } catch {
             logger.error("packet decode/send problems: \(error).")
             RawDataViewModel.addMetaDataToRawData(payload: "packet decode/send problems: \(error).", timestampUnix: Date(), type: 2)
@@ -535,10 +550,11 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     
     func uploadToServer() {
         DispatchQueue.global().async {
-            DispatchQueue.main.sync {
+            DispatchQueue.global().sync {
                 // https://stackoverflow.com/questions/42772907/what-does-main-sync-in-global-async-mean
                 
                 let sem = DispatchSemaphore(value: 0)
+
                 while true {
                     do {
                         let (data, onComplete) = try RawDataViewModel.fetchData()
@@ -566,7 +582,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     } catch {
                         print("cannot upload the data to the server: \(error)")
                         RawDataViewModel.addMetaDataToRawData(payload: "cannot upload the data to the server: \(error)", timestampUnix: Date(), type: 2)
-
+                        break
                     }
                 }
                 
@@ -805,7 +821,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         /// blue green transition
         var blueGreenTransition = AirSpecConfigPacket()
         if isEnable{
-            blueGreenTransition.header.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
+            blueGreenTransition.header.timestampUnix = timestamp_now()
         }else{
             blueGreenTransition.header.timestampUnix = 0
         }
@@ -840,7 +856,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         print("set blue Init")
         /// single LED
         var singleLED = AirSpecConfigPacket()
-        singleLED.header.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
+        singleLED.header.timestampUnix = timestamp_now()
         RawDataViewModel.addMetaDataToRawData(payload: "setblueInit: \(singleLED.header.timestampUnix)", timestampUnix: Date(), type: 2)
 
         singleLED.ctrlIndivLed.left.eye.blue = maxIntensity
@@ -900,7 +916,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
         /// dfu
         var dfu = AirSpecConfigPacket()
-        dfu.header.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
+        dfu.header.timestampUnix = timestamp_now()
         RawDataViewModel.addMetaDataToRawData(payload: "dfu: \(dfu.header.timestampUnix)", timestampUnix: Date(), type: 2)
         dfu.dfuMode.enable = true
 
@@ -935,7 +951,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //
 //        / single LED
         var singleLED = AirSpecConfigPacket()
-        singleLED.header.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
+        singleLED.header.timestampUnix = timestamp_now()
         RawDataViewModel.addMetaDataToRawData(payload: "test single LED\(singleLED.header.timestampUnix)", timestampUnix: Date(), type: 2)
 
         singleLED.ctrlIndivLed.left.eye.blue = leftBlue
@@ -978,7 +994,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
         /// blue green transition
 //        var blueGreenTransition = AirSpecConfigPacket()
-//        blueGreenTransition.header.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
+//        blueGreenTransition.header.timestampUnix = UInt64(Date().timeIntervalSince1970 * 1000)
 //
 //        blueGreenTransition.blueGreenTransition.enable = true
 //        blueGreenTransition.blueGreenTransition.blueMinIntensity = 0
@@ -1058,7 +1074,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //        var headerBytes: [UInt8] = [0x05, 0x00, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00]
 //        let payloadBytes: [UInt8] = [0x02, 0x01, 0x32, 0xFF, 0xFF, 0x0A, 0x0A]
 
-        let timestamp = Int(Date().timeIntervalSince1970)
+        let timestamp = Int(timestamp_now())
         let timestampArray = withUnsafeBytes(of: timestamp.bigEndian, Array.init)
 
         headerBytes[4] = timestampArray[7]

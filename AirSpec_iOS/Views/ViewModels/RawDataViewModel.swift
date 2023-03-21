@@ -23,7 +23,7 @@ class RawDataViewModel {
 
             // load core data
             var err: Error?
-
+            
             container.loadPersistentStores{(description, error) in
                 if let error = error {
                     err = error
@@ -45,7 +45,7 @@ class RawDataViewModel {
         let ctx = container.viewContext
         var ret: Int?
         var err: Error?
-
+        
         ctx.performAndWait {
             do {
                 ret = try ctx.count(for: request)
@@ -70,6 +70,8 @@ class RawDataViewModel {
         var ret: [SensorPacket] = []
         var err: Error?
         var ids: [NSManagedObjectID] = []
+
+        ctx.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
 
         ctx.performAndWait {
             do {
@@ -163,7 +165,6 @@ class RawDataViewModel {
         }
     }
 
-
     static func addRawData(record: Data) throws {
         let newRawData = RawDataEntity(context: container.viewContext)
         newRawData.record = record
@@ -189,7 +190,6 @@ class RawDataViewModel {
                 try ctx.save()
             } catch {
                 err = error
-                RawDataViewModel.addMetaDataToRawData(payload: "temp data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
             }
         }
 
