@@ -155,48 +155,58 @@ struct MyDataTimeView: View {
         }
         .chartXAxis {
             if isTodayData {
-                AxisMarks(values: .stride(by: .hour, count: 1)) { value in
-                    if let date = value.as(Date.self) {
-                        let hour = Calendar.current.component(.hour, from: date)
-                        switch hour {
-                            case 0, 12:
-                                AxisValueLabel(format: .dateTime.hour())
-                            default:
-                                AxisValueLabel(format: .dateTime.hour(.defaultDigits(amPM: .omitted)))
+                if data.count > 8{
+                    AxisMarks(values: .stride(by: .hour, count: 1)) { value in
+                        if let date = value.as(Date.self) {
+                            let hour = Calendar.current.component(.hour, from: date)
+                            switch hour {
+                                case 0, 12:
+                                    AxisValueLabel(format: .dateTime.hour())
+                                default:
+                                    AxisValueLabel(format: .dateTime.hour(.defaultDigits(amPM: .omitted)))
+                                }
                             }
-                        }
-                    
-                    AxisGridLine()
-                    AxisTick()
-                }
-            }else{
-                ///https://developer.apple.com/documentation/charts/customizing-axes-in-swift-charts?language=_2
-                AxisMarks(values: .stride(by: .hour, count: 6)) { value in
-                    if let date = value.as(Date.self) {
-                        let hour = Calendar.current.component(.hour, from: date)
-                        AxisValueLabel {
-                            VStack(alignment: .leading) {
-                                switch hour {
-                                    case 0, 12:
-                                        Text(date, format: .dateTime.hour())
-                                    default:
-                                        Text(date, format: .dateTime.hour(.defaultDigits(amPM: .omitted)))
-                                    }
-                                    if value.index == 0 || hour == 0 {
-                                        Text(date, format: .dateTime.month().day())
-                                    }
-                            }
-                        }
-
-                        if hour == 0 {
-                            AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5))
-                            AxisTick(stroke: StrokeStyle(lineWidth: 0.5))
-                        } else {
-                            AxisGridLine()
-                            AxisTick()
-                        }
+                        
+                        AxisGridLine()
+                        AxisTick()
                     }
                 }
+                else{
+                    AxisMarks(values: .automatic)
+                }
+            }else{
+                if data.count > 8{
+                    ///https://developer.apple.com/documentation/charts/customizing-axes-in-swift-charts?language=_2
+                    AxisMarks(values: .stride(by: .hour, count: 6)) { value in
+                        if let date = value.as(Date.self) {
+                            let hour = Calendar.current.component(.hour, from: date)
+                            AxisValueLabel {
+                                VStack(alignment: .leading) {
+                                    switch hour {
+                                        case 0, 12:
+                                            Text(date, format: .dateTime.hour())
+                                        default:
+                                            Text(date, format: .dateTime.hour(.defaultDigits(amPM: .omitted)))
+                                        }
+                                        if value.index == 0 || hour == 0 {
+                                            Text(date, format: .dateTime.month().day())
+                                        }
+                                }
+                            }
+
+                            if hour == 0 {
+                                AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5))
+                                AxisTick(stroke: StrokeStyle(lineWidth: 0.5))
+                            } else {
+                                AxisGridLine()
+                                AxisTick()
+                            }
+                        }
+                    }
+                }else{
+                    AxisMarks(values: .automatic)
+                }
+
             }
             
         }

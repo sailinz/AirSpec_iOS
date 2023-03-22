@@ -210,8 +210,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         timer = DispatchSource.makeTimerSource()
         timer?.schedule(deadline: .now() + .seconds(60), repeating: .seconds(updateFrequence))
         timer?.setEventHandler {
-            self.uploadToServer()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 90)  { /// wait for 3 sec
+//            self.uploadToServer()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 20)  { /// wait for 3 sec
                 self.storeLongTermData()
             }
             
@@ -500,11 +500,11 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //                    print(packet)
                     break
                 case .some(.micPacket(_)):
-//                        print("mic")
+                        print("mic")
 //                        print(packet)
                     break
                 case .some(.micLevelPacket(_)):
-//                        print("micLevelPacket")
+                        print("micLevelPacket")
 //                        print(packet)
                     for sensorPayload in packet.micLevelPacket.payload {
                         if(sensorPayload.soundSplDb != nil){
@@ -549,6 +549,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     
     
     func uploadToServer() {
+        print("try to upload to server")
         DispatchQueue.global().async {
             DispatchQueue.global().sync {
                 // https://stackoverflow.com/questions/42772907/what-does-main-sync-in-global-async-mean
@@ -581,7 +582,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                         }
                     } catch {
                         print("cannot upload the data to the server: \(error)")
-                        RawDataViewModel.addMetaDataToRawData(payload: "cannot upload the data to the server: \(error)", timestampUnix: Date(), type: 2)
+//                        RawDataViewModel.addMetaDataToRawData(payload: "cannot upload the data to the server: \(error)", timestampUnix: Date(), type: 2)
                         break
                     }
                 }
@@ -825,7 +826,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         }else{
             blueGreenTransition.header.timestampUnix = 0
         }
-        
+//        blueGreenTransition.header.timestampUnix = 0
         RawDataViewModel.addMetaDataToRawData(payload: "blueGreenLight: \(blueGreenTransition.header.timestampUnix); isEnabled \(isEnable)", timestampUnix: Date(), type: 2)
 
         blueGreenTransition.blueGreenTransition.enable = isEnable /// true for enable the transition; false for turning off the high sampling rate
@@ -916,7 +917,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
         /// dfu
         var dfu = AirSpecConfigPacket()
-        dfu.header.timestampUnix = timestamp_now()
+//        dfu.header.timestampUnix = timestamp_now()
+        dfu.header.timestampUnix = 0
         RawDataViewModel.addMetaDataToRawData(payload: "dfu: \(dfu.header.timestampUnix)", timestampUnix: Date(), type: 2)
         dfu.dfuMode.enable = true
 
@@ -951,7 +953,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //
 //        / single LED
         var singleLED = AirSpecConfigPacket()
-        singleLED.header.timestampUnix = timestamp_now()
+//        singleLED.header.timestampUnix = timestamp_now()
+        singleLED.header.timestampUnix = 0
         RawDataViewModel.addMetaDataToRawData(payload: "test single LED\(singleLED.header.timestampUnix)", timestampUnix: Date(), type: 2)
 
         singleLED.ctrlIndivLed.left.eye.blue = leftBlue

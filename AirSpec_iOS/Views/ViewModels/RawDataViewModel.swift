@@ -10,7 +10,7 @@ import CoreData
 
 class RawDataViewModel {
     static let container: NSPersistentContainer = NSPersistentContainer(name: "RawDataContainer")
-    static let MAX_UNSENT_COUNT = 4096000
+    static let MAX_UNSENT_COUNT = 409600000
 
     static let q = DispatchQueue(label: "init_rawdata")
     static var has_init = false

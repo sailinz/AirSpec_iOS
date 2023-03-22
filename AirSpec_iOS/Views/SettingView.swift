@@ -402,7 +402,7 @@ struct SettingView: View {
             }
             
             
-            
+            self.isCelsius = UserDefaults.standard.bool(forKey: "isCelcius")
             
             if UserDefaults.standard.float(forKey: "minValueTemp") == 0 {
                 UserDefaults.standard.set(SensorIconConstants.sensorThermal[0].color1Position, forKey: "minValueTemp")

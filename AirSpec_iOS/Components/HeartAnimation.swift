@@ -102,7 +102,7 @@ struct HeartAnimation: View {
                                 Image("heart_aq")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(width: 120)
+                                    .frame(width: 110)
                                     .offset(x:50,y: -15)
                                     .opacity(opacityAQ)
                                 
@@ -119,7 +119,7 @@ struct HeartAnimation: View {
                                 Image("heart_thermal")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(width: 120)
+                                    .frame(width: 110)
                                     .offset(x:-40,y: 0)
                                     .opacity(opacityT)
                             }.buttonStyle(PlainButtonStyle())
