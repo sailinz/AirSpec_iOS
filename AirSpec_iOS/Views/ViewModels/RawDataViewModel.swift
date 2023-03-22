@@ -7,13 +7,21 @@
 
 import Foundation
 import CoreData
+import os.log
 
 class RawDataViewModel {
     static let container: NSPersistentContainer = NSPersistentContainer(name: "RawDataContainer")
-    static let MAX_UNSENT_COUNT = 409600000
+    static let log_container: NSPersistentContainer = NSPersistentContainer(name: "logs")
+    static let MAX_UNSENT_COUNT = 40960 ///1 hour
+    static let DELETE_CHUNK = MAX_UNSENT_COUNT / 10
 
     static let q = DispatchQueue(label: "init_rawdata")
     static var has_init = false
+    
+    private static let logger = Logger(
+        subsystem: AirSpec_iOSApp.name,
+        category: String(describing: RawDataViewModel.self)
+    )
 
     static func init_container() {
         q.sync {
@@ -24,15 +32,17 @@ class RawDataViewModel {
             // load core data
             var err: Error?
             
-            container.loadPersistentStores{(description, error) in
-                if let error = error {
-                    err = error
-                    RawDataViewModel.addMetaDataToRawData(payload: "temp data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
+            for cont in [container, log_container] {
+                cont.loadPersistentStores{(description, error) in
+                    if let error = error {
+                        err = error
+                        RawDataViewModel.addMetaDataToRawData(payload: "temp data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
+                    }
                 }
             }
-
+            
             if let error = err {
-                print("initializing container")
+                print("initializing container: \(error)")
             } else {
                 has_init = true
             }
@@ -61,8 +71,22 @@ class RawDataViewModel {
 
         return ret!
     }
-
+    
     static func fetchData(_ n: Int = 100) throws -> ([SensorPacket], () throws -> Void) {
+        let (sensor_data, sensor_cleanup) = try fetchData(n, fromContainer: container)
+        let (log_data, log_cleanup) = try fetchData(n - sensor_data.count, fromContainer: log_container)
+        
+        return (sensor_data + log_data, {
+            try sensor_cleanup()
+            try log_cleanup()
+        })
+    }
+
+    static func fetchData(_ n: Int = 100, fromContainer container: NSPersistentContainer) throws -> ([SensorPacket], () throws -> Void) {
+        if n == 0 {
+            return ([], {})
+        }
+        
         let request = NSFetchRequest<RawDataEntity>(entityName: "RawDataEntity")
         request.fetchLimit = n
 
@@ -123,7 +147,7 @@ class RawDataViewModel {
         metaData.timestampUnix = UInt64(timestampUnix.timeIntervalSince1970) * 1000
         metaData.type = UInt32(type)
 
-        var sensorPacket = SensorPacket.with {
+        let sensorPacket = SensorPacket.with {
             $0.header = SensorPacketHeader.with {
                 $0.epoch = UInt64(NSDate().timeIntervalSince1970 * 1000)
             }
@@ -133,7 +157,7 @@ class RawDataViewModel {
 
         do {
             let metaDataBinary = try sensorPacket.serializedData()
-            try self.addRawData(record: metaDataBinary)
+            try saveData(metaDataBinary, toContainer: log_container, saveErrors: false)
             print(metaData)
         } catch {
             print("fail to append metadata:  \(error.localizedDescription)")
@@ -141,6 +165,8 @@ class RawDataViewModel {
     }
 
     static func addSurveyDataToRawData(qIndex: Int32, qChoice: String, qGroupIndex: UInt32, timestampUnix: Date){
+        logger.debug("add survey data")
+        
         var surveyData = appSurveyDataPacket()
         surveyData.payload = [appSurveyDataPayload()]
         surveyData.payload[0].qIndex = qIndex
@@ -148,7 +174,7 @@ class RawDataViewModel {
         surveyData.payload[0].qGroupIndex = qGroupIndex
         surveyData.payload[0].timestampUnix = UInt64(timestampUnix.timeIntervalSince1970) * 1000
 
-        var sensorPacket = SensorPacket.with {
+        let sensorPacket = SensorPacket.with {
             $0.header = SensorPacketHeader.with {
                 $0.epoch = UInt64(NSDate().timeIntervalSince1970 * 1000)
             }
@@ -164,8 +190,8 @@ class RawDataViewModel {
             print("Fail to append survey data to raw data:  \(error.localizedDescription)")
         }
     }
-
-    static func addRawData(record: Data) throws {
+    
+    static func saveData(_ record: Data, toContainer container: NSPersistentContainer, saveErrors: Bool) throws {
         let newRawData = RawDataEntity(context: container.viewContext)
         newRawData.record = record
 
@@ -177,11 +203,19 @@ class RawDataViewModel {
         ctx.performAndWait {
             do {
                 let count = try ctx.count(for: request)
-                
+
                 if count >= MAX_UNSENT_COUNT {
+                    let log_str = "too many stored records, cleaning up (have: \(count), max: \(MAX_UNSENT_COUNT))"
+                    
+                    logger.warning("\(log_str)")
+
                     let delete_old = NSFetchRequest<NSFetchRequestResult>(entityName: "RawDataEntity")
-                    delete_old.fetchLimit = 100
-                    RawDataViewModel.addMetaDataToRawData(payload: "maximum raw records reached \(count)", timestampUnix: Date(), type: 2)
+                    delete_old.fetchLimit = (count - MAX_UNSENT_COUNT + DELETE_CHUNK)
+                    
+                    if saveErrors {
+                        addMetaDataToRawData(payload: log_str, timestampUnix: Date(), type: 2)
+                    }
+                    
                     let del_req = NSBatchDeleteRequest(fetchRequest: delete_old)
                     try ctx.execute(del_req)
                 }
@@ -196,7 +230,10 @@ class RawDataViewModel {
         if let e = err {
             throw e
         }
+
+    }
+
+    static func addRawData(record: Data) throws {
+        return try saveData(record, toContainer: container, saveErrors: true)
     }
 }
-
-
