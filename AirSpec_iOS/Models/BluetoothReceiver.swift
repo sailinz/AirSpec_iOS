@@ -92,7 +92,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     var randomNextNotificationGap: Int = 30 /// minute
     var notificationTimer:DispatchSourceTimer?
     let greenHoldTime = 60 * 15 /// sec
-    let maxIntensity: UInt32 = 53
+    let maxIntensity: UInt32 = 9
     var disconnectionTimer:DispatchSourceTimer?
     
     /// -- PUSH TO THE SERVER
@@ -312,7 +312,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 RawDataViewModel.addMetaDataToRawData(payload: "failed parsing packet: \(error) ", timestampUnix: Date(), type: 2)
                 return
             }
-            //                print(packet)
+//            print(packet)
             
             try RawDataViewModel.addRawData(record: data)
             
@@ -390,7 +390,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 
                 let repetitions = packet.bmePacket.payload.count - timestamps.count
                 
-                print("bme: \(repetitions) repetitions; unique: \(timestamps)")
+//                print("bme: \(repetitions) repetitions; unique: \(timestamps)")
                 
                 for sensorPayload in packet.bmePacket.payload {
                     
@@ -825,7 +825,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 }
             } catch {
                 print("cannot push data to the Long Term Data Container: \(error)")
-                RawDataViewModel.addMetaDataToRawData(payload: "[App issue] cannot push data to the Long Term Data Container: \(error)", timestampUnix: Date(), type: 2)
+//                RawDataViewModel.addMetaDataToRawData(payload: "[App issue] cannot push data to the Long Term Data Container: \(error)", timestampUnix: Date(), type: 2)
             }
             
             counter += 1
@@ -852,7 +852,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         blueGreenTransition.blueGreenTransition.blueMaxIntensity = maxIntensity
         blueGreenTransition.blueGreenTransition.greenMaxIntensity = maxIntensity
         blueGreenTransition.blueGreenTransition.stepSize = 1
-        blueGreenTransition.blueGreenTransition.stepDurationMs = 1000 /// 53 seconds
+        blueGreenTransition.blueGreenTransition.stepDurationMs = 6000 /// 53 seconds
         blueGreenTransition.blueGreenTransition.greenHoldLengthSeconds = UInt32(greenHoldTime)
         blueGreenTransition.blueGreenTransition.transitionDelaySeconds = 10
         

@@ -36,7 +36,7 @@ class RawDataViewModel {
                 cont.loadPersistentStores{(description, error) in
                     if let error = error {
                         err = error
-                        RawDataViewModel.addMetaDataToRawData(payload: "temp data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
+                        RawDataViewModel.addMetaDataLogToRawData(payload: "raw data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
                     }
                 }
             }
@@ -61,7 +61,7 @@ class RawDataViewModel {
                 ret = try ctx.count(for: request)
             } catch {
                 err = error
-                RawDataViewModel.addMetaDataToRawData(payload: "temp data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
+                RawDataViewModel.addMetaDataLogToRawData(payload: "raw data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
             }
         }
 
@@ -75,6 +75,7 @@ class RawDataViewModel {
     static func fetchData(_ n: Int = 100) throws -> ([SensorPacket], () throws -> Void) {
         let (sensor_data, sensor_cleanup) = try fetchData(n, fromContainer: container)
         let (log_data, log_cleanup) = try fetchData(n - sensor_data.count, fromContainer: log_container)
+//        logger.info("log container count: \(log_data.count)")
         
         return (sensor_data + log_data, {
             try sensor_cleanup()
@@ -109,7 +110,7 @@ class RawDataViewModel {
                 try ctx.save()
             } catch {
                 err = error
-                RawDataViewModel.addMetaDataToRawData(payload: "temp data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
+                RawDataViewModel.addMetaDataLogToRawData(payload: "temp data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
             }
         }
 
@@ -131,7 +132,7 @@ class RawDataViewModel {
                     try ctx.save()
                 } catch {
                     err = error
-                    RawDataViewModel.addMetaDataToRawData(payload: "temp data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
+                    RawDataViewModel.addMetaDataLogToRawData(payload: "Raw data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
                 }
             }
 
@@ -140,8 +141,35 @@ class RawDataViewModel {
             }
         })
     }
-
+    
     static func addMetaDataToRawData(payload: String, timestampUnix: Date, type: Int32){
+        logger.debug("add user/sensor metadata")
+        
+        var surveyData = appSurveyDataPacket()
+        var metaData = appMetaDataPacket()
+        metaData.payload = payload
+        metaData.timestampUnix = UInt64(timestampUnix.timeIntervalSince1970) * 1000
+        metaData.type = UInt32(type)
+
+        let sensorPacket = SensorPacket.with {
+            $0.header = SensorPacketHeader.with {
+                $0.epoch = UInt64(NSDate().timeIntervalSince1970 * 1000)
+            }
+            $0.metaDataPacket = metaData
+        }
+
+
+        do {
+            let metaDataBinary = try sensorPacket.serializedData()
+            try self.addRawData(record: metaDataBinary)
+        } catch {
+            print("fail to append user/sensor metadata:  \(error.localizedDescription)")
+        }
+    }
+
+
+    static func addMetaDataLogToRawData(payload: String, timestampUnix: Date, type: Int32){
+        logger.debug("add core data raw data metadata")
         var metaData = appMetaDataPacket()
         metaData.payload = payload
         metaData.timestampUnix = UInt64(timestampUnix.timeIntervalSince1970) * 1000
@@ -158,9 +186,8 @@ class RawDataViewModel {
         do {
             let metaDataBinary = try sensorPacket.serializedData()
             try saveData(metaDataBinary, toContainer: log_container, saveErrors: false)
-            print(metaData)
         } catch {
-            print("fail to append metadata:  \(error.localizedDescription)")
+            print("fail to append core data raw data metadata:  \(error.localizedDescription)")
         }
     }
 
@@ -213,7 +240,7 @@ class RawDataViewModel {
                     delete_old.fetchLimit = (count - MAX_UNSENT_COUNT + DELETE_CHUNK)
                     
                     if saveErrors {
-                        addMetaDataToRawData(payload: log_str, timestampUnix: Date(), type: 2)
+                        addMetaDataLogToRawData(payload: log_str, timestampUnix: Date(), type: 2)
                     }
                     
                     let del_req = NSBatchDeleteRequest(fetchRequest: delete_old)
