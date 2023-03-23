@@ -143,7 +143,7 @@ class RawDataViewModel {
     }
     
     static func addMetaDataToRawData(payload: String, timestampUnix: Date, type: Int32){
-        logger.debug("add user/sensor metadata")
+//        logger.debug("add user/sensor metadata")
         
         var surveyData = appSurveyDataPacket()
         var metaData = appMetaDataPacket()
@@ -169,7 +169,7 @@ class RawDataViewModel {
 
 
     static func addMetaDataLogToRawData(payload: String, timestampUnix: Date, type: Int32){
-        logger.debug("add core data raw data metadata")
+//        logger.debug("add core data raw data metadata")
         var metaData = appMetaDataPacket()
         metaData.payload = payload
         metaData.timestampUnix = UInt64(timestampUnix.timeIntervalSince1970) * 1000
@@ -192,7 +192,7 @@ class RawDataViewModel {
     }
 
     static func addSurveyDataToRawData(qIndex: Int32, qChoice: String, qGroupIndex: UInt32, timestampUnix: Date){
-        logger.debug("add survey data")
+//        logger.debug("add survey data")
         
         var surveyData = appSurveyDataPacket()
         surveyData.payload = [appSurveyDataPayload()]

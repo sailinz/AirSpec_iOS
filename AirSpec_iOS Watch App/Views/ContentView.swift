@@ -29,6 +29,8 @@ struct ContentView: View {
                         eyeCalibration = false
                         print("active")
                         print(UserDefaults.standard.string(forKey: "user_id"))
+                        
+                        
                     }
                 }
                 .onDisappear {
@@ -38,19 +40,23 @@ struct ContentView: View {
                         showSurvey = true
                         eyeCalibration = false
                         print("go to the background")
+                        
                     }
                 }
                 .onChange(of: scenePhase) { newPhase in
                     
                     if newPhase == .inactive {
                         print("Inactive")
+                        RawDataViewModel.addMetaDataToRawData(payload: "watch inactive", timestampUnix: Date(), type: 1)
                     } else if newPhase == .active {
                         print("Active")
+                        RawDataViewModel.addMetaDataToRawData(payload: "watch active", timestampUnix: Date(), type: 1)
                         isComfyVote = true
                         showSurvey = true
                         eyeCalibration = false
                     } else if newPhase == .background {
                         print("Background")
+                        RawDataViewModel.addMetaDataToRawData(payload: "watch background", timestampUnix: Date(), type: 1)
                         isComfyVote = true
                         showSurvey = true
                         eyeCalibration = false
