@@ -16,7 +16,7 @@ struct ContentView: View {
 //    let secondAppPath = "cozie://"
     
     @State private var feedbackButton = false
-    
+    @Environment(\.scenePhase) var scenePhase
     
     var body: some View {
         ZStack(alignment: .top){
@@ -93,6 +93,20 @@ struct ContentView: View {
             if feedbackButton{
                 SelfLoggingView(show: $feedbackButton).environmentObject(delegate.bluetoothReceiver)
             }
+        }
+        .onChange(of: scenePhase) { newPhase in
+            
+            if newPhase == .inactive {
+                print("Inactive")
+                RawDataViewModel.addMetaDataToRawData(payload: "phone inactive", timestampUnix: Date(), type: 1)
+            } else if newPhase == .active {
+                print("Active")
+                RawDataViewModel.addMetaDataToRawData(payload: "phone active", timestampUnix: Date(), type: 1)
+            } else if newPhase == .background {
+                print("Background")
+                RawDataViewModel.addMetaDataToRawData(payload: "phone background", timestampUnix: Date(), type: 1)
+            }
+            
         }
         
     }
