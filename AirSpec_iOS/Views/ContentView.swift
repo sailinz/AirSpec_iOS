@@ -17,6 +17,8 @@ struct ContentView: View {
     
     @State private var feedbackButton = false
     @Environment(\.scenePhase) var scenePhase
+    private var timer: DispatchSourceTimer? = DispatchSource.makeTimerSource()
+    let updateFrequence = 60 * 1 /// seconds
     
     var body: some View {
         ZStack(alignment: .top){
@@ -35,7 +37,6 @@ struct ContentView: View {
                     .tabItem{
                         Label("Settings", systemImage: "gearshape.circle")
                     }
-        
 
             }
 //            .blur(radius: isSurvey ? 20 : 0)
@@ -94,6 +95,26 @@ struct ContentView: View {
                 SelfLoggingView(show: $feedbackButton).environmentObject(delegate.bluetoothReceiver)
             }
         }
+        .onAppear{
+            timer?.schedule(deadline: .now() + .seconds(5), repeating: .seconds(updateFrequence))
+            timer?.setEventHandler {
+//                self.isUploadToServer = true
+                DispatchQueue.global().async {
+                    uploadToServer()
+                }
+                
+    //            self.countUpdateFrequency = self.countUpdateFrequency + 1
+    //            if self.countUpdateFrequency == 5 {
+    //                self.countUpdateFrequency = 0
+    //                DispatchQueue.main.asyncAfter(deadline: .now() + 20)  { /// wait for 3 sec
+    //                    self.storeLongTermData()
+    //                }
+    //            }
+                
+                
+            }
+            timer?.resume()
+        }
         .onChange(of: scenePhase) { newPhase in
             
             if newPhase == .inactive {
@@ -110,6 +131,62 @@ struct ContentView: View {
         }
         
     }
+    
+    func uploadToServer() {
+        print("try to upload to server")
+        DispatchQueue.global().async {
+            DispatchQueue.global().sync {
+                // https://stackoverflow.com/questions/42772907/what-does-main-sync-in-global-async-mean
+                
+                let sem = DispatchSemaphore(value: 0)
+                
+                while true {
+                    do {
+                        let (data, onComplete) = try RawDataViewModel.fetchData()
+                        if data.isEmpty {
+//                            sem.signal()
+//                            self.storeLongTermData()
+//                            sem.wait()
+                            print("sent all packets")
+                            
+                            RawDataViewModel.addMetaDataToRawData(payload: "Sent all packets", timestampUnix: Date(), type: 7)
+                            try onComplete()
+//                            self.isUploadToServer = false
+//                            self.migrateFromTempRawToRaw()
+                            
+                            
+                            
+                            return
+                        }
+                        
+                        var err: Error?
+                        
+                        try Airspec.send_packets(packets: data, auth_token: AUTH_TOKEN) { error in
+                            err = error
+                            sem.signal()
+                        }
+                        
+                        sem.wait()
+                        
+                        if let err = err {
+                            throw err
+                        } else {
+                            try onComplete()
+                        }
+                    } catch {
+                        print("cannot upload the data to the server: \(error)")
+                        //                        RawDataViewModel.addMetaDataToRawData(payload: "cannot upload the data to the server: \(error)", timestampUnix: Date(), type: 2)
+                        break
+                    }
+                }
+                
+            }
+        }
+    }
+    
+    
+    
+    
         
 }
 

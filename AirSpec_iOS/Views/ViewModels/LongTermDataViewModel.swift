@@ -9,7 +9,7 @@ import CoreData
 
 class LongTermDataViewModel {
     static let container: NSPersistentContainer = NSPersistentContainer(name: "LongTermDataContainer")
-    static let MAX_UNSENT_COUNT = 40960000
+    static let MAX_UNSENT_COUNT = 40960
     
     static let q = DispatchQueue(label: "init_LongTermData")
     static var has_init = false

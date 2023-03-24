@@ -145,7 +145,6 @@ class RawDataViewModel {
     static func addMetaDataToRawData(payload: String, timestampUnix: Date, type: Int32){
 //        logger.debug("add user/sensor metadata")
         
-        var surveyData = appSurveyDataPacket()
         var metaData = appMetaDataPacket()
         metaData.payload = payload
         metaData.timestampUnix = UInt64(timestampUnix.timeIntervalSince1970) * 1000

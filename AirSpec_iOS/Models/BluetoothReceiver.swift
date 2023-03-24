@@ -69,6 +69,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     var specPacketID: Int?
     var thermPacketID: Int?
     
+    var isUploadToServer = false
+    
     var state: State {
         get {
             if (peripheral == nil) {
@@ -105,10 +107,10 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     var disconnectionTimer:DispatchSourceTimer?
     
     /// -- PUSH TO THE SERVER
-    private var timer: DispatchSourceTimer?
+//    private var timer: DispatchSourceTimer?
     let updateFrequence = 60 * 1 /// seconds
     var countUpdateFrequency = 0 
-    
+    let queue = DispatchQueue(label: "com.example.bluetoothQueue")
     
     override init() {
         super.init()
@@ -216,21 +218,25 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         disconnectionTimer?.cancel()
         disconnectionTimer = nil
         
-        timer = DispatchSource.makeTimerSource()
-        timer?.schedule(deadline: .now() + .seconds(5), repeating: .seconds(updateFrequence))
-        timer?.setEventHandler {
-            self.uploadToServer()
-            self.countUpdateFrequency = self.countUpdateFrequency + 1
-            if self.countUpdateFrequency == 5 {
-                self.countUpdateFrequency = 0
-                DispatchQueue.main.asyncAfter(deadline: .now() + 20)  { /// wait for 3 sec
-                    self.storeLongTermData()
-                }
-            }
-            
-            
-        }
-        timer?.resume()
+//        timer = DispatchSource.makeTimerSource()
+//        timer?.schedule(deadline: .now() + .seconds(5), repeating: .seconds(updateFrequence))
+//        timer?.setEventHandler {
+//            self.isUploadToServer = true
+//            DispatchQueue.global().async {
+////                self.uploadToServer()
+//            }
+//
+////            self.countUpdateFrequency = self.countUpdateFrequency + 1
+////            if self.countUpdateFrequency == 5 {
+////                self.countUpdateFrequency = 0
+////                DispatchQueue.main.asyncAfter(deadline: .now() + 20)  { /// wait for 3 sec
+////                    self.storeLongTermData()
+////                }
+////            }
+//
+//
+//        }
+//        timer?.resume()
     }
     
     /// If the app wakes up to handle a background refresh task, the system calls this method if
@@ -252,8 +258,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         disconnectionTimer?.resume()
         
         /// stop data stream to the server
-        timer?.cancel()
-        timer = nil
+//        timer?.cancel()
+//        timer = nil
         
         scan()
     }
@@ -326,7 +332,9 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 RawDataViewModel.addMetaDataToRawData(payload: "failed parsing packet: \(error) ", timestampUnix: Date(), type: 2)
                 return
             }
-            print(packet)
+//            print(packet)
+            
+            /// directly send
 //            do {
 //                var err: Error?
 //
@@ -341,7 +349,23 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //                RawDataViewModel.addMetaDataToRawData(payload: "cannot upload the data to the server: \(error)", timestampUnix: Date(), type: 2)
 //            }
             
-            try RawDataViewModel.addRawData(record: data)
+            /// store to tempdata during the thread
+//            if(isUploadToServer){
+//                try TempRawDataViewModel.addTempRawData(record: data)
+//            }else{
+//                try RawDataViewModel.addRawData(record: data)
+//            }
+            
+            /// store to raw data
+            DispatchQueue.main.async {
+                do {
+                    try RawDataViewModel.addRawData(record: data)
+                } catch {
+                    print("Error adding raw data: \(error)")
+                    // Handle the error here
+                }
+            }
+           
             
             if(dataToWatch.surveyDone){
                 var secondsBetweenDates = Double(greenHoldTime + 12)
@@ -452,7 +476,15 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 })
                 
                 let repetitions = packet.bmePacket.payload.count - timestamps.count
-                RawDataViewModel.addMetaDataToRawData(payload: "bme: packet index: \(packet.bmePacket.packetIndex); \(repetitions) repetitions; unique: \(timestamps); ", timestampUnix: Date(), type: 2)
+                
+                if(isUploadToServer){
+                    TempRawDataViewModel.addMetaDataToRawData(payload: "bme: packet index: \(packet.bmePacket.packetIndex); \(repetitions) repetitions; unique: \(timestamps) ", timestampUnix: Date(), type: 2)
+                }else{
+                    RawDataViewModel.addMetaDataToRawData(payload: "bme: packet index: \(packet.bmePacket.packetIndex); \(repetitions) repetitions; unique: \(timestamps) ", timestampUnix: Date(), type: 2)
+                }
+                
+                RawDataViewModel.addMetaDataToRawData(payload: "bme: packet index: \(packet.bmePacket.packetIndex); \(repetitions) repetitions; unique: \(timestamps) ", timestampUnix: Date(), type: 2)
+               
                 
 //                print("bme: \(repetitions) repetitions; unique: \(timestamps)")
                 
@@ -675,8 +707,10 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     
     
     
-    func uploadToServer() {
-        print("try to upload to server")
+    
+    
+    func migrateFromTempRawToRaw() {
+        print("try migrate raw data from temp raw to raw coredata that saved during the upload to server period")
         DispatchQueue.global().async {
             DispatchQueue.global().sync {
                 // https://stackoverflow.com/questions/42772907/what-does-main-sync-in-global-async-mean
@@ -685,20 +719,15 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 
                 while true {
                     do {
-                        let (data, onComplete) = try RawDataViewModel.fetchData()
+                        let (data, onComplete) = try TempRawDataViewModel.fetchData()
                         if data.isEmpty {
-                            print("sent all packets")
-                            RawDataViewModel.addMetaDataToRawData(payload: "Sent all packets", timestampUnix: Date(), type: 7)
+                            print("migrate all packets")
+                            RawDataViewModel.addMetaDataToRawData(payload: "migrate all packets", timestampUnix: Date(), type: 7)
                             try onComplete()
                             return
                         }
                         
                         var err: Error?
-                        
-                        try Airspec.send_packets(packets: data, auth_token: AUTH_TOKEN) { error in
-                            err = error
-                            sem.signal()
-                        }
                         
                         sem.wait()
                         
@@ -708,8 +737,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                             try onComplete()
                         }
                     } catch {
-                        print("cannot upload the data to the server: \(error)")
-                        //                        RawDataViewModel.addMetaDataToRawData(payload: "cannot upload the data to the server: \(error)", timestampUnix: Date(), type: 2)
+                        print("cannot migrate the data: \(error)")
                         break
                     }
                 }

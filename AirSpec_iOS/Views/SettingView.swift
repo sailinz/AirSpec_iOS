@@ -95,7 +95,8 @@ struct SettingView: View {
                             }) {
                                 Text(receiver.GLASSNAME == nil ? "AirSpec" : receiver.GLASSNAME!)
                                     .font(.system(.subheadline))
-                                    .foregroundColor(.black)
+                                    .foregroundColor(.white)
+                                    .colorInvert()
                             }
                             
 //                            Image(systemName: receiver.state != .disconnectedWithoutPeripheral ? "checkmark.circle.fill" : "x.circle.fill")

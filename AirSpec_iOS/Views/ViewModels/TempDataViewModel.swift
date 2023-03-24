@@ -9,7 +9,7 @@ import CoreData
 
 class TempDataViewModel {
     static let container: NSPersistentContainer = NSPersistentContainer(name: "TempDataContainer")
-    static let MAX_UNSENT_COUNT = 4096000
+    static let MAX_UNSENT_COUNT = 40960
     
     static let q = DispatchQueue(label: "init_TempData")
     static var has_init = false
