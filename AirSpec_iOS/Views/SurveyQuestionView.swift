@@ -32,6 +32,7 @@ struct SurveyQuestionView: View {
 //    @State var backPressed: Bool = false
     
     @Binding var showSurvey: Bool
+    @Environment(\.colorScheme) var colorScheme
     
     
 //    let userID = UserDefaults.standard.double(forKey: "user_id")
@@ -92,7 +93,7 @@ struct SurveyQuestionView: View {
                             .colorMultiply(.pink.opacity(0.7))
                             .frame(maxWidth: 20, alignment: .leading)
                         Text(option)
-                            .foregroundColor(.black)
+                            .foregroundColor(colorScheme == .light ? .black: .white)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }

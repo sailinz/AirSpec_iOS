@@ -75,6 +75,7 @@ struct MyDataTimeView: View {
                                 .frame(width:26, height:26)
                                 .foregroundColor(.white)
                             Image(systemName: isTodayData ? "clock.arrow.circlepath" : "calendar")
+                                .foregroundColor(.pink)
                         }
                         .shadow(color: .black.opacity(0.14), radius: 4, x: 0, y: 2)
                         .offset(x:isTodayData ? 18 : -18)

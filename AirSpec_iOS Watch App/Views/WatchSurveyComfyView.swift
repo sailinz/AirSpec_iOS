@@ -30,6 +30,7 @@ struct WatchSurveyComfyView: View {
                         Spacer()
                             .frame(height: 30)
                         Text("How are you feeling now?")
+                            .multilineTextAlignment(.center)
                         Spacer()
                             .frame(height: 10)
                         HStack{

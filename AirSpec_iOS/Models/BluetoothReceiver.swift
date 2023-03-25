@@ -107,10 +107,10 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     var disconnectionTimer:DispatchSourceTimer?
     
     /// -- PUSH TO THE SERVER
-//    private var timer: DispatchSourceTimer?
+    private var timer: DispatchSourceTimer?
     let updateFrequence = 60 * 1 /// seconds
     var countUpdateFrequency = 0 
-    let queue = DispatchQueue(label: "com.example.bluetoothQueue")
+//    let queue = DispatchQueue(label: "com.example.bluetoothQueue")
     
     override init() {
         super.init()
@@ -218,25 +218,25 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         disconnectionTimer?.cancel()
         disconnectionTimer = nil
         
-//        timer = DispatchSource.makeTimerSource()
-//        timer?.schedule(deadline: .now() + .seconds(5), repeating: .seconds(updateFrequence))
-//        timer?.setEventHandler {
-//            self.isUploadToServer = true
-//            DispatchQueue.global().async {
-////                self.uploadToServer()
-//            }
-//
-////            self.countUpdateFrequency = self.countUpdateFrequency + 1
-////            if self.countUpdateFrequency == 5 {
-////                self.countUpdateFrequency = 0
-////                DispatchQueue.main.asyncAfter(deadline: .now() + 20)  { /// wait for 3 sec
-////                    self.storeLongTermData()
-////                }
-////            }
-//
-//
-//        }
-//        timer?.resume()
+        timer = DispatchSource.makeTimerSource()
+        timer?.schedule(deadline: .now() + .seconds(5), repeating: .seconds(updateFrequence))
+        timer?.setEventHandler {
+            self.isUploadToServer = true
+            DispatchQueue.global().async {
+                self.uploadToServer()
+            }
+            
+            self.countUpdateFrequency = self.countUpdateFrequency + 1
+            if self.countUpdateFrequency == 5 {
+                self.countUpdateFrequency = 0
+                DispatchQueue.main.asyncAfter(deadline: .now() + 20)  { /// wait for 3 sec
+                    self.storeLongTermData()
+                }
+            }
+            
+            
+        }
+        timer?.resume()
     }
     
     /// If the app wakes up to handle a background refresh task, the system calls this method if
@@ -258,8 +258,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         disconnectionTimer?.resume()
         
         /// stop data stream to the server
-//        timer?.cancel()
-//        timer = nil
+        timer?.cancel()
+        timer = nil
         
         scan()
     }
@@ -707,7 +707,57 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     
     
     
-    
+    func uploadToServer() {
+        print("try to upload to server")
+        DispatchQueue.global().async {
+            DispatchQueue.global().sync {
+                // https://stackoverflow.com/questions/42772907/what-does-main-sync-in-global-async-mean
+                
+                let sem = DispatchSemaphore(value: 0)
+                
+                while true {
+                    do {
+                        let (data, onComplete) = try RawDataViewModel.fetchData()
+                        if data.isEmpty {
+//                            sem.signal()
+//                            self.storeLongTermData()
+//                            sem.wait()
+                            print("sent all packets")
+                            
+                            RawDataViewModel.addMetaDataToRawData(payload: "Sent all packets", timestampUnix: Date(), type: 7)
+                            try onComplete()
+//                            self.isUploadToServer = false
+//                            self.migrateFromTempRawToRaw()
+                            
+                            
+                            
+                            return
+                        }
+                        
+                        var err: Error?
+                        
+                        try Airspec.send_packets(packets: data, auth_token: AUTH_TOKEN) { error in
+                            err = error
+                            sem.signal()
+                        }
+                        
+                        sem.wait()
+                        
+                        if let err = err {
+                            throw err
+                        } else {
+                            try onComplete()
+                        }
+                    } catch {
+                        print("cannot upload the data to the server: \(error)")
+                        //                        RawDataViewModel.addMetaDataToRawData(payload: "cannot upload the data to the server: \(error)", timestampUnix: Date(), type: 2)
+                        break
+                    }
+                }
+                
+            }
+        }
+    }
     
     func migrateFromTempRawToRaw() {
         print("try migrate raw data from temp raw to raw coredata that saved during the upload to server period")
@@ -735,6 +785,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                             throw err
                         } else {
                             try onComplete()
+                            sem.signal()
                         }
                     } catch {
                         print("cannot migrate the data: \(error)")
@@ -900,77 +951,86 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     
     /// storeLongTermData
     func storeLongTermData() {
-        logger.info("storing long term data")
-        
-        var counter = 0
-        while true {
-            do {
-                let (data, onComplete) = try TempDataViewModel.fetchData()
-                if data.isEmpty {
-                    print("no new data")
-                    if counter == 0{
-                        LocalNotification.setLocalNotification(title: "No Sensor data",
-                                                               subtitle: "Please check glasses status",
-                                                               body: "Open AirSpec App on phone, reboot the glasses if needed.",
-                                                               when: 1) /// now
+        DispatchQueue.global().async {
+            DispatchQueue.global().sync {
+                self.logger.info("storing long term data")
+                
+                let sem = DispatchSemaphore(value: 0)
+                
+                var counter = 0
+                while true {
+                    do {
+                        let (data, onComplete) = try TempDataViewModel.fetchData()
+                        if data.isEmpty {
+                            print("no new data")
+                            if counter == 0{
+                                LocalNotification.setLocalNotification(title: "No Sensor data",
+                                                                       subtitle: "Please check glasses status",
+                                                                       body: "Open AirSpec App on phone, reboot the glasses if needed.",
+                                                                       when: 1) /// now
+                            }
+                            
+                            RawDataViewModel.addMetaDataToRawData(payload: "Glasses status check notification (vibration) triggered", timestampUnix: Date(), type: 4)
+                            try onComplete()
+                            return
+                        }
+                        
+                        var err: Error?
+                        
+                        /// calculate means (timestamp: Date, sensor: String, value: Float)
+                        var sumDict: [String: (Float, Date, Int)] = [:]
+                        /// Iterate through the array and update the sum and count for each group
+                        data.forEach { item in
+                            let key = item.1 /// sensor name
+                            let value1 = item.2 /// sensor value
+                            let value2 = item.0 /// timestamp
+                            if let (sum1, sum2, count) = sumDict[key] {
+                                sumDict[key] = (sum1 + value1, value2, count + 1)
+                            } else {
+                                sumDict[key] = (value1, value2, 1)
+                            }
+                        }
+                        
+                        /// Calculate the mean for each group
+                        let means = sumDict.mapValues { (sum1, datetime, count) in
+                            (sum1 / Float(count), datetime)
+                        }
+                        
+                        print(means)
+                        ///  means format ["iaq": (61.812943, 1.6771994e+09), "co2": (592.4955, 1.6771994e+09), "noxIndex": (1.0, 1.6771994e+09), "humidity": (17.783474, 1.6771994e+09), "temperature": (27.817734, 1.6771994e+09), "lux": (58.24, 1.677199e+09), "vocIndex": (104.5, 1.6771994e+09)]
+                        
+                        for (sensor, (mean1, datetime)) in means {
+                            let timestamp = datetime
+                            let value = mean1
+                            // Call your function here with the timestamp, sensor, and value
+                            try LongTermDataViewModel.addLongTermData(timestamp: timestamp, sensor: sensor, value: value)
+                            
+                            
+                        }
+
+                        try RawDataViewModel.addMetaDataToRawData(payload: "Long term data length: \(LongTermDataViewModel.count())", timestampUnix: Date(), type: 7)
+                        
+                        sem.signal()
+                        self.triggerLEDNotification(tempData: data, means: means)
+                        
+                        
+                        sem.wait()
+                        
+                        if let err = err {
+                            throw err
+                        } else {
+                            try onComplete()
+                        }
+                    } catch {
+                        print("cannot push data to the Long Term Data Container: \(error)")
+        //                RawDataViewModel.addMetaDataToRawData(payload: "[App issue] cannot push data to the Long Term Data Container: \(error)", timestampUnix: Date(), type: 2)
                     }
                     
-                    RawDataViewModel.addMetaDataToRawData(payload: "Glasses status check notification (vibration) triggered", timestampUnix: Date(), type: 4)
-                    try onComplete()
-                    return
+                    counter += 1
                 }
-                
-                var err: Error?
-                
-                /// calculate means (timestamp: Date, sensor: String, value: Float)
-                var sumDict: [String: (Float, Date, Int)] = [:]
-                /// Iterate through the array and update the sum and count for each group
-                data.forEach { item in
-                    let key = item.1 /// sensor name
-                    let value1 = item.2 /// sensor value
-                    let value2 = item.0 /// timestamp
-                    if let (sum1, sum2, count) = sumDict[key] {
-                        sumDict[key] = (sum1 + value1, value2, count + 1)
-                    } else {
-                        sumDict[key] = (value1, value2, 1)
-                    }
-                }
-                
-                /// Calculate the mean for each group
-                let means = sumDict.mapValues { (sum1, datetime, count) in
-                    (sum1 / Float(count), datetime)
-                }
-                
-                print(means)
-                ///  means format ["iaq": (61.812943, 1.6771994e+09), "co2": (592.4955, 1.6771994e+09), "noxIndex": (1.0, 1.6771994e+09), "humidity": (17.783474, 1.6771994e+09), "temperature": (27.817734, 1.6771994e+09), "lux": (58.24, 1.677199e+09), "vocIndex": (104.5, 1.6771994e+09)]
-                
-                for (sensor, (mean1, datetime)) in means {
-                    let timestamp = datetime
-                    let value = mean1
-                    // Call your function here with the timestamp, sensor, and value
-                    try LongTermDataViewModel.addLongTermData(timestamp: timestamp, sensor: sensor, value: value)
-                    
-                }
-                //                print("long term data length:")
-                //                print(try LongTermDataViewModel.count())
-                try RawDataViewModel.addMetaDataToRawData(payload: "Long term data length: \(LongTermDataViewModel.count())", timestampUnix: Date(), type: 7)
-                
-                
-                triggerLEDNotification(tempData: data, means: means)
-                
-                
-                if let err = err {
-                    throw err
-                } else {
-                    try onComplete()
-                }
-            } catch {
-                print("cannot push data to the Long Term Data Container: \(error)")
-//                RawDataViewModel.addMetaDataToRawData(payload: "[App issue] cannot push data to the Long Term Data Container: \(error)", timestampUnix: Date(), type: 2)
             }
-            
-            counter += 1
         }
+        
         
     }
     

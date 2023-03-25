@@ -138,6 +138,7 @@ public struct RRRangeSliderSwiftUI: View {
                     .frame(width: sliderHeight, height: sliderHeight, alignment: .center)
                     .foregroundColor(sliderMinMaxValuesColor)
                     .font(.system(.subheadline, design: .rounded) .weight(.semibold))
+                    .minimumScaleFactor(0.5)
                       
                 // maximum value glob view
                 Circle()
@@ -160,6 +161,7 @@ public struct RRRangeSliderSwiftUI: View {
                     .frame(width: sliderHeight, height: sliderHeight, alignment: .center)
                     .foregroundColor(sliderMinMaxValuesColor)
                     .font(.system(.subheadline, design: .rounded) .weight(.semibold))
+                    .minimumScaleFactor(0.5)
 //                    .padding(.trailing)
             })
 //            .padding()

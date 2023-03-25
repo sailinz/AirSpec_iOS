@@ -23,6 +23,7 @@ let sliderWidth = Float(UIScreen.main.bounds.width-140)
 /// This view displays an interface for discovering and connecting to Bluetooth peripherals.
 struct SettingView: View {
     @EnvironmentObject private var receiver: BluetoothReceiver
+    @Environment(\.colorScheme) var colorScheme
     @State var user_id:String = "" ///"9067133"
     @State private var togglePublicState = false
     @State private var toggleRangeState = false
@@ -95,13 +96,9 @@ struct SettingView: View {
                             }) {
                                 Text(receiver.GLASSNAME == nil ? "AirSpec" : receiver.GLASSNAME!)
                                     .font(.system(.subheadline))
-                                    .foregroundColor(.white)
-                                    .colorInvert()
+                                    .foregroundColor(colorScheme == .light ? .black: .white)
                             }
-                            
-//                            Image(systemName: receiver.state != .disconnectedWithoutPeripheral ? "checkmark.circle.fill" : "x.circle.fill")
-//                                .foregroundColor(receiver.state != .disconnectedWithoutPeripheral ? .green : .red)
-                            
+
                             make_text()
                         }
                                                      
@@ -147,22 +144,11 @@ struct SettingView: View {
                             
                         }
                         
-//                        HStack() {
-//                            Image(systemName: "timer")
-//                                .frame(width: 30, height: 20)
-//                            Text("Last Survey")
-//                                .font(.system(.subheadline))
-//                            if let prevNotificationTime = UserDefaults.standard.object(forKey: "prevNotificationTime") as? Date{
-//                                Text("\(prevNotificationTime)")
-//                                    .font(.system(.subheadline))
-//                            }
-//                        }
                         
                         
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding()
-//                    .padding(.all, 10)
                     .background(Color.pink.opacity(0.05))
                     .cornerRadius(15)
                 }
@@ -209,149 +195,149 @@ struct SettingView: View {
                         
                         
                         VStack(alignment: .leading) {
-                            ScrollView {
+//                            ScrollView {
                             
-                                Text("Temperature")
-                                    .font(.system(.subheadline) .weight(.semibold))
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                HStack {
-                                    Image(systemName: SensorIconConstants.sensorThermal[0].icon)
-                                        .frame(width: 30, height: 20)
-                                    
-                                    RRRangeSliderSwiftUI(
-                                        minValue: self.$minValueTemp, // mimimum value
-                                        maxValue: self.$maxValueTemp, // maximum value
-    //                                    minLabel: "0", // mimimum Label text
-    //                                    maxLabel: "100", // maximum Label text
-                                        minLabelBound: isCelsius ? Float(SensorIconConstants.sensorThermal[0].minValue) : (Float(SensorIconConstants.sensorThermal[0].minValue) * 1.8 + 34),
-                                        maxLabelBound: isCelsius ? Float(SensorIconConstants.sensorThermal[0].maxValue) : (Float(SensorIconConstants.sensorThermal[0].maxValue) * 1.8 + 34),
-                                        sliderWidth: sliderWidth, // set slider width
-                                        sliderHeight: CGFloat(30.0),
-                                        //                            backgroundTrackColor: Color.pink.opacity(0.5), // track color
-                                        leftTrackColor:SensorIconConstants.sensorThermal[0].color1,
-                                        rightTrackColor:SensorIconConstants.sensorThermal[0].color3,
-                                        selectedTrackColor: SensorIconConstants.sensorThermal[0].color2, // track color
-                                        globeColor: SensorIconConstants.sensorThermal[0].color2, // globe background color
-                                        globeBackgroundColor: Color.white, // globe rounded border color
-                                        sliderMinMaxValuesColor: Color.black // all text label color
-                                    )
-                                    .frame(maxWidth: .infinity, alignment: .center)
-                                    
-                                    Button(action: {
-                                        UserDefaults.standard.set(!self.isCelsius ,forKey: "isCelcius")
-                                        isCelsius.toggle()
+                            Text("Temperature")
+                                .font(.system(.subheadline) .weight(.semibold))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            HStack {
+                                Image(systemName: SensorIconConstants.sensorThermal[0].icon)
+                                    .frame(width: 30, height: 20)
+                                
+                                RRRangeSliderSwiftUI(
+                                    minValue: self.$minValueTemp, // mimimum value
+                                    maxValue: self.$maxValueTemp, // maximum value
+//                                    minLabel: "0", // mimimum Label text
+//                                    maxLabel: "100", // maximum Label text
+                                    minLabelBound: isCelsius ? Float(SensorIconConstants.sensorThermal[0].minValue) : (Float(SensorIconConstants.sensorThermal[0].minValue) * 1.8 + 34),
+                                    maxLabelBound: isCelsius ? Float(SensorIconConstants.sensorThermal[0].maxValue) : (Float(SensorIconConstants.sensorThermal[0].maxValue) * 1.8 + 34),
+                                    sliderWidth: sliderWidth, // set slider width
+                                    sliderHeight: CGFloat(30.0),
+                                    //                            backgroundTrackColor: Color.pink.opacity(0.5), // track color
+                                    leftTrackColor:SensorIconConstants.sensorThermal[0].color1,
+                                    rightTrackColor:SensorIconConstants.sensorThermal[0].color3,
+                                    selectedTrackColor: SensorIconConstants.sensorThermal[0].color2, // track color
+                                    globeColor: SensorIconConstants.sensorThermal[0].color2, // globe background color
+                                    globeBackgroundColor: Color.white, // globe rounded border color
+                                    sliderMinMaxValuesColor: Color.black // all text label color
+                                )
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                
+                                Button(action: {
+                                    UserDefaults.standard.set(!self.isCelsius ,forKey: "isCelcius")
+                                    isCelsius.toggle()
 
-                                            }) {
-                                                Text(isCelsius ? "°C" : "°F")
-                                                    .font(.system(.subheadline))
-                                                    .frame(maxWidth: .infinity, alignment: .trailing)
-                                                    .frame(maxWidth: .infinity, alignment: .trailing)
-                                                    .foregroundColor(Color.black)
-                                            }
+                                        }) {
+                                            Text(isCelsius ? "°C" : "°F")
+                                                .font(.system(.subheadline))
+                                                .frame(maxWidth: .infinity, alignment: .trailing)
+                                                .frame(maxWidth: .infinity, alignment: .trailing)
+                                                .foregroundColor(colorScheme == .light ? .black: .white)
+                                        }
 //                                            .buttonStyle(PlainButtonStyle())
-                                   
-                                    
-                                }
+                               
                                 
-                                Text("Humidity")
-                                    .font(.system(.subheadline) .weight(.semibold))
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                HStack {
-                                    Image(systemName: SensorIconConstants.sensorThermal[1].icon)
-                                        .frame(width: 30, height: 20)
-                                    
-                                    RRRangeSliderSwiftUI(
-                                        minValue: self.$minValueHum, // mimimum value
-                                        maxValue: self.$maxValueHum, // maximum value
-    //                                    minLabel: "0", // mimimum Label text
-    //                                    maxLabel: "100", // maximum Label text
-                                        minLabelBound: Float(SensorIconConstants.sensorThermal[1].minValue),
-                                        maxLabelBound: Float(SensorIconConstants.sensorThermal[1].maxValue),
-                                        sliderWidth: sliderWidth, // set slider width
-                                        sliderHeight: CGFloat(30.0),
-                                        //                            backgroundTrackColor: Color.pink.opacity(0.5), // track color
-                                        leftTrackColor:SensorIconConstants.sensorThermal[1].color1,
-                                        rightTrackColor:SensorIconConstants.sensorThermal[1].color3,
-                                        selectedTrackColor: SensorIconConstants.sensorThermal[1].color2, // track color
-                                        globeColor: SensorIconConstants.sensorThermal[1].color2, // globe background color
-                                        globeBackgroundColor: Color.white, // globe rounded border color
-                                        sliderMinMaxValuesColor: Color.black // all text label color
-                                    )
-                                    .frame(maxWidth: .infinity, alignment: .center)
-                                    Text(SensorIconConstants.sensorThermal[1].unit)
-                                        .frame(maxWidth: .infinity, alignment: .trailing)
-                                        .foregroundColor(Color.black)
-                                        .font(.system(.subheadline))
-                                    
-                                }
-                                
-                                
-                                Text("Light intensity")
-                                    .font(.system(.subheadline) .weight(.semibold))
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                HStack {
-                                    Image(systemName: SensorIconConstants.sensorVisual[0].icon)
-                                        .frame(width: 30, height: 20)
-                                    
-                                    RRRangeSliderSwiftUI(
-                                        minValue: self.$minValueLightIntensity, // mimimum value
-                                        maxValue: self.$maxValueLightIntensity, // maximum value
-    //                                    minLabel: "0", // mimimum Label text
-    //                                    maxLabel: "100", // maximum Label text
-                                        minLabelBound: Float(SensorIconConstants.sensorVisual[0].minValue),
-                                        maxLabelBound: Float(SensorIconConstants.sensorVisual[0].maxValue),
-                                        sliderWidth: sliderWidth, // set slider width
-                                        sliderHeight: CGFloat(30.0),
-                                        //                            backgroundTrackColor: Color.pink.opacity(0.5), // track color
-                                        leftTrackColor:SensorIconConstants.sensorVisual[0].color1,
-                                        rightTrackColor:SensorIconConstants.sensorVisual[0].color3,
-                                        selectedTrackColor: SensorIconConstants.sensorVisual[0].color2, // track color
-                                        globeColor: SensorIconConstants.sensorVisual[0].color2, // globe background color
-                                        globeBackgroundColor: Color.white, // globe rounded border color
-                                        sliderMinMaxValuesColor: Color.black // all text label color
-                                    )
-                                    .frame(maxWidth: .infinity, alignment: .center)
-                                    Text(SensorIconConstants.sensorVisual[0].unit)
-                                        .frame(maxWidth: .infinity, alignment: .trailing)
-                                        .foregroundColor(Color.black)
-                                        .font(.system(.subheadline))
-                                    
-                                }
-                                
-                                
-                                Text("Noise")
-                                    .font(.system(.subheadline) .weight(.semibold))
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                HStack {
-                                    Image(systemName: SensorIconConstants.sensorAcoustics[0].icon)
-                                        .frame(width: 30, height: 20)
-                                    
-                                    RRRangeSliderSwiftUI(
-                                        minValue: self.$minValueNoise, // mimimum value
-                                        maxValue: self.$maxValueNoise, // maximum value
-    //                                    minLabel: "0", // mimimum Label text
-    //                                    maxLabel: "100", // maximum Label text
-                                        minLabelBound: Float(SensorIconConstants.sensorAcoustics[0].minValue),
-                                        maxLabelBound: Float(SensorIconConstants.sensorAcoustics[0].maxValue),
-                                        sliderWidth: sliderWidth, // set slider width
-                                        sliderHeight: CGFloat(30.0),
-                                        //                            backgroundTrackColor: Color.pink.opacity(0.5), // track color
-                                        leftTrackColor:SensorIconConstants.sensorAcoustics[0].color1,
-                                        rightTrackColor:SensorIconConstants.sensorAcoustics[0].color3,
-                                        selectedTrackColor: SensorIconConstants.sensorAcoustics[0].color2, // track color
-                                        globeColor: SensorIconConstants.sensorAcoustics[0].color2, // globe background color
-                                        globeBackgroundColor: Color.white, // globe rounded border color
-                                        sliderMinMaxValuesColor: Color.black // all text label color
-                                    )
-                                    .frame(maxWidth: .infinity, alignment: .center)
-                                    Text(SensorIconConstants.sensorAcoustics[0].unit)
-                                        .frame(maxWidth: .infinity, alignment: .trailing)
-                                        .foregroundColor(Color.black)
-                                        .font(.system(.subheadline))
-                                    
-                                }
-
                             }
+                            
+                            Text("Humidity")
+                                .font(.system(.subheadline) .weight(.semibold))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            HStack {
+                                Image(systemName: SensorIconConstants.sensorThermal[1].icon)
+                                    .frame(width: 30, height: 20)
+                                
+                                RRRangeSliderSwiftUI(
+                                    minValue: self.$minValueHum, // mimimum value
+                                    maxValue: self.$maxValueHum, // maximum value
+//                                    minLabel: "0", // mimimum Label text
+//                                    maxLabel: "100", // maximum Label text
+                                    minLabelBound: Float(SensorIconConstants.sensorThermal[1].minValue),
+                                    maxLabelBound: Float(SensorIconConstants.sensorThermal[1].maxValue),
+                                    sliderWidth: sliderWidth, // set slider width
+                                    sliderHeight: CGFloat(30.0),
+                                    //                            backgroundTrackColor: Color.pink.opacity(0.5), // track color
+                                    leftTrackColor:SensorIconConstants.sensorThermal[1].color1,
+                                    rightTrackColor:SensorIconConstants.sensorThermal[1].color3,
+                                    selectedTrackColor: SensorIconConstants.sensorThermal[1].color2, // track color
+                                    globeColor: SensorIconConstants.sensorThermal[1].color2, // globe background color
+                                    globeBackgroundColor: Color.white, // globe rounded border color
+                                    sliderMinMaxValuesColor: Color.black // all text label color
+                                )
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                Text(SensorIconConstants.sensorThermal[1].unit)
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
+                                    .foregroundColor(colorScheme == .light ? .black: .white)
+                                    .font(.system(.subheadline))
+                                
+                            }
+                            
+                            
+                            Text("Light intensity")
+                                .font(.system(.subheadline) .weight(.semibold))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            HStack {
+                                Image(systemName: SensorIconConstants.sensorVisual[0].icon)
+                                    .frame(width: 30, height: 20)
+                                
+                                RRRangeSliderSwiftUI(
+                                    minValue: self.$minValueLightIntensity, // mimimum value
+                                    maxValue: self.$maxValueLightIntensity, // maximum value
+//                                    minLabel: "0", // mimimum Label text
+//                                    maxLabel: "100", // maximum Label text
+                                    minLabelBound: Float(SensorIconConstants.sensorVisual[0].minValue),
+                                    maxLabelBound: Float(SensorIconConstants.sensorVisual[0].maxValue),
+                                    sliderWidth: sliderWidth, // set slider width
+                                    sliderHeight: CGFloat(30.0),
+                                    //                            backgroundTrackColor: Color.pink.opacity(0.5), // track color
+                                    leftTrackColor:SensorIconConstants.sensorVisual[0].color1,
+                                    rightTrackColor:SensorIconConstants.sensorVisual[0].color3,
+                                    selectedTrackColor: SensorIconConstants.sensorVisual[0].color2, // track color
+                                    globeColor: SensorIconConstants.sensorVisual[0].color2, // globe background color
+                                    globeBackgroundColor: Color.white, // globe rounded border color
+                                    sliderMinMaxValuesColor: Color.black // all text label color
+                                )
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                Text(SensorIconConstants.sensorVisual[0].unit)
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
+                                    .foregroundColor(colorScheme == .light ? .black: .white)
+                                    .font(.system(.subheadline))
+                                
+                            }
+                            
+                            
+                            Text("Noise")
+                                .font(.system(.subheadline) .weight(.semibold))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            HStack {
+                                Image(systemName: SensorIconConstants.sensorAcoustics[0].icon)
+                                    .frame(width: 30, height: 20)
+                                
+                                RRRangeSliderSwiftUI(
+                                    minValue: self.$minValueNoise, // mimimum value
+                                    maxValue: self.$maxValueNoise, // maximum value
+//                                    minLabel: "0", // mimimum Label text
+//                                    maxLabel: "100", // maximum Label text
+                                    minLabelBound: Float(SensorIconConstants.sensorAcoustics[0].minValue),
+                                    maxLabelBound: Float(SensorIconConstants.sensorAcoustics[0].maxValue),
+                                    sliderWidth: sliderWidth, // set slider width
+                                    sliderHeight: CGFloat(30.0),
+                                    //                            backgroundTrackColor: Color.pink.opacity(0.5), // track color
+                                    leftTrackColor:SensorIconConstants.sensorAcoustics[0].color1,
+                                    rightTrackColor:SensorIconConstants.sensorAcoustics[0].color3,
+                                    selectedTrackColor: SensorIconConstants.sensorAcoustics[0].color2, // track color
+                                    globeColor: SensorIconConstants.sensorAcoustics[0].color2, // globe background color
+                                    globeBackgroundColor: Color.white, // globe rounded border color
+                                    sliderMinMaxValuesColor: Color.black // all text label color
+                                )
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                Text(SensorIconConstants.sensorAcoustics[0].unit)
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
+                                    .foregroundColor(colorScheme == .light ? .black: .white)
+                                    .font(.system(.subheadline))
+                                
+                            }
+
+//                            }
                             
                         }
                         .frame(maxWidth: .infinity, alignment: .center)
