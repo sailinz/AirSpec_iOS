@@ -41,18 +41,22 @@ struct HeartAnimation: View {
                     CrookedText(text: "Visual", radius:90)
                         .rotationEffect(.radians(.pi*5/4))
                         .offset(x:-30,y:30)
+                        .minimumScaleFactor(0.8)
                     
                     CrookedText(text: "Noise", radius:90)
                         .rotationEffect(.radians(.pi*3/4))
                         .offset(x:20,y: 35)
+                        .minimumScaleFactor(0.8)
                     
                     CrookedText(text: "Air quality", radius:90)
                         .rotationEffect(.radians(.pi/4))
                         .offset(x:40,y: 10)
+                        .minimumScaleFactor(0.8)
                     
                     CrookedText(text: "Thermal", radius:90)
                         .rotationEffect(.radians(.pi*7/4))
                         .offset(x:-30,y: 5)
+                        .minimumScaleFactor(0.8)
                 }
                 .scaleEffect(animate ? 1.1:1.0)
                 .offset(y: animate ? -5 : 0)
@@ -166,6 +170,7 @@ struct HeartAnimation: View {
                             .shadow(
                                 color:Color.white.opacity(0.8),
                                 radius:2)
+                            .minimumScaleFactor(0.9)
                     }.buttonStyle(PlainButtonStyle())
                     
                     NavigationLink(destination: AcousticsView(dataReceivedWatch: dataReceivedWatch)) {
@@ -181,6 +186,7 @@ struct HeartAnimation: View {
                             .shadow(
                                 color:Color.white.opacity(0.8),
                                 radius:2)
+                            .minimumScaleFactor(0.9)
                     }.buttonStyle(PlainButtonStyle())
                     
                     
@@ -197,6 +203,7 @@ struct HeartAnimation: View {
                             .shadow(
                                 color:Color.white.opacity(0.8),
                                 radius:2)
+                            .minimumScaleFactor(0.9)
                     }.buttonStyle(PlainButtonStyle())
                     
                     
@@ -213,6 +220,7 @@ struct HeartAnimation: View {
                             .shadow(
                                 color:Color.white.opacity(0.8),
                                 radius:2)
+                            .minimumScaleFactor(0.9)
                     }.buttonStyle(PlainButtonStyle())
                     
                     

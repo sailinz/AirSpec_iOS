@@ -53,11 +53,16 @@ struct AirSpec_iOS_Watch_ComplicationEntryView : View {
 //        Text(entry.date, style: .time)
         ZStack {
             Color.white
-                
+            
+//            Image("Icon_64px")
+//                .resizable()
+//                .scaledToFit()
+//                .frame(width: 40, height: 40)
             Text("AirSpec")
-                .font(Font.custom("Helvetica", size: 10))
+                .font(.system(.footnote))
                 .fontWeight(.bold)
                 .foregroundColor(.black)
+                .scaledToFit()
         }
         
 //        Image("Icon_64px")

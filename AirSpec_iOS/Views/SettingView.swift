@@ -77,7 +77,7 @@ struct SettingView: View {
                         HStack() {
                             Image(systemName: "person.crop.circle.badge")
                                 .frame(width: 30, height: 20)
-                            Text("User ID")
+                            Text("Glasses ID")
                                 .font(.system(.subheadline))
                             TextField("Enter ID", text: $user_id, onCommit: {
                                 UserDefaults.standard.set(self.user_id, forKey: "user_id")
@@ -94,55 +94,59 @@ struct SettingView: View {
                             Button(action: {
                                 receiver.toggle()
                             }) {
-                                Text(receiver.GLASSNAME == nil ? "AirSpec" : receiver.GLASSNAME!)
+                                Text(receiver.GLASSNAME == nil ? "AirSpec" : receiver.GLASSNAME!.dropFirst(8))
+                                    .fixedSize(horizontal: false, vertical: true)
                                     .font(.system(.subheadline))
+                                    .minimumScaleFactor(0.5)
                                     .foregroundColor(colorScheme == .light ? .black: .white)
+                                //                                    .font(.system(.subheadline))
+                                    
                             }
 
                             make_text()
                         }
                                                      
                         
-                        HStack() {
-                            Image(systemName: "externaldrive")
-                                .frame(width: 30, height: 20)
-                            Text("DFU")
-                                .font(.system(.subheadline))
-                            Button(action:receiver.dfu) {
-                                Text("DFU enable")
-                                .font(.system(.subheadline) .weight(.semibold))
-                                .foregroundColor(.white)
-                            }
-                            .padding(.all,5)
-                            .background(.gray.opacity(0.5))
-                            .clipShape(Capsule())
-                        
-                        }
-                        
-                        HStack() {
-                            Image(systemName: "lightbulb.led.wide.fill")
-                                .frame(width: 30, height: 20)
-                            Text("Test light")
-                                .font(.system(.subheadline))
-                            Spacer()
-
-                            
-                            Button(action:
-                                    {
-                                        receiver.blueGreenLight(isEnable: true)
-                                        receiver.isBlueGreenSurveyDone = false
-                                    }
-                                    
-                                ) {
-                                Text("Test")
-                                .font(.system(.subheadline) .weight(.semibold))
-                                .foregroundColor(.white)
-                            }
-                            .padding(.all,5)
-                            .background(.pink.opacity(0.5))
-                            .clipShape(Capsule())
-                            
-                        }
+//                        HStack() {
+//                            Image(systemName: "externaldrive")
+//                                .frame(width: 30, height: 20)
+//                            Text("DFU")
+//                                .font(.system(.subheadline))
+//                            Button(action:receiver.dfu) {
+//                                Text("DFU enable")
+//                                .font(.system(.subheadline) .weight(.semibold))
+//                                .foregroundColor(.white)
+//                            }
+//                            .padding(.all,5)
+//                            .background(.gray.opacity(0.5))
+//                            .clipShape(Capsule())
+//                        
+//                        }
+//                        
+//                        HStack() {
+//                            Image(systemName: "lightbulb.led.wide.fill")
+//                                .frame(width: 30, height: 20)
+//                            Text("Test light")
+//                                .font(.system(.subheadline))
+//                            Spacer()
+//
+//                            
+//                            Button(action:
+//                                    {
+//                                        receiver.blueGreenLight(isEnable: true)
+//                                        receiver.isBlueGreenSurveyDone = false
+//                                    }
+//                                    
+//                                ) {
+//                                Text("Test")
+//                                .font(.system(.subheadline) .weight(.semibold))
+//                                .foregroundColor(.white)
+//                            }
+//                            .padding(.all,5)
+//                            .background(.pink.opacity(0.5))
+//                            .clipShape(Capsule())
+//                            
+//                        }
                         
                         
                         
@@ -233,6 +237,7 @@ struct SettingView: View {
                                                 .frame(maxWidth: .infinity, alignment: .trailing)
                                                 .frame(maxWidth: .infinity, alignment: .trailing)
                                                 .foregroundColor(colorScheme == .light ? .black: .white)
+                                                .minimumScaleFactor(0.6)
                                         }
 //                                            .buttonStyle(PlainButtonStyle())
                                
@@ -268,7 +273,7 @@ struct SettingView: View {
                                     .frame(maxWidth: .infinity, alignment: .trailing)
                                     .foregroundColor(colorScheme == .light ? .black: .white)
                                     .font(.system(.subheadline))
-                                
+                                    .minimumScaleFactor(0.6)
                             }
                             
                             
@@ -301,6 +306,7 @@ struct SettingView: View {
                                     .frame(maxWidth: .infinity, alignment: .trailing)
                                     .foregroundColor(colorScheme == .light ? .black: .white)
                                     .font(.system(.subheadline))
+                                    .minimumScaleFactor(0.6)
                                 
                             }
                             
@@ -334,6 +340,7 @@ struct SettingView: View {
                                     .frame(maxWidth: .infinity, alignment: .trailing)
                                     .foregroundColor(colorScheme == .light ? .black: .white)
                                     .font(.system(.subheadline))
+                                    .minimumScaleFactor(0.6)
                                 
                             }
 
@@ -351,6 +358,7 @@ struct SettingView: View {
                                 .frame(width: 30, height: 20)
                             Text("These values are very personal as the sensors read from your body and the environment. The absolute value may not be the same on other sensing devices.")
                                 .font(.system(.caption2))
+                                .minimumScaleFactor(0.5)
                         }
                     }
                     .padding()

@@ -18,7 +18,7 @@ struct ContentView: View {
     @State private var feedbackButton = false
     @Environment(\.scenePhase) var scenePhase
     private var timer: DispatchSourceTimer? = DispatchSource.makeTimerSource()
-    let updateFrequence = 60 * 1 /// seconds
+//    let updateFrequence = 60 * 1 /// seconds
     
     var body: some View {
         ZStack(alignment: .top){

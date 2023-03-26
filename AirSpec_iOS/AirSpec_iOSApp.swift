@@ -17,7 +17,7 @@ struct AirSpec_iOSApp: App {
     
     init() {
         RawDataViewModel.init_container()
-        TempRawDataViewModel.init_container()
+//        eTempRawDataViewModel.init_container()
         TempDataViewModel.init_container()
         LongTermDataViewModel.init_container()
         SurveyDataViewModel.init_container()

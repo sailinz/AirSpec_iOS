@@ -38,6 +38,7 @@ struct SelfLoggingView: View {
                     HStack{
                         VStack{
                             Text("How are you feeling now?")
+                                .multilineTextAlignment(.center)
                             Spacer()
                                 .frame(height: 20)
                             HStack{
@@ -162,6 +163,7 @@ struct SelfLoggingView: View {
                             
                         
                             Text("Have time for a 30s survey?")
+                                .multilineTextAlignment(.center)
                             
                             Button(action:{
                                             ///go to the survey view

@@ -128,7 +128,7 @@ struct ContentView: View {
                 
                 
                 
-            TextField("Enter ID", text: $user_id, onCommit: {
+            TextField("Enter Glasses ID", text: $user_id, onCommit: {
                 UserDefaults.standard.set(self.user_id, forKey: "user_id")
             })
             .multilineTextAlignment(.trailing)

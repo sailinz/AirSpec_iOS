@@ -30,7 +30,7 @@ struct WatchSurveyComfyView: View {
                         Spacer()
                             .frame(height: 30)
                         Text("How are you feeling now?")
-                            .multilineTextAlignment(.center)
+                            .minimumScaleFactor(0.6)
                         Spacer()
                             .frame(height: 10)
                         HStack{
@@ -63,6 +63,7 @@ struct WatchSurveyComfyView: View {
                                         Text("Not comfy")
                                             .font(.system(.subheadline) .weight(.semibold))
                                             .foregroundColor(.white)
+                                            .minimumScaleFactor(0.6)
                                     }
                                 }
                             }
@@ -99,6 +100,7 @@ struct WatchSurveyComfyView: View {
                                         Text("Comfy")
                                             .font(.system(.subheadline) .weight(.semibold))
                                             .foregroundColor(.white)
+                                            .minimumScaleFactor(0.5)
                                     }
                                 }
                             }

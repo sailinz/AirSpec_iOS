@@ -73,8 +73,6 @@
 		03931B9E2943BAB90093515D /* NetworkConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03931B9D2943BAB90093515D /* NetworkConstants.swift */; };
 		03931BA02943BDB90093515D /* NIO_TCP_Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03931B9F2943BDB90093515D /* NIO_TCP_Client.swift */; };
 		03A0221229A840CA006C17A8 /* LongTermDataViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A0221129A840CA006C17A8 /* LongTermDataViewModel.swift */; };
-		03A4B41129CD052700650FE3 /* TempRawDataContainer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 03A4B40F29CD052600650FE3 /* TempRawDataContainer.xcdatamodeld */; };
-		03A4B41329CD058000650FE3 /* TempRawDataViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A4B41229CD058000650FE3 /* TempRawDataViewModel.swift */; };
 		03A9F606296CB24A00BC9100 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03A9F605296CB24A00BC9100 /* WidgetKit.framework */; };
 		03A9F608296CB24A00BC9100 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03A9F607296CB24A00BC9100 /* SwiftUI.framework */; };
 		03A9F60B296CB24A00BC9100 /* AirSpec_iOS_Watch_Complication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9F60A296CB24A00BC9100 /* AirSpec_iOS_Watch_Complication.swift */; };
@@ -255,8 +253,6 @@
 		03931B9D2943BAB90093515D /* NetworkConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkConstants.swift; sourceTree = "<group>"; };
 		03931B9F2943BDB90093515D /* NIO_TCP_Client.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NIO_TCP_Client.swift; sourceTree = "<group>"; };
 		03A0221129A840CA006C17A8 /* LongTermDataViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongTermDataViewModel.swift; sourceTree = "<group>"; };
-		03A4B41029CD052700650FE3 /* TempRawDataContainer.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TempRawDataContainer.xcdatamodel; sourceTree = "<group>"; };
-		03A4B41229CD058000650FE3 /* TempRawDataViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TempRawDataViewModel.swift; sourceTree = "<group>"; };
 		03A9F604296CB24A00BC9100 /* AirSpec_iOS Watch ComplicationExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "AirSpec_iOS Watch ComplicationExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		03A9F605296CB24A00BC9100 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		03A9F607296CB24A00BC9100 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -415,7 +411,6 @@
 				0380B910299EBEB400D070FF /* TempDataViewModel.swift */,
 				0380B912299EBED500D070FF /* RawDataViewModel.swift */,
 				03A0221129A840CA006C17A8 /* LongTermDataViewModel.swift */,
-				03A4B41229CD058000650FE3 /* TempRawDataViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -484,7 +479,6 @@
 				0380B8F0299C7B5700D070FF /* TempDataContainer.xcdatamodeld */,
 				0380B916299FD64C00D070FF /* LongTermDataContainer.xcdatamodeld */,
 				0380B8F3299C7BBC00D070FF /* RawDataContainer.xcdatamodeld */,
-				03A4B40F29CD052600650FE3 /* TempRawDataContainer.xcdatamodeld */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -995,12 +989,10 @@
 				03D53EA9299093EA0008B74D /* SensorData.swift in Sources */,
 				0380B8EF299C794F00D070FF /* SurveyDataContainer.xcdatamodeld in Sources */,
 				03F21BC1292AE85D001D4D8E /* ContentView.swift in Sources */,
-				03A4B41329CD058000650FE3 /* TempRawDataViewModel.swift in Sources */,
 				0341136529B2DB6B00393BC4 /* Answer.swift in Sources */,
 				034D16DE294A7FD7005BE966 /* OpenCircularGauge.swift in Sources */,
 				03BC95E829525F7600AD89BE /* Array+SafeSubscript.swift in Sources */,
 				03BC96162956507000AD89BE /* testChart.swift in Sources */,
-				03A4B41129CD052700650FE3 /* TempRawDataContainer.xcdatamodeld in Sources */,
 				03BC95E429525EFD00AD89BE /* CrookedText.swift in Sources */,
 				03BC95C32950D3B300AD89BE /* HeartAnimation.swift in Sources */,
 				034D16E3294CF9A2005BE966 /* LinearGauge.swift in Sources */,
@@ -1865,16 +1857,6 @@
 			);
 			currentVersion = 0380B917299FD64C00D070FF /* LongTermDataContainer.xcdatamodel */;
 			path = LongTermDataContainer.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-		03A4B40F29CD052600650FE3 /* TempRawDataContainer.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				03A4B41029CD052700650FE3 /* TempRawDataContainer.xcdatamodel */,
-			);
-			currentVersion = 03A4B41029CD052700650FE3 /* TempRawDataContainer.xcdatamodel */;
-			path = TempRawDataContainer.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

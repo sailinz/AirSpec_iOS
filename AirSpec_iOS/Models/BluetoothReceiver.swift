@@ -8,6 +8,7 @@ import CoreBluetooth
 import os.log
 import CoreData
 import CoreLocation
+import DequeModule
 
 enum BluetoothReceiverError: Error {
     case failedToConnect
@@ -70,6 +71,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     var thermPacketID: Int?
     
     
+    var prevBMEIndex: Int = 0
+    
     
     var state: State {
         get {
@@ -108,11 +111,12 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     
     /// -- PUSH TO THE SERVER
     private var timer: DispatchSourceTimer?
-    let updateFrequence = 60 * 1 /// seconds
+    let updateFrequence = 20 /// seconds
     var countUpdateFrequency = 0
     var isUploadToServer = false
-    var tempPacketBuffer:[SensorPacket] = []
-    var countPackets = 0
+//    var tempPacketBuffer:[SensorPacket] = []
+//    var countPackets = 0
+    var rawDataQueue: Deque<Data> = []
 
     
     override init() {
@@ -224,18 +228,37 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         timer = DispatchSource.makeTimerSource()
         timer?.schedule(deadline: .now() + .seconds(3), repeating: .seconds(updateFrequence))
         timer?.setEventHandler {
-            self.isUploadToServer = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5)  { /// wait for 3 sec
-                self.uploadToServer()
-            }
             
-            self.countUpdateFrequency = self.countUpdateFrequency + 1
-            if self.countUpdateFrequency == 5 {
+            self.countUpdateFrequency += 1
+//            if self.countUpdateFrequency % 3 == 0{ /// upload to server every 2 minute
+//                self.uploadToServer()
+//            }else{
+//                self.addDatafromQueueToRawDataDB()
+//            }
+            
+            if self.countUpdateFrequency == 15 { /// local avg every 5 min
                 self.countUpdateFrequency = 0
-                DispatchQueue.main.asyncAfter(deadline: .now() + 20)  { /// wait for 3 sec
+                self.uploadToServer()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5)  { /// wait for 5 sec
                     self.storeLongTermData()
                 }
+            }else{
+                self.addDatafromQueueToRawDataDB()
             }
+            
+            
+//            self.isUploadToServer = true
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 5)  { /// wait for 3 sec
+//                self.uploadToServer()
+//            }
+//
+//            self.countUpdateFrequency = self.countUpdateFrequency + 1
+//            if self.countUpdateFrequency == 5 {
+//                self.countUpdateFrequency = 0
+//                DispatchQueue.main.asyncAfter(deadline: .now() + 20)  { /// wait for 3 sec
+//                    self.storeLongTermData()
+//                }
+//            }
         }
         timer?.resume()
     }
@@ -331,7 +354,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         do {
             guard let packet = try? Airspec.decode_packet(data) else {
                 print("failed parsing packet: \(error)")
-                RawDataViewModel.addMetaDataToRawData(payload: "failed parsing packet: \(error) ", timestampUnix: Date(), type: 2)
+//                RawDataViewModel.addMetaDataToRawData(payload: "failed parsing packet: \(error) ", timestampUnix: Date(), type: 2)
                 return
             }
 //            print(packet)
@@ -339,7 +362,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             /// directly send
 //            do {
 //                var err: Error?
-//
+//                print(packet)
 //                try Airspec.send_packets(packets: [packet], auth_token: AUTH_TOKEN) { error in
 //                    err = error
 //                }
@@ -351,14 +374,17 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //                RawDataViewModel.addMetaDataToRawData(payload: "cannot upload the data to the server: \(error)", timestampUnix: Date(), type: 2)
 //            }
             
+            /// using queue
+            rawDataQueue.append(data)
+            
             /// store to tempdata during the thread
-            print(self.isUploadToServer)
-            if(self.isUploadToServer){
-                tempPacketBuffer.append(packet)
-                print(packet)
-            }else{
-                try RawDataViewModel.addRawData(record: data)
-            }
+//            print(self.isUploadToServer)
+//            if(self.isUploadToServer){
+//                tempPacketBuffer.append(packet)
+//                print(packet)
+//            }else{
+//                try RawDataViewModel.addRawData(record: data)
+//            }
             
             /// store to raw data
 //            DispatchQueue.main.async {
@@ -467,8 +493,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 
                 
             case .some(.bmePacket(_)):
-                print(packet.bmePacket.packetIndex)
-                print(self.isUploadToServer)
+//                print(packet.bmePacket.packetIndex)
+//                print(self.isUploadToServer)
 //                if let prevbmePacketID = self.bmePacketID{
 //                    if (Int(packet.bmePacket.packetIndex) - prevbmePacketID) > 1{
 //                        RawDataViewModel.addMetaDataToRawData(payload: "bme packet ID missing: current \(packet.bmePacket.packetIndex); prev \(prevbmePacketID) ", timestampUnix: Date(), type: 2)
@@ -549,38 +575,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             case .some(.shtPacket(_)):
                 for sensorPayload in packet.shtPacket.payload {
                     if packet.shtPacket.sensorID == 0 {
-//                        if let prevshtNosePacketID = self.shtNosePacketID{
-//                            if (Int(packet.shtPacket.packetIndex) - prevshtNosePacketID) > 1{
-//                                RawDataViewModel.addMetaDataToRawData(payload: "shtNose packet ID missing: current \(packet.shtPacket.packetIndex); prev \(prevshtNosePacketID) ", timestampUnix: Date(), type: 2)
-//                            }
-//                            self.shtNosePacketID = Int(packet.shtPacket.packetIndex)
-//                        }else{
-//                            self.shtNosePacketID = Int(packet.shtPacket.packetIndex)
-//                        }
-                        
-//                        print(packet.shtPacket.packetIndex)
-//                        print(self.isUploadToServer)
-//
-//                        if(isUploadToServer){
-//                            var metaData = appMetaDataPacket()
-//                            metaData.payload = "sht(nose): packet index: \(packet.shtPacket.packetIndex) (while upload to server)"
-//                            metaData.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
-//                            metaData.type = UInt32(2)
-//
-//                            let sensorPacket = SensorPacket.with {
-//                                $0.header = SensorPacketHeader.with {
-//                                    $0.epoch = UInt64(NSDate().timeIntervalSince1970 * 1000)
-//                                }
-//                                $0.metaDataPacket = metaData
-//                            }
-//                            tempPacketBuffer.append(sensorPacket)
-//                        }else{
-//                            RawDataViewModel.addMetaDataToRawData(payload: "sht(nose): packet index: \(packet.shtPacket.packetIndex)", timestampUnix: Date(), type: 2)
-//                        }
-                        
-                        
                         if(sensorPayload.temperature != nil && sensorPayload.humidity != nil){
-                            self.visualData[1] = Double(sensorPayload.temperature) /// temperature
+                            self.visualData[1] = Double(sensorPayload.temperature) - 5.5 /// temperature
                             dataToWatch.updateValue(sensorValue: self.visualData[1], sensorName: "temperatureData")
                             self.visualData[2] = Double(sensorPayload.humidity) /// humidity
                             dataToWatch.updateValue(sensorValue: self.visualData[2], sensorName: "humidityData")
@@ -605,7 +601,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //                        }
                         
                         if(sensorPayload.temperature != nil && sensorPayload.humidity != nil){
-                            self.thermalData[0] = Double(sensorPayload.temperature) /// temperature
+                            self.thermalData[0] = Double(sensorPayload.temperature) - 4.4/// temperature
                             dataToWatch.updateValue(sensorValue: self.thermalData[0], sensorName: "temperatureAmbientData")
                             self.thermalData[1] = Double(sensorPayload.humidity) /// humidity
                             dataToWatch.updateValue(sensorValue: self.thermalData[1], sensorName: "humidityAmbientData")
@@ -669,14 +665,14 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 /// estimate cog load:  (temple - face)  (high cog load: low face temp -- https://neurosciencenews.com/stress-nasal-temperature-8579/)
                 let thermalpileData = thermNoseTip * thermNoseBridge * thermTempleFront * thermTempleMiddle * thermTempleRear
                 if (thermalpileData.isInfinite || thermalpileData.isNaN){
-#if DEBUG_THERMOPILE
+//#if DEBUG_THERMOPILE
                     print("error parsing thermopile value")
                     print(thermNoseTip)
                     print(thermNoseBridge)
                     print(thermTempleFront)
                     print(thermTempleMiddle)
                     print(thermTempleRear)
-#endif
+//#endif
                 }else{
                     if(Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - cogLoadOffset) * cogLoadMultiFactor) > 0){
                         
@@ -744,11 +740,71 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         }
     }
     
+    func addDatafromQueueToRawDataDB(){
+        DispatchQueue.global().async { [self] in
+            DispatchQueue.global().sync {
+                print("dequeing")
+                while true {
+                    if rawDataQueue.isEmpty{
+                        break
+                    }else{
+//                        var data = rawDataQueue.popFirst()!
+                        
+                        do{
+                            try RawDataViewModel.addRawData(record: rawDataQueue.popFirst()!)
+                        }catch{
+                            print("cannot add dequed packet to raw data db \(error.localizedDescription)")
+                        }
+
+//                        guard let packet = try? Airspec.decode_packet(data) else {
+//                            print("failed parsing packet")
+//                            return
+//                        }
+//
+//                        switch packet.payload{
+//                            case .some(.sgpPacket(_)):
+//                                break
+//                            case .some(.bmePacket(_)):
+//                                print(packet.bmePacket.packetIndex)
+//                            case .some(.luxPacket(_)):
+//                                break
+//                            case .some(.blinkPacket(_)):
+//                                break
+//                            case .some(.shtPacket(_)):
+//                                break
+//                            case .some(.specPacket(_)):
+//                                break
+//                            case .some(.thermPacket(_)):
+//                                break
+//                            case .some(.imuPacket(_)):
+//                                break
+//                            case .some(.micPacket(_)):
+//                                break
+//                            case .some(.micLevelPacket(_)):
+//                                break
+//                            case .some(.surveyPacket(_)):
+//                                break
+//                            case .some(.metaDataPacket(_)):
+//                                break
+//                            case .none:
+//                                break
+//                        }
+                        
+                        
+                    
+                    }
+                }
+                
+            }
+        }
+        
+        
+    }
     
     
     func uploadToServer() {
         print("try to upload to server")
-//        DispatchQueue.global().async { [self] in
+        DispatchQueue.global().async { [self] in
             DispatchQueue.global().sync {
                 // https://stackoverflow.com/questions/42772907/what-does-main-sync-in-global-async-mean
                 
@@ -758,31 +814,64 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     do {
                         let (data, onComplete) = try RawDataViewModel.fetchData()
                         if data.isEmpty {
-//                            sem.signal()
-//                            self.storeLongTermData()
-//                            sem.wait()
                             
                             try onComplete()
                             print("\(Date.now) sent all packets")
                             RawDataViewModel.addMetaDataToRawData(payload: "Sent all packets", timestampUnix: Date(), type: 7)
                             
                             self.isUploadToServer = false
-                            var err: Error?
-                            try Airspec.send_packets(packets: self.tempPacketBuffer, auth_token: AUTH_TOKEN) { error in
-                                err = error
-//                                sem.signal()
-                            }
                             
-                            RawDataViewModel.addMetaDataToRawData(payload: "sent gap packets \(self.tempPacketBuffer.count)", timestampUnix: Date(), type: 7)
-                            print("sent gap packets \(self.tempPacketBuffer.count)")
-                            tempPacketBuffer = []
-//                            self.migrateFromTempRawToRaw()
+                            /// buffer the packets during upload to server event
+//                            var err: Error?
+//                            try Airspec.send_packets(packets: self.tempPacketBuffer, auth_token: AUTH_TOKEN) { error in
+//                                err = error
+////                                sem.signal()
+//                            }
+                            
+//                            RawDataViewModel.addMetaDataToRawData(payload: "sent gap packets \(self.tempPacketBuffer.count)", timestampUnix: Date(), type: 7)
+//                            print("sent gap packets \(self.tempPacketBuffer.count)")
+//                            tempPacketBuffer = []
                                   
                             
                             return
                         }
                         
                         var err: Error?
+                        
+//                        for packet in data{
+//                            switch packet.payload{
+//                                case .some(.sgpPacket(_)):
+//                                    break
+//                                case .some(.bmePacket(_)):
+//                                if ( Int(packet.bmePacket.packetIndex) - prevBMEIndex) > 1 {
+//                                        print("missing packets: prev \(prevBMEIndex), current \(packet.bmePacket.packetIndex)")
+//                                    }
+//                                    print(packet.bmePacket.packetIndex)
+//                                    prevBMEIndex = Int(packet.bmePacket.packetIndex)
+//                                case .some(.luxPacket(_)):
+//                                    break
+//                                case .some(.blinkPacket(_)):
+//                                    break
+//                                case .some(.shtPacket(_)):
+//                                    break
+//                                case .some(.specPacket(_)):
+//                                    break
+//                                case .some(.thermPacket(_)):
+//                                    break
+//                                case .some(.imuPacket(_)):
+//                                    break
+//                                case .some(.micPacket(_)):
+//                                    break
+//                                case .some(.micLevelPacket(_)):
+//                                    break
+//                                case .some(.surveyPacket(_)):
+//                                    break
+//                                case .some(.metaDataPacket(_)):
+//                                    break
+//                                case .none:
+//                                    break
+//                            }
+//                        }
                         
                         try Airspec.send_packets(packets: data, auth_token: AUTH_TOKEN) { error in
                             err = error
@@ -799,44 +888,6 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     } catch {
                         print("cannot upload the data to the server: \(error)")
                         //                        RawDataViewModel.addMetaDataToRawData(payload: "cannot upload the data to the server: \(error)", timestampUnix: Date(), type: 2)
-                        break
-                    }
-                }
-                
-            }
-//        }
-    }
-    
-    func migrateFromTempRawToRaw() {
-        print("try migrate raw data from temp raw to raw coredata that saved during the upload to server period")
-        DispatchQueue.global().async {
-            DispatchQueue.global().sync {
-                // https://stackoverflow.com/questions/42772907/what-does-main-sync-in-global-async-mean
-                
-                let sem = DispatchSemaphore(value: 0)
-                
-                while true {
-                    do {
-                        let (data, onComplete) = try TempRawDataViewModel.fetchData()
-                        if data.isEmpty {
-                            print("migrate all packets")
-                            RawDataViewModel.addMetaDataToRawData(payload: "migrate all packets", timestampUnix: Date(), type: 7)
-                            try onComplete()
-                            return
-                        }
-                        
-                        var err: Error?
-                        
-                        sem.wait()
-                        
-                        if let err = err {
-                            throw err
-                        } else {
-                            try onComplete()
-                            sem.signal()
-                        }
-                    } catch {
-                        print("cannot migrate the data: \(error)")
                         break
                     }
                 }
