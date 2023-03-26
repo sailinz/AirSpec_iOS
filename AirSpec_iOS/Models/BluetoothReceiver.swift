@@ -69,7 +69,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     var specPacketID: Int?
     var thermPacketID: Int?
     
-    var isUploadToServer = false
+    
     
     var state: State {
         get {
@@ -109,8 +109,11 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     /// -- PUSH TO THE SERVER
     private var timer: DispatchSourceTimer?
     let updateFrequence = 60 * 1 /// seconds
-    var countUpdateFrequency = 0 
-//    let queue = DispatchQueue(label: "com.example.bluetoothQueue")
+    var countUpdateFrequency = 0
+    var isUploadToServer = false
+    var tempPacketBuffer:[SensorPacket] = []
+    var countPackets = 0
+
     
     override init() {
         super.init()
@@ -219,10 +222,10 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         disconnectionTimer = nil
         
         timer = DispatchSource.makeTimerSource()
-        timer?.schedule(deadline: .now() + .seconds(5), repeating: .seconds(updateFrequence))
+        timer?.schedule(deadline: .now() + .seconds(3), repeating: .seconds(updateFrequence))
         timer?.setEventHandler {
             self.isUploadToServer = true
-            DispatchQueue.global().async {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5)  { /// wait for 3 sec
                 self.uploadToServer()
             }
             
@@ -233,8 +236,6 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     self.storeLongTermData()
                 }
             }
-            
-            
         }
         timer?.resume()
     }
@@ -301,6 +302,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         
         if let rxchar = service.characteristics?.first(where: { $0.uuid == BluetoothConstants.airspecRXCharacteristicUUID }) {
             logger.info("got rx characteristic")
+            logger.info("got rx characteristic")
             
             sendCharacteristic = rxchar
             
@@ -350,22 +352,32 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //            }
             
             /// store to tempdata during the thread
-//            if(isUploadToServer){
-//                try TempRawDataViewModel.addTempRawData(record: data)
-//            }else{
-//                try RawDataViewModel.addRawData(record: data)
-//            }
+            print(self.isUploadToServer)
+            if(self.isUploadToServer){
+                tempPacketBuffer.append(packet)
+                print(packet)
+            }else{
+                try RawDataViewModel.addRawData(record: data)
+            }
             
             /// store to raw data
-            DispatchQueue.main.async {
-                do {
-                    try RawDataViewModel.addRawData(record: data)
-                } catch {
-                    print("Error adding raw data: \(error)")
-                    // Handle the error here
-                }
-            }
-           
+//            DispatchQueue.main.async {
+//                do {
+//                    try RawDataViewModel.addRawData(record: data)
+//                } catch {
+//                    print("Error adding raw data: \(error)")
+//                    // Handle the error here
+//                }
+//            }
+//            try RawDataViewModel.addRawData(record: data)
+//
+//            countPackets = countPackets + 1
+//            if countPackets > 500 {
+//                print(Date())
+//                self.uploadToServer()
+//                countPackets = 0
+//            }
+            
             
             if(dataToWatch.surveyDone){
                 var secondsBetweenDates = Double(greenHoldTime + 12)
@@ -386,6 +398,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     }
                     
                     RawDataViewModel.addMetaDataToRawData(payload: "Reaction time: \(secondsBetweenDates); Time now: \(Date()); PrevNotification: \(UserDefaults.standard.object(forKey: "prevNotificationTime")); survey received from watch; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                    
                     
                     
                 }else{
@@ -409,28 +422,26 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             case .some(.sgpPacket(_)):
                 for sensorPayload in packet.sgpPacket.payload {
                     if packet.sgpPacket.sensorID == 0 {
-//                        print(packet)
-                        if let prevSgpNosePacketID = self.sgpNosePacketID{
-//                            print("sgpNose packet: current \(packet.sgpPacket.packetIndex); prev \(prevSgpNosePacketID) ")
-                            if (Int(packet.sgpPacket.packetIndex) - prevSgpNosePacketID) > 1{
-                                RawDataViewModel.addMetaDataToRawData(payload: "sgpNose packet ID missing: current \(packet.sgpPacket.packetIndex); prev \(prevSgpNosePacketID) ", timestampUnix: Date(), type: 2)
-                            }
-                            self.sgpNosePacketID = Int(packet.sgpPacket.packetIndex)
-                        }else{
-                            self.sgpNosePacketID = Int(packet.sgpPacket.packetIndex)
-                        }
+//                        if let prevSgpNosePacketID = self.sgpNosePacketID{
+//                            if (Int(packet.sgpPacket.packetIndex) - prevSgpNosePacketID) > 1{
+//                                RawDataViewModel.addMetaDataToRawData(payload: "sgpNose packet ID missing: current \(packet.sgpPacket.packetIndex); prev \(prevSgpNosePacketID) ", timestampUnix: Date(), type: 2)
+//                            }
+//                            self.sgpNosePacketID = Int(packet.sgpPacket.packetIndex)
+//                        }else{
+//                            self.sgpNosePacketID = Int(packet.sgpPacket.packetIndex)
+//                        }
                         
                         
                         if(sensorPayload.vocIndexValue != nil && sensorPayload.noxIndexValue != nil){
                             
-                            if let prevsgpSidePacketID = self.sgpSidePacketID{
-                                if (Int(packet.sgpPacket.packetIndex) - prevsgpSidePacketID) > 1{
-                                    RawDataViewModel.addMetaDataToRawData(payload: "sgpSide packet ID missing: current \(packet.sgpPacket.packetIndex); prev \(prevsgpSidePacketID) ", timestampUnix: Date(), type: 2)
-                                }
-                                self.sgpSidePacketID = Int(packet.sgpPacket.packetIndex)
-                            }else{
-                                self.sgpSidePacketID = Int(packet.sgpPacket.packetIndex)
-                            }
+//                            if let prevsgpSidePacketID = self.sgpSidePacketID{
+//                                if (Int(packet.sgpPacket.packetIndex) - prevsgpSidePacketID) > 1{
+//                                    RawDataViewModel.addMetaDataToRawData(payload: "sgpSide packet ID missing: current \(packet.sgpPacket.packetIndex); prev \(prevsgpSidePacketID) ", timestampUnix: Date(), type: 2)
+//                                }
+//                                self.sgpSidePacketID = Int(packet.sgpPacket.packetIndex)
+//                            }else{
+//                                self.sgpSidePacketID = Int(packet.sgpPacket.packetIndex)
+//                            }
                             
                             self.airQualityData[3] = Double(sensorPayload.vocIndexValue) /// voc index nose
                             dataToWatch.updateValue(sensorValue: self.airQualityData[3], sensorName: "vocIndexData")
@@ -442,9 +453,6 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                         }
                     }else{
                         if(sensorPayload.vocIndexValue != nil && sensorPayload.noxIndexValue != nil){
-                            
-                            
-                            
                             self.airQualityData[0] = Double(sensorPayload.vocIndexValue) /// voc index nose
                             dataToWatch.updateValue(sensorValue: self.airQualityData[0], sensorName: "vocIndexAmbientData")
                             self.airQualityData[1] = Double(sensorPayload.noxIndexValue) /// nox index nose
@@ -459,31 +467,44 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 
                 
             case .some(.bmePacket(_)):
-                if let prevbmePacketID = self.bmePacketID{
-                    if (Int(packet.bmePacket.packetIndex) - prevbmePacketID) > 1{
-                        RawDataViewModel.addMetaDataToRawData(payload: "bme packet ID missing: current \(packet.bmePacket.packetIndex); prev \(prevbmePacketID) ", timestampUnix: Date(), type: 2)
-                    }
-                    self.bmePacketID = Int(packet.bmePacket.packetIndex)
-                }else{
-                    self.bmePacketID = Int(packet.bmePacket.packetIndex)
-                }
-                
-                let timestamps = Set(packet.bmePacket.payload.map {
-                    let date = Date(timeIntervalSince1970: Double($0.timestampUnix) / 1000)
-                    let id = $0.sensorID
-                    
-                    return "\(date), \(id)"
-                })
-                
-                let repetitions = packet.bmePacket.payload.count - timestamps.count
-                
-                if(isUploadToServer){
-                    TempRawDataViewModel.addMetaDataToRawData(payload: "bme: packet index: \(packet.bmePacket.packetIndex); \(repetitions) repetitions; unique: \(timestamps) ", timestampUnix: Date(), type: 2)
-                }else{
-                    RawDataViewModel.addMetaDataToRawData(payload: "bme: packet index: \(packet.bmePacket.packetIndex); \(repetitions) repetitions; unique: \(timestamps) ", timestampUnix: Date(), type: 2)
-                }
-                
-                RawDataViewModel.addMetaDataToRawData(payload: "bme: packet index: \(packet.bmePacket.packetIndex); \(repetitions) repetitions; unique: \(timestamps) ", timestampUnix: Date(), type: 2)
+                print(packet.bmePacket.packetIndex)
+                print(self.isUploadToServer)
+//                if let prevbmePacketID = self.bmePacketID{
+//                    if (Int(packet.bmePacket.packetIndex) - prevbmePacketID) > 1{
+//                        RawDataViewModel.addMetaDataToRawData(payload: "bme packet ID missing: current \(packet.bmePacket.packetIndex); prev \(prevbmePacketID) ", timestampUnix: Date(), type: 2)
+//                    }
+//                    self.bmePacketID = Int(packet.bmePacket.packetIndex)
+//                }else{
+//                    self.bmePacketID = Int(packet.bmePacket.packetIndex)
+//                }
+//
+//                let timestamps = Set(packet.bmePacket.payload.map {
+//                    let date = Date(timeIntervalSince1970: Double($0.timestampUnix) / 1000)
+//                    let id = $0.sensorID
+//
+//                    return "\(date), \(id)"
+//                })
+//
+//                let repetitions = packet.bmePacket.payload.count - timestamps.count
+//
+//                if(isUploadToServer){
+//                    var metaData = appMetaDataPacket()
+//                    metaData.payload = "bme: packet index: \(packet.bmePacket.packetIndex) (while upload to server); \(repetitions) repetitions; unique: \(timestamps) "
+//                    metaData.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
+//                    metaData.type = UInt32(2)
+//
+//                    let sensorPacket = SensorPacket.with {
+//                        $0.header = SensorPacketHeader.with {
+//                            $0.epoch = UInt64(NSDate().timeIntervalSince1970 * 1000)
+//                        }
+//                        $0.metaDataPacket = metaData
+//                    }
+//                    tempPacketBuffer.append(sensorPacket)
+//                }else{
+//                    RawDataViewModel.addMetaDataToRawData(payload: "bme: packet index: \(packet.bmePacket.packetIndex); \(repetitions) repetitions; unique: \(timestamps) ", timestampUnix: Date(), type: 2)
+//                }
+//
+//                RawDataViewModel.addMetaDataToRawData(payload: "bme: packet index: \(packet.bmePacket.packetIndex); \(repetitions) repetitions; unique: \(timestamps) ", timestampUnix: Date(), type: 2)
                
                 
 //                print("bme: \(repetitions) repetitions; unique: \(timestamps)")
@@ -505,14 +526,14 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 
                 
             case .some(.luxPacket(_)):
-                if let prevluxPacketID = self.luxPacketID{
-                    if (Int(packet.luxPacket.packetIndex) - prevluxPacketID) > 1{
-                        RawDataViewModel.addMetaDataToRawData(payload: "lux packet ID missing: current \(packet.luxPacket.packetIndex); prev \(prevluxPacketID) ", timestampUnix: Date(), type: 2)
-                    }
-                    self.luxPacketID = Int(packet.luxPacket.packetIndex)
-                }else{
-                    self.luxPacketID = Int(packet.luxPacket.packetIndex)
-                }
+//                if let prevluxPacketID = self.luxPacketID{
+//                    if (Int(packet.luxPacket.packetIndex) - prevluxPacketID) > 1{
+//                        RawDataViewModel.addMetaDataToRawData(payload: "lux packet ID missing: current \(packet.luxPacket.packetIndex); prev \(prevluxPacketID) ", timestampUnix: Date(), type: 2)
+//                    }
+//                    self.luxPacketID = Int(packet.luxPacket.packetIndex)
+//                }else{
+//                    self.luxPacketID = Int(packet.luxPacket.packetIndex)
+//                }
                 
                 for sensorPayload in packet.luxPacket.payload {
                     if(sensorPayload.lux != nil){
@@ -528,14 +549,35 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             case .some(.shtPacket(_)):
                 for sensorPayload in packet.shtPacket.payload {
                     if packet.shtPacket.sensorID == 0 {
-                        if let prevshtNosePacketID = self.shtNosePacketID{
-                            if (Int(packet.shtPacket.packetIndex) - prevshtNosePacketID) > 1{
-                                RawDataViewModel.addMetaDataToRawData(payload: "shtNose packet ID missing: current \(packet.shtPacket.packetIndex); prev \(prevshtNosePacketID) ", timestampUnix: Date(), type: 2)
-                            }
-                            self.shtNosePacketID = Int(packet.shtPacket.packetIndex)
-                        }else{
-                            self.shtNosePacketID = Int(packet.shtPacket.packetIndex)
-                        }
+//                        if let prevshtNosePacketID = self.shtNosePacketID{
+//                            if (Int(packet.shtPacket.packetIndex) - prevshtNosePacketID) > 1{
+//                                RawDataViewModel.addMetaDataToRawData(payload: "shtNose packet ID missing: current \(packet.shtPacket.packetIndex); prev \(prevshtNosePacketID) ", timestampUnix: Date(), type: 2)
+//                            }
+//                            self.shtNosePacketID = Int(packet.shtPacket.packetIndex)
+//                        }else{
+//                            self.shtNosePacketID = Int(packet.shtPacket.packetIndex)
+//                        }
+                        
+//                        print(packet.shtPacket.packetIndex)
+//                        print(self.isUploadToServer)
+//
+//                        if(isUploadToServer){
+//                            var metaData = appMetaDataPacket()
+//                            metaData.payload = "sht(nose): packet index: \(packet.shtPacket.packetIndex) (while upload to server)"
+//                            metaData.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
+//                            metaData.type = UInt32(2)
+//
+//                            let sensorPacket = SensorPacket.with {
+//                                $0.header = SensorPacketHeader.with {
+//                                    $0.epoch = UInt64(NSDate().timeIntervalSince1970 * 1000)
+//                                }
+//                                $0.metaDataPacket = metaData
+//                            }
+//                            tempPacketBuffer.append(sensorPacket)
+//                        }else{
+//                            RawDataViewModel.addMetaDataToRawData(payload: "sht(nose): packet index: \(packet.shtPacket.packetIndex)", timestampUnix: Date(), type: 2)
+//                        }
+                        
                         
                         if(sensorPayload.temperature != nil && sensorPayload.humidity != nil){
                             self.visualData[1] = Double(sensorPayload.temperature) /// temperature
@@ -553,14 +595,14 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                             try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[2].name, value: Float(self.visualData[2]))
                         }
                     }else{
-                        if let prevshtSidePacketID = self.shtSidePacketID{
-                            if (Int(packet.shtPacket.packetIndex) - prevshtSidePacketID) > 1{
-                                RawDataViewModel.addMetaDataToRawData(payload: "shtSide packet ID missing: current \(packet.shtPacket.packetIndex); prev \(prevshtSidePacketID) ", timestampUnix: Date(), type: 2)
-                            }
-                            self.shtSidePacketID = Int(packet.shtPacket.packetIndex)
-                        }else{
-                            self.shtSidePacketID = Int(packet.shtPacket.packetIndex)
-                        }
+//                        if let prevshtSidePacketID = self.shtSidePacketID{
+//                            if (Int(packet.shtPacket.packetIndex) - prevshtSidePacketID) > 1{
+//                                RawDataViewModel.addMetaDataToRawData(payload: "shtSide packet ID missing: current \(packet.shtPacket.packetIndex); prev \(prevshtSidePacketID) ", timestampUnix: Date(), type: 2)
+//                            }
+//                            self.shtSidePacketID = Int(packet.shtPacket.packetIndex)
+//                        }else{
+//                            self.shtSidePacketID = Int(packet.shtPacket.packetIndex)
+//                        }
                         
                         if(sensorPayload.temperature != nil && sensorPayload.humidity != nil){
                             self.thermalData[0] = Double(sensorPayload.temperature) /// temperature
@@ -582,25 +624,25 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 }
                 
             case .some(.specPacket(_)):
-                if let prevspecPacketID = self.specPacketID{
-                    if (Int(packet.specPacket.packetIndex) - prevspecPacketID) > 1{
-                        RawDataViewModel.addMetaDataToRawData(payload: "spec packet ID missing: current \(packet.specPacket.packetIndex); prev \(prevspecPacketID) ", timestampUnix: Date(), type: 2)
-                    }
-                    self.specPacketID = Int(packet.specPacket.packetIndex)
-                }else{
-                    self.specPacketID = Int(packet.specPacket.packetIndex)
-                }
+//                if let prevspecPacketID = self.specPacketID{
+//                    if (Int(packet.specPacket.packetIndex) - prevspecPacketID) > 1{
+//                        RawDataViewModel.addMetaDataToRawData(payload: "spec packet ID missing: current \(packet.specPacket.packetIndex); prev \(prevspecPacketID) ", timestampUnix: Date(), type: 2)
+//                    }
+//                    self.specPacketID = Int(packet.specPacket.packetIndex)
+//                }else{
+//                    self.specPacketID = Int(packet.specPacket.packetIndex)
+//                }
                 break
                 
             case .some(.thermPacket(_)):
-                if let prevthermPacketID = self.thermPacketID{
-                    if (Int(packet.thermPacket.packetIndex) - prevthermPacketID) > 1{
-                        RawDataViewModel.addMetaDataToRawData(payload: "therm packet ID missing: current \(packet.thermPacket.packetIndex); prev \(prevthermPacketID) ", timestampUnix: Date(), type: 2)
-                    }
-                    self.thermPacketID = Int(packet.thermPacket.packetIndex)
-                }else{
-                    self.thermPacketID = Int(packet.thermPacket.packetIndex)
-                }
+//                if let prevthermPacketID = self.thermPacketID{
+//                    if (Int(packet.thermPacket.packetIndex) - prevthermPacketID) > 1{
+//                        RawDataViewModel.addMetaDataToRawData(payload: "therm packet ID missing: current \(packet.thermPacket.packetIndex); prev \(prevthermPacketID) ", timestampUnix: Date(), type: 2)
+//                    }
+//                    self.thermPacketID = Int(packet.thermPacket.packetIndex)
+//                }else{
+//                    self.thermPacketID = Int(packet.thermPacket.packetIndex)
+//                }
                 
                 var thermNoseTip: Double = 0
                 var thermNoseBridge: Double = 0
@@ -654,16 +696,13 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 
                 
             case .some(.imuPacket(_)):
-                //                    print("imu")
-                //                    print(packet)
+//                    print("imu")
                 break
             case .some(.micPacket(_)):
 //                print("mic")
-                //                        print(packet)
                 break
             case .some(.micLevelPacket(_)):
 //                print("micLevelPacket")
-                //                        print(packet)
                 for sensorPayload in packet.micLevelPacket.payload {
                     if(sensorPayload.soundSplDb != nil){
                         self.acoutsticsData[0] = Double(sensorPayload.soundSplDb)
@@ -709,7 +748,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     
     func uploadToServer() {
         print("try to upload to server")
-        DispatchQueue.global().async {
+//        DispatchQueue.global().async { [self] in
             DispatchQueue.global().sync {
                 // https://stackoverflow.com/questions/42772907/what-does-main-sync-in-global-async-mean
                 
@@ -722,14 +761,23 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //                            sem.signal()
 //                            self.storeLongTermData()
 //                            sem.wait()
-                            print("sent all packets")
                             
-                            RawDataViewModel.addMetaDataToRawData(payload: "Sent all packets", timestampUnix: Date(), type: 7)
                             try onComplete()
-//                            self.isUploadToServer = false
+                            print("\(Date.now) sent all packets")
+                            RawDataViewModel.addMetaDataToRawData(payload: "Sent all packets", timestampUnix: Date(), type: 7)
+                            
+                            self.isUploadToServer = false
+                            var err: Error?
+                            try Airspec.send_packets(packets: self.tempPacketBuffer, auth_token: AUTH_TOKEN) { error in
+                                err = error
+//                                sem.signal()
+                            }
+                            
+                            RawDataViewModel.addMetaDataToRawData(payload: "sent gap packets \(self.tempPacketBuffer.count)", timestampUnix: Date(), type: 7)
+                            print("sent gap packets \(self.tempPacketBuffer.count)")
+                            tempPacketBuffer = []
 //                            self.migrateFromTempRawToRaw()
-                            
-                            
+                                  
                             
                             return
                         }
@@ -756,7 +804,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 }
                 
             }
-        }
+//        }
     }
     
     func migrateFromTempRawToRaw() {
