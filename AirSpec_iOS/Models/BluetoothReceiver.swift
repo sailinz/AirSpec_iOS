@@ -379,6 +379,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             let noHighFreq = try RawDataViewModel.shouldDisableHighFrequency()
             var isHighFreq = false
             
+            
+            
             switch packet.payload {
             case .some(.blinkPacket(_)):
                 isHighFreq = true
@@ -386,6 +388,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 
             case .some(.imuPacket(_)):
                 isHighFreq = true
+                
                 break
                 
             default:
@@ -396,8 +399,13 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             if (data.isEmpty || isHighFreq && noHighFreq) {
                 return
             } else {
-                rawDataSync.sync {
-                    rawDataQueue.append(data)
+                DispatchQueue.global().async { [self] in
+                    rawDataSync.sync {
+                        
+                        rawDataQueue.append(data)
+                        
+                        
+                    }
                 }
             }
             
@@ -688,7 +696,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 
                 
             case .some(.imuPacket(_)):
-//                    print("imu")
+                print(packet)
                 break
             case .some(.micPacket(_)):
 //                print("mic")
@@ -772,20 +780,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                             print("\(Date.now) sent all packets")
                             RawDataViewModel.addMetaDataToRawData(payload: "Sent all packets", timestampUnix: Date(), type: 7)
                             
-                            self.isUploadToServer = false
-                            
-                            /// buffer the packets during upload to server event
-                            //                            var err: Error?
-                            //                            try Airspec.send_packets(packets: self.tempPacketBuffer, auth_token: AUTH_TOKEN) { error in
-                            //                                err = error
-                            ////                                sem.signal()
-                            //                            }
-                            
-                            //                            RawDataViewModel.addMetaDataToRawData(payload: "sent gap packets \(self.tempPacketBuffer.count)", timestampUnix: Date(), type: 7)
-                            //                            print("sent gap packets \(self.tempPacketBuffer.count)")
-                            //                            tempPacketBuffer = []
-                            
-                            
+//                            self.isUploadToServer = false
                             return
                         }
                         
@@ -799,11 +794,13 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                                 if ( Int(packet.bmePacket.packetIndex) - prevBMEIndex) > 1 {
                                         print("missing packets: prev \(prevBMEIndex), current \(packet.bmePacket.packetIndex)")
                                     }
-                                    print(packet.bmePacket.packetIndex)
+//                                    print(packet.bmePacket.packetIndex)
+                                    print(packet)
                                     prevBMEIndex = Int(packet.bmePacket.packetIndex)
                                 case .some(.luxPacket(_)):
                                     break
                                 case .some(.blinkPacket(_)):
+                                    print(packet)
                                     break
                                 case .some(.shtPacket(_)):
                                     break
@@ -812,6 +809,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                                 case .some(.thermPacket(_)):
                                     break
                                 case .some(.imuPacket(_)):
+                                    print("sending imu")
+//                                    print(packet)
                                     break
                                 case .some(.micPacket(_)):
                                     break
@@ -1092,12 +1091,14 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         
         /// blue green transition
         var blueGreenTransition = AirSpecConfigPacket()
-        if isEnable{
-            blueGreenTransition.header.timestampUnix = timestamp_now()
-        }else{
-            blueGreenTransition.header.timestampUnix = 0
-        }
+//        if isEnable{
+//            blueGreenTransition.header.timestampUnix = timestamp_now()
+//        }else{
+//            blueGreenTransition.header.timestampUnix = 0
+//        }
         //        blueGreenTransition.header.timestampUnix = 0
+        
+        blueGreenTransition.header.timestampUnix = timestamp_now()
         RawDataViewModel.addMetaDataToRawData(payload: "blueGreenLight: \(blueGreenTransition.header.timestampUnix); isEnabled \(isEnable)", timestampUnix: Date(), type: 2)
         
         blueGreenTransition.blueGreenTransition.enable = isEnable /// true for enable the transition; false for turning off the high sampling rate
@@ -1157,7 +1158,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         logger.info("set blue")
         /// single LED
         var singleLED = AirSpecConfigPacket()
-        singleLED.header.timestampUnix = 0
+//        singleLED.header.timestampUnix = 0
+        singleLED.header.timestampUnix = timestamp_now()
         RawDataViewModel.addMetaDataToRawData(payload: "setblue: \(singleLED.header.timestampUnix)", timestampUnix: Date(), type: 2)
         
         singleLED.ctrlIndivLed.left.eye.blue = maxIntensity
@@ -1188,8 +1190,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         
         /// dfu
         var dfu = AirSpecConfigPacket()
-        //        dfu.header.timestampUnix = timestamp_now()
-        dfu.header.timestampUnix = 0
+        dfu.header.timestampUnix = timestamp_now()
+//        dfu.header.timestampUnix = 0
         RawDataViewModel.addMetaDataToRawData(payload: "dfu: \(dfu.header.timestampUnix)", timestampUnix: Date(), type: 2)
         dfu.dfuMode.enable = true
         

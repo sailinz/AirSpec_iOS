@@ -59,7 +59,7 @@ struct SelfLoggingView: View {
                                         
                                         
                                         if(!receiver.isBlueGreenSurveyDone){
-                                            RawDataViewModel.addMetaDataToRawData(payload: "Reaction time: \(secondsBetweenDates); Time now: \(Date()); PrevNotification: \(UserDefaults.standard.object(forKey: "prevNotificationTime")); survey received from watch; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                                            RawDataViewModel.addMetaDataToRawData(payload: "Reaction time: \(secondsBetweenDates); Time now: \(Date()); PrevNotification: \(UserDefaults.standard.object(forKey: "prevNotificationTime")); survey received from phone; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
                                             
                                             receiver.blueGreenLight(isEnable: false)
                                             DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
@@ -117,7 +117,7 @@ struct SelfLoggingView: View {
                                         
                                      
                                         if(!receiver.isBlueGreenSurveyDone){
-                                            RawDataViewModel.addMetaDataToRawData(payload: "Reaction time: \(secondsBetweenDates); Time now: \(Date()); PrevNotification: \(UserDefaults.standard.object(forKey: "prevNotificationTime")); survey received from watch; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                                            RawDataViewModel.addMetaDataToRawData(payload: "Reaction time: \(secondsBetweenDates); Time now: \(Date()); PrevNotification: \(UserDefaults.standard.object(forKey: "prevNotificationTime")); survey received from phone; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
                                             
                                             receiver.blueGreenLight(isEnable: false)
                                             DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
