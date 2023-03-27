@@ -117,7 +117,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //    var tempPacketBuffer:[SensorPacket] = []
 //    var countPackets = 0
     var rawDataQueue: Deque<Data> = []
-
+    
+    let rawDataSync = DispatchQueue(label: "raw_data_queue")
     
     override init() {
         super.init()
@@ -226,25 +227,27 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         disconnectionTimer = nil
         
         timer = DispatchSource.makeTimerSource()
-        timer?.schedule(deadline: .now() + .seconds(3), repeating: .seconds(updateFrequence))
+        timer?.schedule(deadline: .now() + .seconds(10), repeating: .seconds(updateFrequence))
         timer?.setEventHandler {
             
             self.countUpdateFrequency += 1
-//            if self.countUpdateFrequency % 3 == 0{ /// upload to server every 2 minute
-//                self.uploadToServer()
-//            }else{
-//                self.addDatafromQueueToRawDataDB()
-//            }
             
-            if self.countUpdateFrequency == 15 { /// local avg every 5 min
-                self.countUpdateFrequency = 0
+            if self.countUpdateFrequency % 3 == 0{ /// upload to server every 1 minute
                 self.uploadToServer()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 5)  { /// wait for 5 sec
-                    self.storeLongTermData()
-                }
             }else{
                 self.addDatafromQueueToRawDataDB()
             }
+            
+            if self.countUpdateFrequency == 15 { /// local avg every 5 min
+                self.countUpdateFrequency = 0
+//                self.uploadToServer()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 9)  { /// wait for 9 sec
+                    self.storeLongTermData()
+                }
+            }
+//            else{
+//                self.addDatafromQueueToRawDataDB()
+//            }
             
             
 //            self.isUploadToServer = true
@@ -331,7 +334,6 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
                 self.setBlueInit()
-                self.setBlueInit()
                 
             }
         }
@@ -374,36 +376,30 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //                RawDataViewModel.addMetaDataToRawData(payload: "cannot upload the data to the server: \(error)", timestampUnix: Date(), type: 2)
 //            }
             
+            let noHighFreq = try RawDataViewModel.shouldDisableHighFrequency()
+            var isHighFreq = false
+            
+            switch packet.payload {
+            case .some(.blinkPacket(_)):
+                isHighFreq = true
+                break
+
+            case .some(.imuPacket(_)):
+                isHighFreq = true
+                break
+                
+            default:
+                break
+            }
+            
             /// using queue
-            rawDataQueue.append(data)
-            
-            /// store to tempdata during the thread
-//            print(self.isUploadToServer)
-//            if(self.isUploadToServer){
-//                tempPacketBuffer.append(packet)
-//                print(packet)
-//            }else{
-//                try RawDataViewModel.addRawData(record: data)
-//            }
-            
-            /// store to raw data
-//            DispatchQueue.main.async {
-//                do {
-//                    try RawDataViewModel.addRawData(record: data)
-//                } catch {
-//                    print("Error adding raw data: \(error)")
-//                    // Handle the error here
-//                }
-//            }
-//            try RawDataViewModel.addRawData(record: data)
-//
-//            countPackets = countPackets + 1
-//            if countPackets > 500 {
-//                print(Date())
-//                self.uploadToServer()
-//                countPackets = 0
-//            }
-            
+            if (data.isEmpty || isHighFreq && noHighFreq) {
+                return
+            } else {
+                rawDataSync.sync {
+                    rawDataQueue.append(data)
+                }
+            }
             
             if(dataToWatch.surveyDone){
                 var secondsBetweenDates = Double(greenHoldTime + 12)
@@ -665,20 +661,20 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 /// estimate cog load:  (temple - face)  (high cog load: low face temp -- https://neurosciencenews.com/stress-nasal-temperature-8579/)
                 let thermalpileData = thermNoseTip * thermNoseBridge * thermTempleFront * thermTempleMiddle * thermTempleRear
                 if (thermalpileData.isInfinite || thermalpileData.isNaN){
-//#if DEBUG_THERMOPILE
+                    #if DEBUG_THERMOPILE
                     print("error parsing thermopile value")
                     print(thermNoseTip)
                     print(thermNoseBridge)
                     print(thermTempleFront)
                     print(thermTempleMiddle)
                     print(thermTempleRear)
-//#endif
+                    #endif
                 }else{
                     if(Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - cogLoadOffset) * cogLoadMultiFactor) > 0){
                         
                         cogIntensity = Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - cogLoadOffset) * cogLoadMultiFactor  + 3)
-                        print("cogload baseline: \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
-                        print("cogload est: \(cogIntensity)")
+//                        print("cogload baseline: \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
+//                        print("cogload est: \(cogIntensity)")
                         dataToWatch.updateValue(sensorValue: Double(cogIntensity), sensorName: "cogLoadData")
                     }else{
                         cogIntensity = 3
@@ -742,63 +738,20 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     
     func addDatafromQueueToRawDataDB(){
         DispatchQueue.global().async { [self] in
-            DispatchQueue.global().sync {
+            rawDataSync.sync {
                 print("dequeing")
-                while true {
-                    if rawDataQueue.isEmpty{
-                        break
-                    }else{
-//                        var data = rawDataQueue.popFirst()!
-                        
+
+                while !rawDataQueue.isEmpty {
+                    if let data = rawDataQueue.popFirst() {
                         do{
-                            try RawDataViewModel.addRawData(record: rawDataQueue.popFirst()!)
+                            try RawDataViewModel.addRawData(record: data)
                         }catch{
                             print("cannot add dequed packet to raw data db \(error.localizedDescription)")
                         }
-
-//                        guard let packet = try? Airspec.decode_packet(data) else {
-//                            print("failed parsing packet")
-//                            return
-//                        }
-//
-//                        switch packet.payload{
-//                            case .some(.sgpPacket(_)):
-//                                break
-//                            case .some(.bmePacket(_)):
-//                                print(packet.bmePacket.packetIndex)
-//                            case .some(.luxPacket(_)):
-//                                break
-//                            case .some(.blinkPacket(_)):
-//                                break
-//                            case .some(.shtPacket(_)):
-//                                break
-//                            case .some(.specPacket(_)):
-//                                break
-//                            case .some(.thermPacket(_)):
-//                                break
-//                            case .some(.imuPacket(_)):
-//                                break
-//                            case .some(.micPacket(_)):
-//                                break
-//                            case .some(.micLevelPacket(_)):
-//                                break
-//                            case .some(.surveyPacket(_)):
-//                                break
-//                            case .some(.metaDataPacket(_)):
-//                                break
-//                            case .none:
-//                                break
-//                        }
-                        
-                        
-                    
                     }
                 }
-                
             }
         }
-        
-        
     }
     
     
@@ -822,56 +775,56 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                             self.isUploadToServer = false
                             
                             /// buffer the packets during upload to server event
-//                            var err: Error?
-//                            try Airspec.send_packets(packets: self.tempPacketBuffer, auth_token: AUTH_TOKEN) { error in
-//                                err = error
-////                                sem.signal()
-//                            }
+                            //                            var err: Error?
+                            //                            try Airspec.send_packets(packets: self.tempPacketBuffer, auth_token: AUTH_TOKEN) { error in
+                            //                                err = error
+                            ////                                sem.signal()
+                            //                            }
                             
-//                            RawDataViewModel.addMetaDataToRawData(payload: "sent gap packets \(self.tempPacketBuffer.count)", timestampUnix: Date(), type: 7)
-//                            print("sent gap packets \(self.tempPacketBuffer.count)")
-//                            tempPacketBuffer = []
-                                  
+                            //                            RawDataViewModel.addMetaDataToRawData(payload: "sent gap packets \(self.tempPacketBuffer.count)", timestampUnix: Date(), type: 7)
+                            //                            print("sent gap packets \(self.tempPacketBuffer.count)")
+                            //                            tempPacketBuffer = []
+                            
                             
                             return
                         }
                         
                         var err: Error?
                         
-//                        for packet in data{
-//                            switch packet.payload{
-//                                case .some(.sgpPacket(_)):
-//                                    break
-//                                case .some(.bmePacket(_)):
-//                                if ( Int(packet.bmePacket.packetIndex) - prevBMEIndex) > 1 {
-//                                        print("missing packets: prev \(prevBMEIndex), current \(packet.bmePacket.packetIndex)")
-//                                    }
-//                                    print(packet.bmePacket.packetIndex)
-//                                    prevBMEIndex = Int(packet.bmePacket.packetIndex)
-//                                case .some(.luxPacket(_)):
-//                                    break
-//                                case .some(.blinkPacket(_)):
-//                                    break
-//                                case .some(.shtPacket(_)):
-//                                    break
-//                                case .some(.specPacket(_)):
-//                                    break
-//                                case .some(.thermPacket(_)):
-//                                    break
-//                                case .some(.imuPacket(_)):
-//                                    break
-//                                case .some(.micPacket(_)):
-//                                    break
-//                                case .some(.micLevelPacket(_)):
-//                                    break
-//                                case .some(.surveyPacket(_)):
-//                                    break
-//                                case .some(.metaDataPacket(_)):
-//                                    break
-//                                case .none:
-//                                    break
-//                            }
-//                        }
+                        for packet in data{
+                            switch packet.payload{
+                            case .some(.sgpPacket(_)):
+                                    break
+                                case .some(.bmePacket(_)):
+                                if ( Int(packet.bmePacket.packetIndex) - prevBMEIndex) > 1 {
+                                        print("missing packets: prev \(prevBMEIndex), current \(packet.bmePacket.packetIndex)")
+                                    }
+                                    print(packet.bmePacket.packetIndex)
+                                    prevBMEIndex = Int(packet.bmePacket.packetIndex)
+                                case .some(.luxPacket(_)):
+                                    break
+                                case .some(.blinkPacket(_)):
+                                    break
+                                case .some(.shtPacket(_)):
+                                    break
+                                case .some(.specPacket(_)):
+                                    break
+                                case .some(.thermPacket(_)):
+                                    break
+                                case .some(.imuPacket(_)):
+                                    break
+                                case .some(.micPacket(_)):
+                                    break
+                                case .some(.micLevelPacket(_)):
+                                    break
+                                case .some(.surveyPacket(_)):
+                                    break
+                                case .some(.metaDataPacket(_)):
+                                    break
+                                case .none:
+                                    break
+                            }
+                        }
                         
                         try Airspec.send_packets(packets: data, auth_token: AUTH_TOKEN) { error in
                             err = error
@@ -1176,7 +1129,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         /// single LED
         var singleLED = AirSpecConfigPacket()
         singleLED.header.timestampUnix = timestamp_now()
-        RawDataViewModel.addMetaDataToRawData(payload: "setblueInit: \(singleLED.header.timestampUnix)", timestampUnix: Date(), type: 2)
+//        RawDataViewModel.addMetaDataToRawData(payload: "setblueInit: \(singleLED.header.timestampUnix)", timestampUnix: Date(), type: 2)
         
         singleLED.ctrlIndivLed.left.eye.blue = maxIntensity
         singleLED.ctrlIndivLed.left.eye.green = 0
@@ -1195,7 +1148,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         } catch {
             //handle error
             print("Fail to set blue")
-            RawDataViewModel.addMetaDataToRawData(payload: "Fail to set LED blue: \(error)", timestampUnix: Date(), type: 2)
+//            RawDataViewModel.addMetaDataToRawData(payload: "Fail to set LED blue: \(error)", timestampUnix: Date(), type: 2)
         }
         
     }

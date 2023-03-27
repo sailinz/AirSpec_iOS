@@ -14,7 +14,8 @@ class RawDataViewModel {
     static let log_container: NSPersistentContainer = NSPersistentContainer(name: "logs")
     static let MAX_UNSENT_COUNT = 40960 ///1 hour
     static let DELETE_CHUNK = MAX_UNSENT_COUNT / 10
-
+    static let MAX_HIGH_FREQUENCY_PROP = 0.5
+    
     static let q = DispatchQueue(label: "init_rawdata")
     static var has_init = false
     
@@ -47,6 +48,10 @@ class RawDataViewModel {
                 has_init = true
             }
         }
+    }
+    
+    static func shouldDisableHighFrequency() throws -> Bool {
+        return try Self.count() > Int(Double(MAX_UNSENT_COUNT) * MAX_HIGH_FREQUENCY_PROP)
     }
 
     static func count() throws -> Int {

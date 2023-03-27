@@ -186,16 +186,19 @@ struct SelfLoggingView: View {
     //                        Spacer()
     //                            .frame(height: 20)
                             
-                            TextField(
-                                    " Enter text or voice-to-text here",
-                                    text: $comments,
-                                    axis:.vertical
-                                        
+                            TextEditor(
+//                                    " Enter text or voice-to-text here",
+                                    text: $comments
+//                                    axis:.vertical
                                 )
-                            .padding(7.5)
-                                .lineLimit(1...6)
+                                .padding(5)
+                                .frame(minHeight: 40, maxHeight: 40 * 2)
                                 .frame(width: 250)
-                                .background(RoundedRectangle(cornerRadius: 15).fill(Color.gray).opacity(0.2))
+                                .background(RoundedRectangle(cornerRadius: 15).fill(Color.gray).opacity(0.1))
+                                .multilineTextAlignment(.leading)
+                                .onTapGesture {
+                                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                                }
     //                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.pink,lineWidth: 1))
                                 
                             

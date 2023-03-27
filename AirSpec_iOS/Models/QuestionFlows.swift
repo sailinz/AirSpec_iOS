@@ -585,7 +585,7 @@ let questionFlows = [
         
         Question(
               currentQuestion: 19,
-              title: "Is your camera on?",
+              title: "Is your webcam on?",
               identifier: "visual-comfort1",
               options: [
                 "Yes",

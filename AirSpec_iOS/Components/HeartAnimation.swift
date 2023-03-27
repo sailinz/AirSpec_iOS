@@ -170,7 +170,6 @@ struct HeartAnimation: View {
                             .shadow(
                                 color:Color.white.opacity(0.8),
                                 radius:2)
-                            .minimumScaleFactor(0.9)
                     }.buttonStyle(PlainButtonStyle())
                     
                     NavigationLink(destination: AcousticsView(dataReceivedWatch: dataReceivedWatch)) {
@@ -186,7 +185,6 @@ struct HeartAnimation: View {
                             .shadow(
                                 color:Color.white.opacity(0.8),
                                 radius:2)
-                            .minimumScaleFactor(0.9)
                     }.buttonStyle(PlainButtonStyle())
                     
                     
@@ -203,7 +201,6 @@ struct HeartAnimation: View {
                             .shadow(
                                 color:Color.white.opacity(0.8),
                                 radius:2)
-                            .minimumScaleFactor(0.9)
                     }.buttonStyle(PlainButtonStyle())
                     
                     
@@ -220,7 +217,6 @@ struct HeartAnimation: View {
                             .shadow(
                                 color:Color.white.opacity(0.8),
                                 radius:2)
-                            .minimumScaleFactor(0.9)
                     }.buttonStyle(PlainButtonStyle())
                     
                     

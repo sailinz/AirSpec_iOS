@@ -17,7 +17,7 @@ struct AirSpec_iOSApp: App {
     
     init() {
         RawDataViewModel.init_container()
-//        eTempRawDataViewModel.init_container()
+//        TempRawDataViewModel.init_container()
         TempDataViewModel.init_container()
         LongTermDataViewModel.init_container()
         SurveyDataViewModel.init_container()
@@ -47,7 +47,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        RawDataViewModel.addMetaDataToRawData(payload: "didFailToRegisterForRemoteNotificationsWithError: \(error.localizedDescription)", timestampUnix: Date(), type: 2)
+//        RawDataViewModel.addMetaDataToRawData(payload: "didFailToRegisterForRemoteNotificationsWithError: \(error.localizedDescription)", timestampUnix: Date(), type: 2)
         print(error.localizedDescription)
     }
 }

@@ -28,9 +28,11 @@ struct WatchSurveyComfyView: View {
                 if(isComfyVote){
                     VStack{
                         Spacer()
-                            .frame(height: 30)
+                            .frame(height: 10)
                         Text("How are you feeling now?")
-                            .minimumScaleFactor(0.6)
+                            .minimumScaleFactor(0.8)
+//                            .fixedSize(horizontal: true, vertical: false)
+                            
                         Spacer()
                             .frame(height: 10)
                         HStack{
@@ -63,7 +65,7 @@ struct WatchSurveyComfyView: View {
                                         Text("Not comfy")
                                             .font(.system(.subheadline) .weight(.semibold))
                                             .foregroundColor(.white)
-                                            .minimumScaleFactor(0.6)
+                                            .minimumScaleFactor(0.8)
                                     }
                                 }
                             }
@@ -100,7 +102,7 @@ struct WatchSurveyComfyView: View {
                                         Text("Comfy")
                                             .font(.system(.subheadline) .weight(.semibold))
                                             .foregroundColor(.white)
-                                            .minimumScaleFactor(0.5)
+                                            .minimumScaleFactor(0.8)
                                     }
                                 }
                             }
