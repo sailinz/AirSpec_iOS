@@ -762,44 +762,13 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         DispatchQueue.global().async { [self] in
             rawDataSync.sync {
                 print("dequeing")
-
+                let sem = DispatchSemaphore(value: 0)
                 while !rawDataQueue.isEmpty {
                     if let data = rawDataQueue.popFirst() {
                         do{
-                            guard let packet = try? Airspec.decode_packet(data) else {
-                                print("failed parsing packet")
-                                return
-                            }
-                            switch packet.payload {
-                            case .some(.blinkPacket(_)):
-//                                let timestamps = Set(packet.luxPacket.payload.map {
-//                                    let date = Date(timeIntervalSince1970: Double($0.timestampUnix) / 1000)
-//
-//                                    return "\(date)"
-//                                })
-//
-//                                let repetitions = packet.luxPacket.payload.count - timestamps.count
-//
-//                                if let prevluxPacketID = self.luxPacketIDQueue{
-////                                    if (Int(packet.luxPacket.packetIndex) - prevluxPacketID) > 1{
-////                                        print("missing packets dequeing (Lux: prev \(prevluxPacketID), current \(packet.luxPacket.packetIndex), \(repetitions) repetitions; unique: \(timestamps)")
-////                                    }
-//                                    self.luxPacketIDQueue = Int(packet.luxPacket.packetIndex)
-//                                }else{
-//                                    self.luxPacketIDQueue = Int(packet.luxPacket.packetIndex)
-//                                }
-//
-//                                print("Lux: packet id (from deque) \(packet.luxPacket.packetIndex), \(repetitions) repetitions; unique: \(timestamps)")
-//                                print("blink: packet id (from coredata) \(packet.blinkPacket.packetIndex), \(Date(timeIntervalSince1970: Double(packet.blinkPacket.timestampUnix) / 1000)) timestamp")
-                                break
-                            default:
-                                break
-                            }
-                            
-                            
-                            
-                            
                             try RawDataViewModel.addRawData(record: data)
+                            sem.signal()
+                            sem.wait()
                         }catch{
                             print("cannot add dequed packet to raw data db \(error.localizedDescription)")
                         }
@@ -1158,7 +1127,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                             
                         }
 
-                        try RawDataViewModel.addMetaDataToRawData(payload: "Long term data length: \(LongTermDataViewModel.count())", timestampUnix: Date(), type: 7)
+                        try RawDataViewModel.addMetaDataToRawData(payload: "Long term data length: \(LongTermDataViewModel.count()); means: \(means))", timestampUnix: Date(), type: 7)
                         
                         sem.signal()
                         self.triggerLEDNotification(tempData: data, means: means)

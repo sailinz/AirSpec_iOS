@@ -23,7 +23,7 @@ struct MyDataTimeView: View {
 
     /// environment
     private let lineWidth = 1.0
-    private let interpolationMethod: ChartInterpolationMethod = .cardinal
+//    private let interpolationMethod: ChartInterpolationMethod = .cardinal
     private let chartColor: Color = .pink
     private let showSymbols = true
 
