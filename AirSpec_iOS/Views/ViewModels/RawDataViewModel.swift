@@ -77,7 +77,7 @@ class RawDataViewModel {
         return ret!
     }
     
-    static func fetchData(_ n: Int = 100) throws -> ([SensorPacket], () throws -> Void) {
+    static func fetchData(_ n: Int = 10) throws -> ([SensorPacket], () throws -> Void) {
         let (sensor_data, sensor_cleanup) = try fetchData(n, fromContainer: container)
         let (log_data, log_cleanup) = try fetchData(n - sensor_data.count, fromContainer: log_container)
 //        logger.info("log container count: \(log_data.count)")
@@ -88,7 +88,7 @@ class RawDataViewModel {
         })
     }
 
-    static func fetchData(_ n: Int = 100, fromContainer container: NSPersistentContainer) throws -> ([SensorPacket], () throws -> Void) {
+    static func fetchData(_ n: Int = 10, fromContainer container: NSPersistentContainer) throws -> ([SensorPacket], () throws -> Void) {
         if n == 0 {
             return ([], {})
         }

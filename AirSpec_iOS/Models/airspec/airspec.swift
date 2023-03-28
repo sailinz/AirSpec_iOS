@@ -68,6 +68,10 @@ public class Airspec {
                 onComplete(nil)
                 break
 
+            case 400:
+                print("server cannot accept the packets; client side problem")
+                onComplete(nil)
+                break
             default:
                 onComplete(AirspecError.status(httpResponse.statusCode))
             }
