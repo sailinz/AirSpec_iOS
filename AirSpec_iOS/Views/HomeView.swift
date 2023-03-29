@@ -85,6 +85,7 @@ struct HomeView: View {
                                 color:Color.pink.opacity(0.5),
                                 radius:4)
                             .animation(Animation.easeIn(duration: 1).delay(1))
+//                            .animation(Animation.easeIn(duration: 2).delay(2)) ///week 2 experiment
 
                     }
                 }

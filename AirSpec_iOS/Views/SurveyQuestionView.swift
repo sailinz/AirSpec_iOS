@@ -27,6 +27,7 @@ struct SurveyQuestionView: View {
 //    @State var voteLog = 0
     @State var currentAnswer = 999 /// single choice
     @State var currentAnswers = [Int]() /// multiple choices
+    @State var currentAnswersDisplay = [Int]() /// multiple choices
     @State var currentQuestion = 11
     @State var nextQuestion = 11
 //    @State var backPressed: Bool = false
@@ -80,6 +81,15 @@ struct SurveyQuestionView: View {
                     }else{
                         self.currentAnswer = index /// make sure all the multiple answers as the same next question
                         self.currentAnswers.append(index)
+                        
+                        if self.currentAnswersDisplay.contains(index){
+                            currentAnswersDisplay.removeAll { $0 == index }
+                        }else{
+                            self.currentAnswersDisplay.append(index)
+                        }
+                        
+                        
+                        
                     }
                     
                     
@@ -99,7 +109,7 @@ struct SurveyQuestionView: View {
                 }
                 .frame(width:200)
                 .padding(.all,10)
-                .background( .pink.opacity((currentQuestionItem.multiChoice && currentAnswers.contains(index)) ? 0.5 : 0.2)
+                .background( .pink.opacity((currentQuestionItem.multiChoice && currentAnswersDisplay.contains(index)) ? 0.5 : 0.2)
                 )   ///(.pink.opacity(index == self.currentAnswer ? 0.5 : 0.2))
                 .clipShape(Capsule())
             }
@@ -118,16 +128,20 @@ struct SurveyQuestionView: View {
                     
                     /// something hardcoded - but the logic should be done properly!!!!
                     if nextQuestion == 1{ /// the question about change
-                        if currentAnswers.contains(2) { /// visual comfort
+                        if currentAnswers.contains(2) && currentAnswersDisplay.contains(2) { /// visual comfort
                             currentAnswer = 2
+
                         }
                     }
+                    
+                    
                     
                     
                     self.currentQuestion = currentQuestionItem.currentQuestion
                     self.nextQuestion = currentQuestionItem.nextQuestion[currentAnswer]
                     self.currentAnswer = 999 /// reset
                     self.currentAnswers = [] /// reset
+                    self.currentAnswersDisplay = []
                     ///
                     
                     

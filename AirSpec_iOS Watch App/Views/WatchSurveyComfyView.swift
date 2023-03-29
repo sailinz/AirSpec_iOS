@@ -128,8 +128,8 @@ struct WatchSurveyComfyView: View {
                             }
                             .clipShape(Circle())
                             
-                            Spacer()
-                                .frame(width: 10)
+//                            Spacer()
+//                                .frame(width: 10)
                            
 //                            Button(action:{
 //
@@ -149,15 +149,15 @@ struct WatchSurveyComfyView: View {
 //                            }
 //                            .clipShape(Circle())
                             
-                            Button(action:{
-                                surveyStatusToPhone.updateEyeCalibrationStatus(isEyeCalibrationDone: true)
-                                eyeCalibration = true
-                            }){
-                                Image(systemName: "eye.circle")
-                                    .font(.system(size:20, weight:.bold))
-                                    .foregroundColor(.mint)
-                            }
-                            .clipShape(Circle())
+//                            Button(action:{
+//                                surveyStatusToPhone.updateEyeCalibrationStatus(isEyeCalibrationDone: true)
+//                                eyeCalibration = true
+//                            }){
+//                                Image(systemName: "eye.circle")
+//                                    .font(.system(size:20, weight:.bold))
+//                                    .foregroundColor(.mint)
+//                            }
+//                            .clipShape(Circle())
                             
                         }
                         

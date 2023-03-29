@@ -361,7 +361,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //                RawDataViewModel.addMetaDataToRawData(payload: "failed parsing packet: \(error) ", timestampUnix: Date(), type: 2)
                 return
             }
-//            print(packet)
+            print(packet)
             
             /// directly send
 //            do {
@@ -428,10 +428,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
                         self.setBlue()
                     }
-                    
                     RawDataViewModel.addMetaDataToRawData(payload: "Reaction time: \(secondsBetweenDates); Time now: \(Date()); PrevNotification: \(UserDefaults.standard.object(forKey: "prevNotificationTime")); survey received from watch; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
-                    
-                    
                     
                 }else{
                     RawDataViewModel.addMetaDataToRawData(payload: "Survey received from watch (without blue-green transition); reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
@@ -440,244 +437,137 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             }
             
             if(dataToWatch.isEyeCalibrationDone){
-                //                    blueGreenLight(isEnable: false)
+                //blueGreenLight(isEnable: false)
                 setBlue()
-                //                    testLight(leftBlue: 150, leftGreen: 20, leftRed: 0, rightBlue: 150, rightGreen: 20, rightRed: 0)
                 dataToWatch.isEyeCalibrationDone = false
                 RawDataViewModel.addMetaDataToRawData(payload: "eye calibration started", timestampUnix: Date(), type: 2)
             }
             
-            
-            
+        
             
             switch packet.payload{
             case .some(.sgpPacket(_)):
-                for sensorPayload in packet.sgpPacket.payload {
-                    if packet.sgpPacket.sensorID == 0 {
-//                        if let prevSgpNosePacketID = self.sgpNosePacketID{
-//                            if (Int(packet.sgpPacket.packetIndex) - prevSgpNosePacketID) > 1{
-//                                RawDataViewModel.addMetaDataToRawData(payload: "sgpNose packet ID missing: current \(packet.sgpPacket.packetIndex); prev \(prevSgpNosePacketID) ", timestampUnix: Date(), type: 2)
-//                            }
-//                            self.sgpNosePacketID = Int(packet.sgpPacket.packetIndex)
-//                        }else{
-//                            self.sgpNosePacketID = Int(packet.sgpPacket.packetIndex)
-//                        }
+//                for sensorPayload in packet.sgpPacket.payload {
+                let sensorPayload = packet.sgpPacket.payload[0]
+                if packet.sgpPacket.sensorID == 0 {
+                    if(sensorPayload.vocIndexValue != nil && sensorPayload.noxIndexValue != nil){
+                        self.airQualityData[3] = Double(sensorPayload.vocIndexValue) /// voc index nose
+                        dataToWatch.updateValue(sensorValue: self.airQualityData[3], sensorName: "vocIndexData")
+                        self.airQualityData[4] = Double(sensorPayload.noxIndexValue) /// nox index nose
+                        dataToWatch.updateValue(sensorValue: self.airQualityData[4], sensorName: "noxIndexData")
                         
-                        
-                        if(sensorPayload.vocIndexValue != nil && sensorPayload.noxIndexValue != nil){
-                            
-//                            if let prevsgpSidePacketID = self.sgpSidePacketID{
-//                                if (Int(packet.sgpPacket.packetIndex) - prevsgpSidePacketID) > 1{
-//                                    RawDataViewModel.addMetaDataToRawData(payload: "sgpSide packet ID missing: current \(packet.sgpPacket.packetIndex); prev \(prevsgpSidePacketID) ", timestampUnix: Date(), type: 2)
-//                                }
-//                                self.sgpSidePacketID = Int(packet.sgpPacket.packetIndex)
-//                            }else{
-//                                self.sgpSidePacketID = Int(packet.sgpPacket.packetIndex)
-//                            }
-                            
-                            self.airQualityData[3] = Double(sensorPayload.vocIndexValue) /// voc index nose
-                            dataToWatch.updateValue(sensorValue: self.airQualityData[3], sensorName: "vocIndexData")
-                            self.airQualityData[4] = Double(sensorPayload.noxIndexValue) /// nox index nose
-                            dataToWatch.updateValue(sensorValue: self.airQualityData[4], sensorName: "noxIndexData")
-                            
-                            try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[3].name, value: Float(self.airQualityData[3]))
-                            try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[4].name, value: Float(self.airQualityData[4]))
-                        }
-                    }else{
-                        if(sensorPayload.vocIndexValue != nil && sensorPayload.noxIndexValue != nil){
-                            self.airQualityData[0] = Double(sensorPayload.vocIndexValue) /// voc index nose
-                            dataToWatch.updateValue(sensorValue: self.airQualityData[0], sensorName: "vocIndexAmbientData")
-                            self.airQualityData[1] = Double(sensorPayload.noxIndexValue) /// nox index nose
-                            dataToWatch.updateValue(sensorValue: self.airQualityData[1], sensorName: "noxIndexAmbientData")
-                            
-                            try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[0].name, value: Float(self.airQualityData[0]))
-                            try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[1].name, value: Float(self.airQualityData[1]))
-                        }
+                        try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[3].name, value: Float(self.airQualityData[3]))
+                        try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[4].name, value: Float(self.airQualityData[4]))
                     }
-                    
+                }else{
+                    if(sensorPayload.vocIndexValue != nil && sensorPayload.noxIndexValue != nil){
+                        self.airQualityData[0] = Double(sensorPayload.vocIndexValue) /// voc index nose
+                        dataToWatch.updateValue(sensorValue: self.airQualityData[0], sensorName: "vocIndexAmbientData")
+                        self.airQualityData[1] = Double(sensorPayload.noxIndexValue) /// nox index nose
+                        dataToWatch.updateValue(sensorValue: self.airQualityData[1], sensorName: "noxIndexAmbientData")
+                        
+                        try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[0].name, value: Float(self.airQualityData[0]))
+                        try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[1].name, value: Float(self.airQualityData[1]))
+
+                    }
                 }
-                
-                
+//                }
             case .some(.bmePacket(_)):
-//                print(packet.bmePacket.packetIndex)
-//                print(self.isUploadToServer)
-//                if let prevbmePacketID = self.bmePacketID{
-//                    if (Int(packet.bmePacket.packetIndex) - prevbmePacketID) > 1{
-//                        RawDataViewModel.addMetaDataToRawData(payload: "bme packet ID missing: current \(packet.bmePacket.packetIndex); prev \(prevbmePacketID) ", timestampUnix: Date(), type: 2)
-//                    }
-//                    self.bmePacketID = Int(packet.bmePacket.packetIndex)
-//                }else{
-//                    self.bmePacketID = Int(packet.bmePacket.packetIndex)
-//                }
-//
-//                let timestamps = Set(packet.bmePacket.payload.map {
-//                    let date = Date(timeIntervalSince1970: Double($0.timestampUnix) / 1000)
-//                    let id = $0.sensorID
-//
-//                    return "\(date), \(id)"
-//                })
-//
-//                let repetitions = packet.bmePacket.payload.count - timestamps.count
-//
-//                if(isUploadToServer){
-//                    var metaData = appMetaDataPacket()
-//                    metaData.payload = "bme: packet index: \(packet.bmePacket.packetIndex) (while upload to server); \(repetitions) repetitions; unique: \(timestamps) "
-//                    metaData.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
-//                    metaData.type = UInt32(2)
-//
-//                    let sensorPacket = SensorPacket.with {
-//                        $0.header = SensorPacketHeader.with {
-//                            $0.epoch = UInt64(NSDate().timeIntervalSince1970 * 1000)
-//                        }
-//                        $0.metaDataPacket = metaData
-//                    }
-//                    tempPacketBuffer.append(sensorPacket)
-//                }else{
-//                    RawDataViewModel.addMetaDataToRawData(payload: "bme: packet index: \(packet.bmePacket.packetIndex); \(repetitions) repetitions; unique: \(timestamps) ", timestampUnix: Date(), type: 2)
-//                }
-//
-//                RawDataViewModel.addMetaDataToRawData(payload: "bme: packet index: \(packet.bmePacket.packetIndex); \(repetitions) repetitions; unique: \(timestamps) ", timestampUnix: Date(), type: 2)
-               
-                
-//                print("bme: \(repetitions) repetitions; unique: \(timestamps)")
-                
+//                let sensorPayload = packet.bmePacket.payload[0]
                 for sensorPayload in packet.bmePacket.payload {
-                    
                     if(sensorPayload.sensorID == BME680_signal_id.co2Eq){
                         self.airQualityData[2] = Double(sensorPayload.signal) /// CO2
                         dataToWatch.updateValue(sensorValue: self.airQualityData[2], sensorName: "co2Data")
                     }else if(sensorPayload.sensorID == BME680_signal_id.iaq){
                         self.airQualityData[5] = Double(sensorPayload.signal) /// IAQ
                         dataToWatch.updateValue(sensorValue: self.airQualityData[5], sensorName: "iaqData")
-                        dataToWatch.updateValue(sensorValue: self.airQualityData[5], sensorName: "iaqData")
                         
                         try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[2].name, value: Float(self.airQualityData[2]))
                         try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAirQuality[5].name, value: Float(self.airQualityData[5]))
                     }
                 }
-                
-                
+                          
             case .some(.luxPacket(_)):
-//                let timestamps = Set(packet.luxPacket.payload.map {
-//                    let date = Date(timeIntervalSince1970: Double($0.timestampUnix) / 1000)
-//
-//                    return "\(date)"
-//                })
-//
-//                let repetitions = packet.luxPacket.payload.count - timestamps.count
-//
-//                if let prevluxPacketID = self.luxPacketID{
-//                    if (Int(packet.luxPacket.packetIndex) - prevluxPacketID) > 1{
-//                        print("missing packets from glasses (Lux: prev \(prevluxPacketID), current \(packet.luxPacket.packetIndex), \(repetitions) repetitions; unique: \(timestamps)")
-//                    }
-//                    self.luxPacketID = Int(packet.luxPacket.packetIndex)
-//                }else{
-//                    self.luxPacketID = Int(packet.luxPacket.packetIndex)
-//                }
-//
-//
-//                print("Lux: packet id (from glasses) \(packet.luxPacket.packetIndex), \(repetitions) repetitions; unique: \(timestamps)")
-                
-                for sensorPayload in packet.luxPacket.payload {
-                    if(sensorPayload.lux != nil){
-                        self.visualData[0] = Double(sensorPayload.lux) /// lux
-                        dataToWatch.updateValue(sensorValue: self.visualData[0], sensorName: "luxData")
-                        dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueLightIntensity")), sensorName: "minValueLightIntensity")
-                        dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueLightIntensity")), sensorName: "maxValueLightIntensity")
-                        try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[0].name, value: Float(self.visualData[0]))
-                    }
+                let sensorPayload = packet.luxPacket.payload[0]
+//                for sensorPayload in packet.luxPacket.payload {
+                if(sensorPayload.lux != nil){
+                    self.visualData[0] = Double(sensorPayload.lux) /// lux
+                    dataToWatch.updateValue(sensorValue: self.visualData[0], sensorName: "luxData")
+                    dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueLightIntensity")), sensorName: "minValueLightIntensity")
+                    dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueLightIntensity")), sensorName: "maxValueLightIntensity")
+                    try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[0].name, value: Float(self.visualData[0]))
+                    
                 }
+//                }
                 
                 
             case .some(.shtPacket(_)):
-                for sensorPayload in packet.shtPacket.payload {
-                    if packet.shtPacket.sensorID == 0 {
-                        if(sensorPayload.temperature != nil && sensorPayload.humidity != nil){
-                            self.visualData[1] = Double(sensorPayload.temperature) - 5.5 /// temperature
-                            dataToWatch.updateValue(sensorValue: self.visualData[1], sensorName: "temperatureData")
-                            self.visualData[2] = Double(sensorPayload.humidity) /// humidity
-                            dataToWatch.updateValue(sensorValue: self.visualData[2], sensorName: "humidityData")
-                            
-                            dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueTemp")), sensorName: "minValueTemp")
-                            dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueTemp")), sensorName: "maxValueTemp")
-                            
-                            dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueHum")), sensorName: "minValueHum")
-                            dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueHum")), sensorName: "maxValueHum")
-                            
-                            try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[1].name, value: Float(self.visualData[1]))
-                            try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[2].name, value: Float(self.visualData[2]))
-                        }
-                    }else{
-//                        if let prevshtSidePacketID = self.shtSidePacketID{
-//                            if (Int(packet.shtPacket.packetIndex) - prevshtSidePacketID) > 1{
-//                                RawDataViewModel.addMetaDataToRawData(payload: "shtSide packet ID missing: current \(packet.shtPacket.packetIndex); prev \(prevshtSidePacketID) ", timestampUnix: Date(), type: 2)
-//                            }
-//                            self.shtSidePacketID = Int(packet.shtPacket.packetIndex)
-//                        }else{
-//                            self.shtSidePacketID = Int(packet.shtPacket.packetIndex)
-//                        }
+//                for sensorPayload in packet.shtPacket.payload {
+                let sensorPayload = packet.shtPacket.payload[0]
+                if packet.shtPacket.sensorID == 0 {
+                    if(sensorPayload.temperature != nil && sensorPayload.humidity != nil){
+                        self.visualData[1] = Double(sensorPayload.temperature) - 5.5 /// temperature
+                        dataToWatch.updateValue(sensorValue: self.visualData[1], sensorName: "temperatureData")
+                        self.visualData[2] = Double(sensorPayload.humidity) /// humidity
+                        dataToWatch.updateValue(sensorValue: self.visualData[2], sensorName: "humidityData")
                         
-                        if(sensorPayload.temperature != nil && sensorPayload.humidity != nil){
-                            self.thermalData[0] = Double(sensorPayload.temperature) - 4.4/// temperature
-                            dataToWatch.updateValue(sensorValue: self.thermalData[0], sensorName: "temperatureAmbientData")
-                            self.thermalData[1] = Double(sensorPayload.humidity) /// humidity
-                            dataToWatch.updateValue(sensorValue: self.thermalData[1], sensorName: "humidityAmbientData")
-                            
-                            dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueTemp")), sensorName: "minValueTemp")
-                            dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueTemp")), sensorName: "maxValueTemp")
-                            
-                            dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueHum")), sensorName: "minValueHum")
-                            dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueHum")), sensorName: "maxValueHum")
-                            
-                            try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorThermal[0].name, value: Float(self.thermalData[0]))
-                            try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorThermal[1].name, value: Float(self.thermalData[1]))
-                        }
+                        dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueTemp")), sensorName: "minValueTemp")
+                        dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueTemp")), sensorName: "maxValueTemp")
+                        
+                        dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueHum")), sensorName: "minValueHum")
+                        dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueHum")), sensorName: "maxValueHum")
+                        
+                        try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[1].name, value: Float(self.visualData[1]))
+                        try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorVisual[2].name, value: Float(self.visualData[2]))
+
                     }
-                    
+                }else{
+                    if(sensorPayload.temperature != nil && sensorPayload.humidity != nil){
+                        self.thermalData[0] = Double(sensorPayload.temperature) - 4.4/// temperature
+                        dataToWatch.updateValue(sensorValue: self.thermalData[0], sensorName: "temperatureAmbientData")
+                        self.thermalData[1] = Double(sensorPayload.humidity) /// humidity
+                        dataToWatch.updateValue(sensorValue: self.thermalData[1], sensorName: "humidityAmbientData")
+                        
+                        dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueTemp")), sensorName: "minValueTemp")
+                        dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueTemp")), sensorName: "maxValueTemp")
+                        
+                        dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueHum")), sensorName: "minValueHum")
+                        dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueHum")), sensorName: "maxValueHum")
+                        
+                        try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorThermal[0].name, value: Float(self.thermalData[0]))
+                        try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorThermal[1].name, value: Float(self.thermalData[1]))
+
+                    }
                 }
+//                }
                 
             case .some(.specPacket(_)):
-//                if let prevspecPacketID = self.specPacketID{
-//                    if (Int(packet.specPacket.packetIndex) - prevspecPacketID) > 1{
-//                        RawDataViewModel.addMetaDataToRawData(payload: "spec packet ID missing: current \(packet.specPacket.packetIndex); prev \(prevspecPacketID) ", timestampUnix: Date(), type: 2)
-//                    }
-//                    self.specPacketID = Int(packet.specPacket.packetIndex)
-//                }else{
-//                    self.specPacketID = Int(packet.specPacket.packetIndex)
-//                }
                 break
                 
             case .some(.thermPacket(_)):
-//                if let prevthermPacketID = self.thermPacketID{
-//                    if (Int(packet.thermPacket.packetIndex) - prevthermPacketID) > 1{
-//                        RawDataViewModel.addMetaDataToRawData(payload: "therm packet ID missing: current \(packet.thermPacket.packetIndex); prev \(prevthermPacketID) ", timestampUnix: Date(), type: 2)
-//                    }
-//                    self.thermPacketID = Int(packet.thermPacket.packetIndex)
-//                }else{
-//                    self.thermPacketID = Int(packet.thermPacket.packetIndex)
-//                }
-                
+
                 var thermNoseTip: Double = 0
                 var thermNoseBridge: Double = 0
                 var thermTempleFront: Double = 0
                 var thermTempleMiddle: Double = 0
                 var thermTempleRear: Double = 0
                 
-                for sensorPayload in packet.thermPacket.payload {
-                    if(sensorPayload.descriptor == Thermopile_location.tipOfNose){
-                        thermNoseTip = Double(sensorPayload.objectTemp)
-                    }else if(sensorPayload.descriptor == Thermopile_location.noseBridge){
-                        thermNoseBridge = Double(sensorPayload.objectTemp)
-                    }else if(sensorPayload.descriptor == Thermopile_location.frontTemple){
-                        thermTempleFront = Double(sensorPayload.objectTemp)
-                    }else if(sensorPayload.descriptor == Thermopile_location.midTemple){
-                        thermTempleMiddle = Double(sensorPayload.objectTemp)
-                    }else if(sensorPayload.descriptor == Thermopile_location.rearTemple){
-                        thermTempleRear = Double(sensorPayload.objectTemp)
-                    }else{
-                        
-                    }
+                let sensorPayload = packet.thermPacket.payload[0]
+//                for sensorPayload in packet.thermPacket.payload {
+                if(sensorPayload.descriptor == Thermopile_location.tipOfNose){
+                    thermNoseTip = Double(sensorPayload.objectTemp)
+                }else if(sensorPayload.descriptor == Thermopile_location.noseBridge){
+                    thermNoseBridge = Double(sensorPayload.objectTemp)
+                }else if(sensorPayload.descriptor == Thermopile_location.frontTemple){
+                    thermTempleFront = Double(sensorPayload.objectTemp)
+                }else if(sensorPayload.descriptor == Thermopile_location.midTemple){
+                    thermTempleMiddle = Double(sensorPayload.objectTemp)
+                }else if(sensorPayload.descriptor == Thermopile_location.rearTemple){
+                    thermTempleRear = Double(sensorPayload.objectTemp)
+                }else{
+                    
                 }
+//                }
                 
                 /// estimate cog load:  (temple - face)  (high cog load: low face temp -- https://neurosciencenews.com/stress-nasal-temperature-8579/)
                 let thermalpileData = thermNoseTip * thermNoseBridge * thermTempleFront * thermTempleMiddle * thermTempleRear
@@ -702,46 +592,25 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                         //                            print("cogload baseline (neg): \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
                         //                            print("cogload est (neg): \(Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - cogLoadOffset) * cogLoadMultiFactor  + 3))")
                     }
-                    
-                    
                 }
-                
-                
                 
             case .some(.imuPacket(_)):
-//                print(packet)
                 break
             case .some(.micPacket(_)):
-//                print("mic")
                 break
             case .some(.micLevelPacket(_)):
-//                print("micLevelPacket")
-                for sensorPayload in packet.micLevelPacket.payload {
-                    if(sensorPayload.soundSplDb != nil){
-                        self.acoutsticsData[0] = Double(sensorPayload.soundSplDb)
-                        dataToWatch.updateValue(sensorValue: self.acoutsticsData[0], sensorName: "noiseData")
-                        dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueNoise")), sensorName: "minValueNoise")
-                        dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueNoise")), sensorName: "maxValueNoise")
-                        
-                        try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAcoustics[0].name, value: Float(self.acoutsticsData[0]))
-                    }
+                let sensorPayload = packet.micLevelPacket.payload[0]
+//                for sensorPayload in packet.micLevelPacket.payload {
+                if(sensorPayload.soundSplDb != nil){
+                    self.acoutsticsData[0] = Double(sensorPayload.soundSplDb)
+                    dataToWatch.updateValue(sensorValue: self.acoutsticsData[0], sensorName: "noiseData")
+                    dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "minValueNoise")), sensorName: "minValueNoise")
+                    dataToWatch.updateValue(sensorValue: Double(UserDefaults.standard.float(forKey: "maxValueNoise")), sensorName: "maxValueNoise")
+                    try TempDataViewModel.addTempData(timestamp: Date(), sensor: SensorIconConstants.sensorAcoustics[0].name, value: Float(self.acoutsticsData[0]))
+
                 }
-                
-            case .some(.blinkPacket(_)):
-//                let packet_ts = Date(timeIntervalSince1970: Double(packet.blinkPacket.timestampUnix) / 1000)
-//                let now = Date()
-                
-//                print("blink: \(packet_ts)")
-//                print("blink: \(packet.blinkPacket.timestampUnix)")
-//                if packet_ts > now {
-//                    let diff = packet_ts.distance(to: now)
-//                    print("blink packet in future! \(diff), now: \(now), then: \(packet_ts)")
 //                }
-                
-                //                    print("blink packet")
-                //                    print(packet)
-                //                        isBlink = true
-//                print("blink: packet id (from glasses) \(packet.blinkPacket.packetIndex), \(Date(timeIntervalSince1970: Double(packet.blinkPacket.timestampUnix) / 1000))  timestamp")
+            case .some(.blinkPacket(_)):
                 break
             case .some(.surveyPacket(_)):
                 break
@@ -839,6 +708,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //                                    }
 
                                     
+                                
                                 
                                     break
                                 case .some(.blinkPacket(_)):
