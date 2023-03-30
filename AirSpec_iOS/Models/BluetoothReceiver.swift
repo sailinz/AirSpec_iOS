@@ -361,7 +361,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //                RawDataViewModel.addMetaDataToRawData(payload: "failed parsing packet: \(error) ", timestampUnix: Date(), type: 2)
                 return
             }
-            print(packet)
+//            print(packet)
             
             /// directly send
 //            do {
@@ -448,6 +448,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             switch packet.payload{
             case .some(.sgpPacket(_)):
 //                for sensorPayload in packet.sgpPacket.payload {
+//                print(packet)
                 if let sensorPayload = packet.sgpPacket.payload.last{
                     if packet.sgpPacket.sensorID == 0 {
                         if(sensorPayload.vocIndexValue != nil && sensorPayload.noxIndexValue != nil){
@@ -558,8 +559,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 var thermTempleMiddle: Double = 0
                 var thermTempleRear: Double = 0
                 
-                if let sensorPayload = packet.thermPacket.payload.last{
-    //                for sensorPayload in packet.thermPacket.payload {
+//                if let sensorPayload = packet.thermPacket.payload.last{
+                for sensorPayload in packet.thermPacket.payload {
                     if(sensorPayload.descriptor == Thermopile_location.tipOfNose){
                         thermNoseTip = Double(sensorPayload.objectTemp)
                     }else if(sensorPayload.descriptor == Thermopile_location.noseBridge){
@@ -573,27 +574,34 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     }else{
                         
                     }
-    //                }
                 }
+//                }
 
                 
                 /// estimate cog load:  (temple - face)  (high cog load: low face temp -- https://neurosciencenews.com/stress-nasal-temperature-8579/)
                 let thermalpileData = thermNoseTip * thermNoseBridge * thermTempleFront * thermTempleMiddle * thermTempleRear
                 if (thermalpileData.isInfinite || thermalpileData.isNaN){
-                    #if DEBUG_THERMOPILE
+//                    #if DEBUG_THERMOPILE
                     print("error parsing thermopile value")
                     print(thermNoseTip)
                     print(thermNoseBridge)
                     print(thermTempleFront)
                     print(thermTempleMiddle)
                     print(thermTempleRear)
-                    #endif
+//                    #endif
                 }else{
+                    
+                    print("nose tip \(thermNoseTip)" )
+                    print("nose bridge \(thermNoseBridge)")
+                    print("front \(thermTempleFront)")
+                    print("middle \(thermTempleMiddle)")
+                    print("rear \(thermTempleRear)")
+//                    print(packet)
                     if(Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - cogLoadOffset) * cogLoadMultiFactor) > 0){
                         
                         cogIntensity = Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - cogLoadOffset) * cogLoadMultiFactor  + 3)
-//                        print("cogload baseline: \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
-//                        print("cogload est: \(cogIntensity)")
+                        print("cogload baseline: \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
+                        print("cogload est: \(cogIntensity)")
                         dataToWatch.updateValue(sensorValue: Double(cogIntensity), sensorName: "cogLoadData")
                     }else{
                         cogIntensity = 3
@@ -681,95 +689,95 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                         
                         var err: Error?
                         
-                        for packet in data{
-                            switch packet.payload{
-                            case .some(.sgpPacket(_)):
-                                    break
-                                case .some(.bmePacket(_)):
-//                                if ( Int(packet.bmePacket.packetIndex) - prevBMEIndex) > 1 {
-//                                        print("missing packets from coredata (BME: prev \(prevBMEIndex), current \(packet.bmePacket.packetIndex)")
-//                                    }
-//                                    print(packet.bmePacket.packetIndex)
-//                                    print(packet)
-//                                    prevBMEIndex = Int(packet.bmePacket.packetIndex)
-                                    
-                                    let timestamps = Set(packet.bmePacket.payload.map {
-                                        let date = Date(timeIntervalSince1970: Double($0.timestampUnix) / 1000)
-                                        return "\(date)"
-                                    })
-                                    let repetitions = packet.bmePacket.payload.count - timestamps.count
-                                    print("bme: packet id (from coredata) \(packet.bmePacket.packetIndex), \(repetitions) repetitions; unique: \(timestamps)")
-                                
-                                case .some(.luxPacket(_)):
-                                    let timestamps = Set(packet.luxPacket.payload.map {
-                                        let date = Date(timeIntervalSince1970: Double($0.timestampUnix) / 1000)
-                                        return "\(date)"
-                                    })
-                                    let repetitions = packet.luxPacket.payload.count - timestamps.count
-                                    print("Lux: packet id (from coredata) \(packet.luxPacket.packetIndex), \(repetitions) repetitions; unique: \(timestamps)")
-
-//                                    if let prevluxPacketID = self.luxPacketIDCoredata{
-////                                        if (Int(packet.luxPacket.packetIndex) - prevluxPacketID) > 1{
-////                                            print("missing packets from coredata (Lux: prev \(prevluxPacketID), current \(packet.luxPacket.packetIndex), \(repetitions) repetitions; unique: \(timestamps)")
-////                                        }
-//                                        self.luxPacketIDCoredata = Int(packet.luxPacket.packetIndex)
-//                                    }else{
-//                                        self.luxPacketIDCoredata = Int(packet.luxPacket.packetIndex)
-//                                    }
-
-                                    
-                                
-                                
-                                    break
-                                case .some(.blinkPacket(_)):
-                                    print("blink: packet id (from coredata) \(packet.blinkPacket.packetIndex), \(Date(timeIntervalSince1970: Double(packet.blinkPacket.timestampUnix) / 1000)) timestamp")
-                                    
-                                case .some(.shtPacket(_)):
-                                    let timestamps = Set(packet.shtPacket.payload.map {
-                                        let date = Date(timeIntervalSince1970: Double($0.timestampUnix) / 1000)
-                                        return "\(date)"
-                                    })
-                                    let repetitions = packet.shtPacket.payload.count - timestamps.count
-                                    print("sht: packet id (from coredata) \(packet.shtPacket.packetIndex), \(repetitions) repetitions; unique: \(timestamps)")
+//                        for packet in data{
+//                            switch packet.payload{
+//                            case .some(.sgpPacket(_)):
 //                                    break
-                                case .some(.specPacket(_)):
-                                    let timestamps = Set(packet.specPacket.payload.map {
-                                        let date = Date(timeIntervalSince1970: Double($0.timestampUnix) / 1000)
-                                        return "\(date)"
-                                    })
-                                    let repetitions = packet.specPacket.payload.count - timestamps.count
-                                    print("spec: packet id (from coredata) \(packet.specPacket.packetIndex), \(repetitions) repetitions; unique: \(timestamps)")
+//                                case .some(.bmePacket(_)):
+////                                if ( Int(packet.bmePacket.packetIndex) - prevBMEIndex) > 1 {
+////                                        print("missing packets from coredata (BME: prev \(prevBMEIndex), current \(packet.bmePacket.packetIndex)")
+////                                    }
+////                                    print(packet.bmePacket.packetIndex)
+////                                    print(packet)
+////                                    prevBMEIndex = Int(packet.bmePacket.packetIndex)
+//                                    
+//                                    let timestamps = Set(packet.bmePacket.payload.map {
+//                                        let date = Date(timeIntervalSince1970: Double($0.timestampUnix) / 1000)
+//                                        return "\(date)"
+//                                    })
+//                                    let repetitions = packet.bmePacket.payload.count - timestamps.count
+//                                    print("bme: packet id (from coredata) \(packet.bmePacket.packetIndex), \(repetitions) repetitions; unique: \(timestamps)")
+//                                
+//                                case .some(.luxPacket(_)):
+//                                    let timestamps = Set(packet.luxPacket.payload.map {
+//                                        let date = Date(timeIntervalSince1970: Double($0.timestampUnix) / 1000)
+//                                        return "\(date)"
+//                                    })
+//                                    let repetitions = packet.luxPacket.payload.count - timestamps.count
+//                                    print("Lux: packet id (from coredata) \(packet.luxPacket.packetIndex), \(repetitions) repetitions; unique: \(timestamps)")
+//
+////                                    if let prevluxPacketID = self.luxPacketIDCoredata{
+//////                                        if (Int(packet.luxPacket.packetIndex) - prevluxPacketID) > 1{
+//////                                            print("missing packets from coredata (Lux: prev \(prevluxPacketID), current \(packet.luxPacket.packetIndex), \(repetitions) repetitions; unique: \(timestamps)")
+//////                                        }
+////                                        self.luxPacketIDCoredata = Int(packet.luxPacket.packetIndex)
+////                                    }else{
+////                                        self.luxPacketIDCoredata = Int(packet.luxPacket.packetIndex)
+////                                    }
+//
+//                                    
+//                                
+//                                
 //                                    break
-                                case .some(.thermPacket(_)):
-                                    let timestamps = Set(packet.thermPacket.payload.map {
-                                        let date = Date(timeIntervalSince1970: Double($0.timestampUnix) / 1000)
-                                        return "\(date)"
-                                    })
-                                    let repetitions = packet.thermPacket.payload.count - timestamps.count
-                                    print("therm: packet id (from coredata) \(packet.thermPacket.packetIndex), \(repetitions) repetitions; unique: \(timestamps)")
+//                                case .some(.blinkPacket(_)):
+//                                    print("blink: packet id (from coredata) \(packet.blinkPacket.packetIndex), \(Date(timeIntervalSince1970: Double(packet.blinkPacket.timestampUnix) / 1000)) timestamp")
+//                                    
+//                                case .some(.shtPacket(_)):
+//                                    let timestamps = Set(packet.shtPacket.payload.map {
+//                                        let date = Date(timeIntervalSince1970: Double($0.timestampUnix) / 1000)
+//                                        return "\(date)"
+//                                    })
+//                                    let repetitions = packet.shtPacket.payload.count - timestamps.count
+//                                    print("sht: packet id (from coredata) \(packet.shtPacket.packetIndex), \(repetitions) repetitions; unique: \(timestamps)")
+////                                    break
+//                                case .some(.specPacket(_)):
+//                                    let timestamps = Set(packet.specPacket.payload.map {
+//                                        let date = Date(timeIntervalSince1970: Double($0.timestampUnix) / 1000)
+//                                        return "\(date)"
+//                                    })
+//                                    let repetitions = packet.specPacket.payload.count - timestamps.count
+//                                    print("spec: packet id (from coredata) \(packet.specPacket.packetIndex), \(repetitions) repetitions; unique: \(timestamps)")
+////                                    break
+//                                case .some(.thermPacket(_)):
+//                                    let timestamps = Set(packet.thermPacket.payload.map {
+//                                        let date = Date(timeIntervalSince1970: Double($0.timestampUnix) / 1000)
+//                                        return "\(date)"
+//                                    })
+//                                    let repetitions = packet.thermPacket.payload.count - timestamps.count
+//                                    print("therm: packet id (from coredata) \(packet.thermPacket.packetIndex), \(repetitions) repetitions; unique: \(timestamps)")
+////                                    break
+//                                case .some(.imuPacket(_)):
+////                                    print("sending imu")
+////                                    print(packet)
 //                                    break
-                                case .some(.imuPacket(_)):
-//                                    print("sending imu")
-//                                    print(packet)
-                                    break
-                                case .some(.micPacket(_)):
-                                    print("mic: packet id (from coredata) \(packet.micPacket.packetIndex), \(Date(timeIntervalSince1970: Double(packet.micPacket.timestampUnix) / 1000)) timestamp")
-                                case .some(.micLevelPacket(_)):
-                                    let timestamps = Set(packet.micLevelPacket.payload.map {
-                                        let date = Date(timeIntervalSince1970: Double($0.timestampUnix) / 1000)
-                                        return "\(date)"
-                                    })
-                                    let repetitions = packet.micLevelPacket.payload.count - timestamps.count
-                                    print("micLevel: packet id (from coredata) \(packet.micLevelPacket.packetIndex), \(repetitions) repetitions; unique: \(timestamps)")
-                                    break
-                                case .some(.surveyPacket(_)):
-                                    break
-                                case .some(.metaDataPacket(_)):
-                                    break
-                                case .none:
-                                    break
-                            }
-                        }
+//                                case .some(.micPacket(_)):
+//                                    print("mic: packet id (from coredata) \(packet.micPacket.packetIndex), \(Date(timeIntervalSince1970: Double(packet.micPacket.timestampUnix) / 1000)) timestamp")
+//                                case .some(.micLevelPacket(_)):
+//                                    let timestamps = Set(packet.micLevelPacket.payload.map {
+//                                        let date = Date(timeIntervalSince1970: Double($0.timestampUnix) / 1000)
+//                                        return "\(date)"
+//                                    })
+//                                    let repetitions = packet.micLevelPacket.payload.count - timestamps.count
+//                                    print("micLevel: packet id (from coredata) \(packet.micLevelPacket.packetIndex), \(repetitions) repetitions; unique: \(timestamps)")
+//                                    break
+//                                case .some(.surveyPacket(_)):
+//                                    break
+//                                case .some(.metaDataPacket(_)):
+//                                    break
+//                                case .none:
+//                                    break
+//                            }
+//                        }
                         
                         try Airspec.send_packets(packets: data, auth_token: AUTH_TOKEN) { error in
                             err = error
