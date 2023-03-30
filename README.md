@@ -3,8 +3,8 @@ This repository stores the source code for a SwiftUI-based AirSpec iOS and assoc
 
 The app is equipped with survey logic modified from on Cozie (an app that allows building occupants to provide feedback in real time): https://github.com/cozie-app/cozie-apple 
 
-<img src="[https://user-images.githubusercontent.com/16971026/226206095-25089548-4ed4-4f53-93a6-643e4051deee.jpg](https://user-images.githubusercontent.com/16971026/228932818-7b1d4a97-a447-48db-a59a-c3883cff7678.gif)" width="150">
-<img src="[https://user-images.githubusercontent.com/16971026/226205477-71badcc0-5075-4de6-adb7-58bcd493c70c.PNG](https://user-images.githubusercontent.com/16971026/228932826-1f56f605-0a54-4c7f-88fe-87d799c302bc.gif)" width="250">
+<img src="https://user-images.githubusercontent.com/16971026/228932818-7b1d4a97-a447-48db-a59a-c3883cff7678.gif" width="150">
+<img src="https://user-images.githubusercontent.com/16971026/228932826-1f56f605-0a54-4c7f-88fe-87d799c302bc.gif" width="250">
 
 ## WatchOS app
 
