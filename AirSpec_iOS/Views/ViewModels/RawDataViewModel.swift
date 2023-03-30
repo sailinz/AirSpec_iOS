@@ -109,7 +109,23 @@ class RawDataViewModel {
 
                 ret = try elems.map { ent in
                     ids.append(ent.objectID)
-                    return try SensorPacket(serializedData: ent.record!)
+                    if ent.record != nil{
+                        return try SensorPacket(serializedData: ent.record!)
+                    }else{
+                        var metaData = appMetaDataPacket()
+                        metaData.payload = "nil in coredata"
+                        metaData.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
+                        metaData.type = UInt32(2)
+
+                        let sensorPacket = SensorPacket.with {
+                            $0.header = SensorPacketHeader.with {
+                                $0.epoch = UInt64(NSDate().timeIntervalSince1970 * 1000)
+                            }
+                            $0.metaDataPacket = metaData
+                        }
+
+                        return sensorPacket
+                    }
                 }
 
                 try ctx.save()
@@ -235,6 +251,7 @@ class RawDataViewModel {
             do {
                 let count = try ctx.count(for: request)
 
+
                 if count >= MAX_UNSENT_COUNT {
                     let log_str = "too many stored records, cleaning up (have: \(count), max: \(MAX_UNSENT_COUNT))"
                     
@@ -248,7 +265,17 @@ class RawDataViewModel {
                     }
                     
                     let del_req = NSBatchDeleteRequest(fetchRequest: delete_old)
-                    try ctx.execute(del_req)
+                    do {
+                        try ctx.execute(del_req)
+                    } catch {
+                        #if os(iOS)
+                        LocalNotification.setLocalNotification(title: "Offline for too long?",
+                                                               subtitle: "Check if you connect to the internet.",
+                                                               body: "The local storage if full. Need to upload data to the server",
+                                                               when: 1) /// now
+                        #endif
+                        print("Error executing batch delete request: \(error)")
+                    }
                 }
 
                 ctx.insert(newRawData)
