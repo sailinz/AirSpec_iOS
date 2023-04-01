@@ -43,14 +43,14 @@ struct VisualView: View {
                             }
                             VStack{
                                 OpenCircularGauge(
-                                    current: dataReceivedWatch.sensorValueNew[2][i],
+                                    current: dataReceivedWatch.sensorValueNew[2][safe: i] ?? -1,
                                     minValue: SensorIconConstants.sensorVisual[i].minValue,
                                     maxValue: SensorIconConstants.sensorVisual[i].maxValue,
                                     color1: SensorIconConstants.sensorVisual[i].color1,
                                     color2: SensorIconConstants.sensorVisual[i].color2,
                                     color3: SensorIconConstants.sensorVisual[i].color3,
-                                    color1Position: dataReceivedWatch.sensorValueNew[7][i],
-                                    color3Position: dataReceivedWatch.sensorValueNew[8][i],
+                                    color1Position: dataReceivedWatch.sensorValueNew[7][safe: i] ?? SensorIconConstants.sensorVisual[i].color1Position,
+                                    color3Position: dataReceivedWatch.sensorValueNew[8][safe: i] ?? SensorIconConstants.sensorVisual[i].color3Position,
                                     valueTrend: VisualDataTrend[i],
                                     icon: SensorIconConstants.sensorVisual[i].icon){
                                     }

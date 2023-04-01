@@ -591,11 +591,11 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //                    #endif
                 }else{
                     
-                    print("nose tip \(thermNoseTip)" )
-                    print("nose bridge \(thermNoseBridge)")
-                    print("front \(thermTempleFront)")
-                    print("middle \(thermTempleMiddle)")
-                    print("rear \(thermTempleRear)")
+//                    print("nose tip \(thermNoseTip)" )
+//                    print("nose bridge \(thermNoseBridge)")
+//                    print("front \(thermTempleFront)")
+//                    print("middle \(thermTempleMiddle)")
+//                    print("rear \(thermTempleRear)")
 //                    print(packet)
                     if(Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - cogLoadOffset) * cogLoadMultiFactor) > 0){
                         

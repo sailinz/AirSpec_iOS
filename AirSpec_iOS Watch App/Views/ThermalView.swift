@@ -34,14 +34,14 @@ struct ThermalView: View {
                 ForEach(0..<SensorIconConstants.sensorThermal.count){i in
                     VStack{
                         OpenCircularGauge(
-                            current: dataReceivedWatch.sensorValueNew[0][i],
+                            current: dataReceivedWatch.sensorValueNew[0][safe: i] ?? -1,
                             minValue: SensorIconConstants.sensorThermal[i].minValue,
                             maxValue: SensorIconConstants.sensorThermal[i].maxValue,
                             color1: SensorIconConstants.sensorThermal[i].color1,
                             color2: SensorIconConstants.sensorThermal[i].color2,
                             color3: SensorIconConstants.sensorThermal[i].color3,
-                            color1Position: dataReceivedWatch.sensorValueNew[5][i],
-                            color3Position: dataReceivedWatch.sensorValueNew[6][i],
+                            color1Position: dataReceivedWatch.sensorValueNew[5][safe: i] ?? SensorIconConstants.sensorThermal[i].color1Position,
+                            color3Position: dataReceivedWatch.sensorValueNew[6][safe: i] ?? SensorIconConstants.sensorThermal[i].color3Position,
                             valueTrend: thermalDataTrend[i],
                             icon: SensorIconConstants.sensorThermal[i].icon){
                             }

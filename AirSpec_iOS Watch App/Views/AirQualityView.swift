@@ -43,7 +43,7 @@ struct AirQualityView: View {
                             }
                             VStack{
                                 OpenCircularGauge(
-                                    current: dataReceivedWatch.sensorValueNew[1][i],
+                                    current: dataReceivedWatch.sensorValueNew[1][safe: i] ?? -1,
                                     minValue: SensorIconConstants.sensorAirQuality[i].minValue,
                                     maxValue: SensorIconConstants.sensorAirQuality[i].maxValue,
                                     color1: SensorIconConstants.sensorAirQuality[i].color1,

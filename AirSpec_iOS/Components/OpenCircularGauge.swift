@@ -16,8 +16,8 @@ struct OpenCircularGauge<Content>: View where Content: View {
     var color1 = Color.blue
     var color2 = Color.white
     var color3 = Color.red
-    var color1Position = 0.0
-    var color3Position = 0.4
+    var color1Position = 0.2
+    var color3Position = 0.8
     var valueTrend = 0 /// 1: increase; 0: no change; -1: decrease
     var icon = "thermometer.low"
     

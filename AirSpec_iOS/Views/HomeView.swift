@@ -241,7 +241,7 @@ struct HomeView: View {
                                                     color2: SensorIconConstants.sensorVisual[i].color2,
                                                     color3: SensorIconConstants.sensorVisual[i].color3,
                                                     color1Position: color1PositionVisual?[i] ?? SensorIconConstants.sensorVisual[i].color1Position,
-                                                    color3Position: color3PositionVisual?[i] ?? SensorIconConstants.sensorVisual[i].color1Position,
+                                                    color3Position: color3PositionVisual?[i] ?? SensorIconConstants.sensorVisual[i].color3Position,
                                                     valueTrend: visualDataTrend[i],
                                                     icon: SensorIconConstants.sensorVisual[i].icon){
                                                     }

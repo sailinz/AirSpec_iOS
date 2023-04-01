@@ -34,14 +34,14 @@ struct AcousticsView: View {
                 ForEach(0..<SensorIconConstants.sensorAcoustics.count){i in
                     VStack{
                         OpenCircularGauge(
-                            current: dataReceivedWatch.sensorValueNew[3][i], //AcousticsData[i],
+                            current: dataReceivedWatch.sensorValueNew[3][safe: i] ?? -1, //AcousticsData[i],
                             minValue: SensorIconConstants.sensorAcoustics[i].minValue,
                             maxValue: SensorIconConstants.sensorAcoustics[i].maxValue,
                             color1: SensorIconConstants.sensorAcoustics[i].color1,
                             color2: SensorIconConstants.sensorAcoustics[i].color2,
                             color3: SensorIconConstants.sensorAcoustics[i].color3,
-                            color1Position: dataReceivedWatch.sensorValueNew[9][i],
-                            color3Position: dataReceivedWatch.sensorValueNew[10][i],
+                            color1Position: dataReceivedWatch.sensorValueNew[9][safe: i] ?? SensorIconConstants.sensorAcoustics[i].color1Position,
+                            color3Position: dataReceivedWatch.sensorValueNew[10][safe: i] ?? SensorIconConstants.sensorAcoustics[i].color3Position,
                             valueTrend: AcousticsDataTrend[i],
                             icon: SensorIconConstants.sensorAcoustics[i].icon){
                             }
