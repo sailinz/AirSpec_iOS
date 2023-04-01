@@ -30,7 +30,9 @@ struct MyDataView: View {
 
             NavigationView{
                 VStack{
-                    MyDataTimeView()
+                    ScrollView {
+                        MyDataTimeView()
+                    }
                 }
                 .navigationTitle("My data")
   

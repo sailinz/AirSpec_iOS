@@ -30,6 +30,7 @@ struct SurveyQuestionView: View {
     @State var currentAnswersDisplay = [Int]() /// multiple choices
     @State var currentQuestion = 11
     @State var nextQuestion = 11
+    @State private var vStackHeight: CGFloat = 0
 //    @State var backPressed: Bool = false
     
     @Binding var showSurvey: Bool
@@ -41,128 +42,153 @@ struct SurveyQuestionView: View {
 //    @EnvironmentObject var surveyData: SurveyDataViewModel
     
     var body: some View {
-        VStack {
-            var currentQuestionItem = questions.filter{ $0.currentQuestion == nextQuestion}.first ?? questions[0]
-            Text(currentQuestionItem.title)
-                .font(.title3)
-                .foregroundColor(.primary)
-                .padding()
-            
-//            Text("userID: \(userID)")
-//            Text("current question: \(currentQuestion)")
-//            Text("next question: \(nextQuestion)")
-//            Text("current answer: \(currentAnswer)")
-//            Text("current answer: \(currentAnswers.description)")
-//            Text("foresee next question: \(currentQuestionItem.nextQuestion[0])")
-            
-            ForEach(Array(currentQuestionItem.options.enumerated()), id: \.offset) { (index, option) in
+        ScrollViewReader { scrollView in
+            ScrollView(.vertical){
+                VStack {
+                    var currentQuestionItem = questions.filter{ $0.currentQuestion == nextQuestion}.first ?? questions[0]
+                    Text(currentQuestionItem.title)
+                        .font(.title3)
+                        .id("question")
+                        .foregroundColor(.primary)
+                        .padding()
+                    
+                    
+                    //            Text("userID: \(userID)")
+                    //            Text("current question: \(currentQuestion)")
+                    //            Text("next question: \(nextQuestion)")
+                    //            Text("current answer: \(currentAnswer)")
+                    //            Text("current answer: \(currentAnswers.description)")
+                    //            Text("foresee next question: \(currentQuestionItem.nextQuestion[0])")
+                    
+                    ForEach(Array(currentQuestionItem.options.enumerated()), id: \.offset) { (index, option) in
+                        
+                        Button(action: {
+                            
+                            // button action here
+                            if(!currentQuestionItem.multiChoice){
+                                self.currentAnswer = index
+                                do{
+                                    /// save to coredata
+                                    try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(nextQuestion), choice: "\(currentAnswer.description)")
+                                    RawDataViewModel.addSurveyDataToRawData(qIndex: Int32(nextQuestion), qChoice: "\(currentAnswer.description)", qGroupIndex: UInt32(UserDefaults.standard.integer(forKey: "survey_record_index")), timestampUnix: Date())
+                                }catch{
+                                    print("Error saving survey data: \(error.localizedDescription)")
+                                }
+                                
+                                
+                                if(currentQuestionItem.nextQuestion[0] == 999){
+                                    print("survey record index: \(UserDefaults.standard.integer(forKey: "survey_record_index"))")
+                                    showSurvey.toggle()
+                                }
+                                
+                                self.currentQuestion = currentQuestionItem.currentQuestion
+                                self.nextQuestion = currentQuestionItem.nextQuestion[currentAnswer]
+                            }else{
+                                self.currentAnswer = index /// make sure all the multiple answers as the same next question
+                                self.currentAnswers.append(index)
+                                
+                                if self.currentAnswersDisplay.contains(index){
+                                    currentAnswersDisplay.removeAll { $0 == index }
+                                }else{
+                                    self.currentAnswersDisplay.append(index)
+                                }
+                                
+                                
+                                
+                            }
+                            
+                            
+                            
+                        }) {
+                            
+                            HStack{
+                                Image(currentQuestionItem.icons[index])
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .colorMultiply(.pink.opacity(0.7))
+                                    .frame(maxWidth: 20, alignment: .leading)
+                                Text(option)
+                                    .foregroundColor(colorScheme == .light ? .black: .white)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                        }
+                        .frame(width:200)
+                        .padding(.all,10)
+                        .background( .pink.opacity((currentQuestionItem.multiChoice && currentAnswersDisplay.contains(index)) ? 0.5 : 0.2)
+                        )   ///(.pink.opacity(index == self.currentAnswer ? 0.5 : 0.2))
+                        .clipShape(Capsule())
+                    }
+                    
+                    if(currentQuestionItem.multiChoice){
+                        Button(action: {
+                            // button action here
+                            do{
+                                /// save to coredata
+                                try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(nextQuestion), choice: "\(currentAnswers.description)")
+                                RawDataViewModel.addSurveyDataToRawData(qIndex: Int32(nextQuestion), qChoice: "\(currentAnswers.description)", qGroupIndex: UInt32(UserDefaults.standard.integer(forKey: "survey_record_index")), timestampUnix: Date())
+                            }catch{
+                                RawDataViewModel.addMetaDataToRawData(payload: "Error saving survey data: \(error.localizedDescription)", timestampUnix: Date(), type: 2)
+                                print("Error saving survey data: \(error.localizedDescription)")
+                            }
+                            
+                            /// something hardcoded - but the logic should be done properly!!!!
+                            if nextQuestion == 1{ /// the question about change
+                                if currentAnswers.contains(2) && currentAnswersDisplay.contains(2) { /// visual comfort
+                                    currentAnswer = 2
+                                    
+                                }
+                            }
+                            
+                            
+                            
+                            
+                            self.currentQuestion = currentQuestionItem.currentQuestion
+                            self.nextQuestion = currentQuestionItem.nextQuestion[currentAnswer]
+                            self.currentAnswer = 999 /// reset
+                            self.currentAnswers = [] /// reset
+                            self.currentAnswersDisplay = []
+                            ///
+                            
+                            
+                            
+                        }) {
+                            HStack{
+                                Text("Next")
+                                    .foregroundColor(.black)
+                                    .foregroundColor(.black.opacity(currentQuestionItem.nextQuestion[0] == 999 ? 0.2: 1))
+                            }
+                        }
+                        .frame(width:85)
+                        .padding(.all,10)
+                        .background(.pink.opacity(0.2))
+                        .clipShape(Capsule())
+                    }
+                    
+                }
+                .background(
+                    GeometryReader { geometry in
+                        Color.clear.onAppear {
+                            self.vStackHeight = geometry.size.height
+                        }
+                        Color.clear.onChange(of: geometry.size.height) { newValue in
+                            if vStackHeight != newValue {
+                                vStackHeight = newValue
+                            }
+                        }
+                    }
+                )
                 
-                Button(action: {
-                    
-                    // button action here
-                    if(!currentQuestionItem.multiChoice){
-                        self.currentAnswer = index
-                        do{
-                            /// save to coredata
-                            try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(nextQuestion), choice: "\(currentAnswer.description)")
-                            RawDataViewModel.addSurveyDataToRawData(qIndex: Int32(nextQuestion), qChoice: "\(currentAnswer.description)", qGroupIndex: UInt32(UserDefaults.standard.integer(forKey: "survey_record_index")), timestampUnix: Date())
-                        }catch{
-                            print("Error saving survey data: \(error.localizedDescription)")
-                        }
-                        
-                        
-                        if(currentQuestionItem.nextQuestion[0] == 999){
-                            print("survey record index: \(UserDefaults.standard.integer(forKey: "survey_record_index"))")
-                            showSurvey.toggle()
-                        }
-                        
-                        self.currentQuestion = currentQuestionItem.currentQuestion
-                        self.nextQuestion = currentQuestionItem.nextQuestion[currentAnswer]
-                    }else{
-                        self.currentAnswer = index /// make sure all the multiple answers as the same next question
-                        self.currentAnswers.append(index)
-                        
-                        if self.currentAnswersDisplay.contains(index){
-                            currentAnswersDisplay.removeAll { $0 == index }
-                        }else{
-                            self.currentAnswersDisplay.append(index)
-                        }
-                        
-                        
-                        
-                    }
-                    
-                    
-                    
-                }) {
-                    
-                    HStack{
-                        Image(currentQuestionItem.icons[index])
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .colorMultiply(.pink.opacity(0.7))
-                            .frame(maxWidth: 20, alignment: .leading)
-                        Text(option)
-                            .foregroundColor(colorScheme == .light ? .black: .white)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                }
-                .frame(width:200)
-                .padding(.all,10)
-                .background( .pink.opacity((currentQuestionItem.multiChoice && currentAnswersDisplay.contains(index)) ? 0.5 : 0.2)
-                )   ///(.pink.opacity(index == self.currentAnswer ? 0.5 : 0.2))
-                .clipShape(Capsule())
             }
-            
-            if(currentQuestionItem.multiChoice){
-                Button(action: {
-                    // button action here
-                    do{
-                        /// save to coredata
-                        try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(nextQuestion), choice: "\(currentAnswers.description)")
-                        RawDataViewModel.addSurveyDataToRawData(qIndex: Int32(nextQuestion), qChoice: "\(currentAnswers.description)", qGroupIndex: UInt32(UserDefaults.standard.integer(forKey: "survey_record_index")), timestampUnix: Date())
-                    }catch{
-                        RawDataViewModel.addMetaDataToRawData(payload: "Error saving survey data: \(error.localizedDescription)", timestampUnix: Date(), type: 2)
-                        print("Error saving survey data: \(error.localizedDescription)")
-                    }
-                    
-                    /// something hardcoded - but the logic should be done properly!!!!
-                    if nextQuestion == 1{ /// the question about change
-                        if currentAnswers.contains(2) && currentAnswersDisplay.contains(2) { /// visual comfort
-                            currentAnswer = 2
-
-                        }
-                    }
-                    
-                    
-                    
-                    
-                    self.currentQuestion = currentQuestionItem.currentQuestion
-                    self.nextQuestion = currentQuestionItem.nextQuestion[currentAnswer]
-                    self.currentAnswer = 999 /// reset
-                    self.currentAnswers = [] /// reset
-                    self.currentAnswersDisplay = []
-                    ///
-                    
-                    
-
-                }) {
-                    HStack{
-                        Text("Next")
-                            .foregroundColor(.black)
-                            .foregroundColor(.black.opacity(currentQuestionItem.nextQuestion[0] == 999 ? 0.2: 1))
-                    }
+            .frame(maxHeight: vStackHeight > UIScreen.main.bounds.height ? .infinity : vStackHeight)
+            .onChange(of: nextQuestion) { _ in
+                withAnimation {
+                    scrollView.scrollTo("question", anchor: .top)
                 }
-                .frame(width:85)
-                .padding(.all,10)
-                .background(.pink.opacity(0.2))
-                .clipShape(Capsule())
             }
             
         }
+            
         
-        
-
     }
     
     

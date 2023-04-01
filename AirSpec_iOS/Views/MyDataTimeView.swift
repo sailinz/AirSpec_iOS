@@ -54,8 +54,8 @@ struct MyDataTimeView: View {
                         .font(.system(size: 22) .weight(.heavy))
                 }
                 Text(sensorSettingList[flags.firstIndex(where: { $0 }) ?? 0].meaning)
-                    .font(.system(size: 12) .weight(.light))
-                    .fixedSize(horizontal: false, vertical: false)
+                    .font(.system(.caption2) .weight(.light))
+//                    .fixedSize(horizontal: false, vertical: false)
             }
             .padding(.horizontal)
             
@@ -156,7 +156,7 @@ struct MyDataTimeView: View {
         }
         .chartXAxis {
             if isTodayData {
-                if data.count > 8{
+                if data.count > 20{
                     AxisMarks(values: .stride(by: .hour, count: 1)) { value in
                         if let date = value.as(Date.self) {
                             let hour = Calendar.current.component(.hour, from: date)
@@ -176,7 +176,7 @@ struct MyDataTimeView: View {
                     AxisMarks(values: .automatic)
                 }
             }else{
-                if data.count > 8{
+                if data.count > 20{
                     ///https://developer.apple.com/documentation/charts/customizing-axes-in-swift-charts?language=_2
                     AxisMarks(values: .stride(by: .hour, count: 6)) { value in
                         if let date = value.as(Date.self) {

@@ -168,9 +168,10 @@ struct HomeView: View {
                                             
                                             if(SensorIconConstants.sensorAirQuality[i].name.contains("nose")){
                                                 Image(systemName: "nose.fill")
+                                                    
                                                     .renderingMode(.template)
                                                     .foregroundColor(SensorIconConstants.customColor)
-                                                    .scaleEffect(bgScaleFactor)
+                                                    .font(.system(size: 30))
                                             }
                                             
                                             VStack{
@@ -229,7 +230,7 @@ struct HomeView: View {
                                                 Image(systemName: "eye")
                                                     .renderingMode(.template)
                                                     .foregroundColor(SensorIconConstants.customColor)
-                                                    .scaleEffect(bgScaleFactor)
+                                                    .font(.system(size: 30))
                                             }
                                             
                                             VStack{

@@ -15,6 +15,7 @@ struct SelfLoggingView: View {
     @State var surveyButton: Bool = false
     @State var isComfySelected:Bool = false
     @State var isUncomfySelected:Bool = false
+    @State private var vStackHeight: CGFloat = 0
     
     
 //    let userID = UserDefaults.standard.double(forKey: "user_id")
@@ -34,162 +35,164 @@ struct SelfLoggingView: View {
                     .background(BlurView())
                     .cornerRadius(25)
             }else{
+                
                 VStack(spacing:25){
                     HStack{
-                        VStack{
-                            Text("How are you feeling now?")
-                                .multilineTextAlignment(.center)
-                            Spacer()
-                                .frame(height: 20)
-                            HStack{
-                                Button(action:{
-                                    isComfySelected = false
-                                    isUncomfySelected = true
-                                    do{
-                                        var secondsBetweenDates = Double(receiver.greenHoldTime + 12)
-                                        if let prevNotificationTime = UserDefaults.standard.object(forKey: "prevNotificationTime") as? Date{
-                                            secondsBetweenDates = Date().timeIntervalSince(prevNotificationTime)
-                                        }
-                                        
-                                        try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-2), choice: "not comfy")
-                                        RawDataViewModel.addSurveyDataToRawData(qIndex: -2, qChoice: "not comfy", qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
-                                        
-                                        receiver.notificationTimer?.cancel()
-                                        receiver.notificationTimer = nil
-                                        
-                                        
-                                        if(!receiver.isBlueGreenSurveyDone){
-                                            RawDataViewModel.addMetaDataToRawData(payload: "Reaction time: \(secondsBetweenDates); Time now: \(Date()); PrevNotification: \(UserDefaults.standard.object(forKey: "prevNotificationTime")); survey received from phone; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
-                                            
-                                            receiver.blueGreenLight(isEnable: false)
-                                            DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
-                                                receiver.setBlue()
+                        ScrollView(){
+                            VStack{
+                                Text("How are you feeling now?")
+                                    .multilineTextAlignment(.center)
+                                Spacer()
+                                    .frame(height: 20)
+                                HStack{
+                                    Button(action:{
+                                        isComfySelected = false
+                                        isUncomfySelected = true
+                                        do{
+                                            var secondsBetweenDates = Double(receiver.greenHoldTime + 12)
+                                            if let prevNotificationTime = UserDefaults.standard.object(forKey: "prevNotificationTime") as? Date{
+                                                secondsBetweenDates = Date().timeIntervalSince(prevNotificationTime)
                                             }
-                                        }else{
-                                            RawDataViewModel.addMetaDataToRawData(payload: "Survey received from phone (without blue-green transition); reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                                            
+                                            try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-2), choice: "not comfy")
+                                            RawDataViewModel.addSurveyDataToRawData(qIndex: -2, qChoice: "not comfy", qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
+                                            
+                                            receiver.notificationTimer?.cancel()
+                                            receiver.notificationTimer = nil
+                                            
+                                            
+                                            if(!receiver.isBlueGreenSurveyDone){
+                                                RawDataViewModel.addMetaDataToRawData(payload: "Reaction time: \(secondsBetweenDates); Time now: \(Date()); PrevNotification: \(UserDefaults.standard.object(forKey: "prevNotificationTime")); survey received from phone; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                                                
+                                                receiver.blueGreenLight(isEnable: false)
+                                                DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
+                                                    receiver.setBlue()
+                                                }
+                                            }else{
+                                                RawDataViewModel.addMetaDataToRawData(payload: "Survey received from phone (without blue-green transition); reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                                            }
+                                            
+                                            
+                                        }catch{
+                                            RawDataViewModel.addMetaDataToRawData(payload: "Error saving survey data from phone: \(error.localizedDescription)", timestampUnix: Date(), type: 2)
+                                            print("Error saving survey data: \(error.localizedDescription)")
                                         }
-                                        
-                                        
-                                    }catch{
-                                        RawDataViewModel.addMetaDataToRawData(payload: "Error saving survey data from phone: \(error.localizedDescription)", timestampUnix: Date(), type: 2)
-                                        print("Error saving survey data: \(error.localizedDescription)")
+                                    }){
+                                        ZStack{
+                                            VStack{
+                                                ZStack{
+                                                    Circle()
+                                                        .frame(width:42, height:42)
+                                                        .foregroundColor(uncomfyColor)
+                                                        .shadow(color: uncomfyColor, radius: 2, x: 0, y: 2)
+                                                    Image("not_comfy")
+                                                        .resizable()
+                                                        .renderingMode(.template)
+                                                        .foregroundColor(.white)
+                                                        .frame(width: 20, height:20)
+                                                }
+                                                .scaleEffect(isUncomfySelected ? 1.2 : 1)
+                                                
+                                                Text("Not comfy")
+                                                    .font(.system(.subheadline) .weight(.semibold))
+                                            }
+                                        }
                                     }
-                                }){
-                                    ZStack{
-                                        VStack{
-                                            ZStack{
-                                                Circle()
-                                                    .frame(width:42, height:42)
-                                                    .foregroundColor(uncomfyColor)
-                                                    .shadow(color: uncomfyColor, radius: 2, x: 0, y: 2)
-                                                Image("not_comfy")
-                                                    .resizable()
-                                                    .renderingMode(.template)
-                                                    .foregroundColor(.white)
-                                                    .frame(width: 20, height:20)
+                                    
+                                    Spacer()
+                                        .frame(width: 20)
+                                    
+                                    Button(action:{
+                                        isComfySelected = true
+                                        isComfySelected = true
+                                        isUncomfySelected = false
+                                        do{
+                                            var secondsBetweenDates = Double(receiver.greenHoldTime + 12)
+                                            if let prevNotificationTime = UserDefaults.standard.object(forKey: "prevNotificationTime") as? Date{
+                                                secondsBetweenDates = Date().timeIntervalSince(prevNotificationTime)
                                             }
-                                            .scaleEffect(isUncomfySelected ? 1.2 : 1)
                                             
-                                            Text("Not comfy")
-                                                .font(.system(.subheadline) .weight(.semibold))
+                                            try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-2), choice: "comfy")
+                                            RawDataViewModel.addSurveyDataToRawData(qIndex: -2, qChoice: "comfy", qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
+                                            
+                                            receiver.notificationTimer?.cancel()
+                                            receiver.notificationTimer = nil
+                                            
+                                            
+                                            if(!receiver.isBlueGreenSurveyDone){
+                                                RawDataViewModel.addMetaDataToRawData(payload: "Reaction time: \(secondsBetweenDates); Time now: \(Date()); PrevNotification: \(UserDefaults.standard.object(forKey: "prevNotificationTime")); survey received from phone; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                                                
+                                                receiver.blueGreenLight(isEnable: false)
+                                                DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
+                                                    receiver.setBlue()
+                                                }
+                                            }else{
+                                                RawDataViewModel.addMetaDataToRawData(payload: "Survey received from phone (without blue-green transition); reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
+                                            }
+                                            
+                                            
+                                            
+                                        }catch{
+                                            RawDataViewModel.addMetaDataToRawData(payload: "Error saving survey data from phone: \(error.localizedDescription)", timestampUnix: Date(), type: 2)
+                                            print("Error saving survey data: \(error.localizedDescription)")
+                                        }
+                                    }){
+                                        ZStack{
+                                            VStack{
+                                                ZStack{
+                                                    Circle()
+                                                        .frame(width:42, height:42)
+                                                        .foregroundColor(comfyColor)
+                                                        .shadow(color: comfyColor, radius: 2, x: 0, y: 2)
+                                                    Image("comfy")
+                                                        .resizable()
+                                                        .renderingMode(.template)
+                                                        .foregroundColor(.white)
+                                                        .frame(width: 20, height:20)
+                                                }
+                                                .scaleEffect(isComfySelected ? 1.2 : 1)
+                                                
+                                                Text("comfy")
+                                                    .font(.system(.subheadline) .weight(.semibold))
+                                                    .foregroundColor(comfyColor)
+                                            }
                                         }
                                     }
                                 }
+                                
                                 
                                 Spacer()
-                                    .frame(width: 20)
+                                    .frame(height: 40)
+                                
+                                
+                                Text("Have time for a 30s survey?")
+                                    .multilineTextAlignment(.center)
                                 
                                 Button(action:{
-                                    isComfySelected = true
-                                    isComfySelected = true
-                                    isUncomfySelected = false
-                                    do{
-                                        var secondsBetweenDates = Double(receiver.greenHoldTime + 12)
-                                        if let prevNotificationTime = UserDefaults.standard.object(forKey: "prevNotificationTime") as? Date{
-                                            secondsBetweenDates = Date().timeIntervalSince(prevNotificationTime)
-                                        }
-                                        
-                                        try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(-2), choice: "comfy")
-                                        RawDataViewModel.addSurveyDataToRawData(qIndex: -2, qChoice: "comfy", qGroupIndex: UInt32(surveyRecordIndex), timestampUnix: Date())
-                                        
-                                        receiver.notificationTimer?.cancel()
-                                        receiver.notificationTimer = nil
-                                        
-                                     
-                                        if(!receiver.isBlueGreenSurveyDone){
-                                            RawDataViewModel.addMetaDataToRawData(payload: "Reaction time: \(secondsBetweenDates); Time now: \(Date()); PrevNotification: \(UserDefaults.standard.object(forKey: "prevNotificationTime")); survey received from phone; reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
-                                            
-                                            receiver.blueGreenLight(isEnable: false)
-                                            DispatchQueue.main.asyncAfter(deadline: .now() + 3)  { /// wait for 3 sec
-                                                receiver.setBlue()
-                                            }
-                                        }else{
-                                            RawDataViewModel.addMetaDataToRawData(payload: "Survey received from phone (without blue-green transition); reset LED to blue; push notification of survey suspended", timestampUnix: Date(), type: 2)
-                                        }
-                                           
-                                            
-                                        
-                                    }catch{
-                                        RawDataViewModel.addMetaDataToRawData(payload: "Error saving survey data from phone: \(error.localizedDescription)", timestampUnix: Date(), type: 2)
-                                        print("Error saving survey data: \(error.localizedDescription)")
-                                    }
-                                }){
-                                    ZStack{
-                                        VStack{
-                                            ZStack{
-                                                Circle()
-                                                    .frame(width:42, height:42)
-                                                    .foregroundColor(comfyColor)
-                                                    .shadow(color: comfyColor, radius: 2, x: 0, y: 2)
-                                                Image("comfy")
-                                                    .resizable()
-                                                    .renderingMode(.template)
-                                                    .foregroundColor(.white)
-                                                    .frame(width: 20, height:20)
-                                            }
-                                            .scaleEffect(isComfySelected ? 1.2 : 1)
-                                            
-                                            Text("comfy")
-                                                .font(.system(.subheadline) .weight(.semibold))
-                                                .foregroundColor(comfyColor)
-                                        }
-                                    }
+                                    ///go to the survey view
+                                    surveyButton.toggle()
                                 }
-                            }
-                            
-                            
-                            Spacer()
-                                .frame(height: 40)
-                            
-                        
-                            Text("Have time for a 30s survey?")
-                                .multilineTextAlignment(.center)
-                            
-                            Button(action:{
-                                            ///go to the survey view
-                                            surveyButton.toggle()
-                                          }
                                 ) {
-                                Text("Start survey")
-                                    .font(.system(.subheadline) .weight(.semibold))
-                                    .foregroundColor(.white)
-                                Image(systemName: "pencil.line")
-                                    .foregroundColor(.white)
-                            }
-                            .padding(.all,10)
-                            .background(.pink.opacity(0.6))
-                            .clipShape(Capsule())
-                            
-                            Spacer()
-                                .frame(height: 40)
-                            Text("Any comments?")
-    //                        Spacer()
-    //                            .frame(height: 20)
-                            
-                            TextEditor(
-//                                    " Enter text or voice-to-text here",
+                                    Text("Start survey")
+                                        .font(.system(.subheadline) .weight(.semibold))
+                                        .foregroundColor(.white)
+                                    Image(systemName: "pencil.line")
+                                        .foregroundColor(.white)
+                                }
+                                .padding(.all,10)
+                                .background(.pink.opacity(0.6))
+                                .clipShape(Capsule())
+                                
+                                Spacer()
+                                    .frame(height: 40)
+                                Text("Any comments?")
+                                //                        Spacer()
+                                //                            .frame(height: 20)
+                                
+                                TextEditor(
+                                    //                                    " Enter text or voice-to-text here",
                                     text: $comments
-//                                    axis:.vertical
+                                    //                                    axis:.vertical
                                 )
                                 .padding(5)
                                 .frame(minHeight: 40, maxHeight: 40 * 2)
@@ -199,11 +202,11 @@ struct SelfLoggingView: View {
                                 .onTapGesture {
                                     UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                                 }
-    //                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.pink,lineWidth: 1))
+                                //                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.pink,lineWidth: 1))
                                 
-                            
-                            Button(action:{
-                                        ///submit data
+                                
+                                Button(action:{
+                                    ///submit data
                                     do{
                                         
                                         if self.comments != "" {
@@ -217,24 +220,35 @@ struct SelfLoggingView: View {
                                         RawDataViewModel.addMetaDataToRawData(payload: "Error saving survey data: \(error.localizedDescription)", timestampUnix: Date(), type: 2)
                                         print("Error saving survey data: \(error.localizedDescription)")
                                     }
-                                
+                                    
                                     withAnimation{
                                         show.toggle()
                                     }
-                                            
+                                    
                                 }
                                 ) {
-                                Text("Done")
-                                .font(.system(.subheadline) .weight(.semibold))
-                                .foregroundColor(.white)
+                                    Text("Done")
+                                        .font(.system(.subheadline) .weight(.semibold))
+                                        .foregroundColor(.white)
+                                }
+                                .padding(.all,10)
+                                .background(.pink.opacity(0.9))
+                                .clipShape(Capsule())
+                                .padding(.top, 30)
+                                
                             }
-                            .padding(.all,10)
-                            .background(.pink.opacity(0.9))
-                            .clipShape(Capsule())
-                            .padding(.top, 30)
+                            .background(
+                                GeometryReader { geometry in
+                                    Color.clear.onAppear {
+                                        self.vStackHeight = geometry.size.height
+                                    }
+                                }
+                            )
                             
                         }
+                        .frame(maxHeight: vStackHeight > UIScreen.main.bounds.height ? .infinity : vStackHeight)
                         
+                       
                         
                     }
                 }
@@ -258,7 +272,6 @@ struct SelfLoggingView: View {
             }
             .padding(5)
         }
-        .frame(maxWidth:.infinity, maxHeight:.infinity)
         .background(
             Color.white.opacity(0.35)
         )

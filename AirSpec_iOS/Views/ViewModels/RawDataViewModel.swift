@@ -238,7 +238,14 @@ class RawDataViewModel {
         }
     }
     
-    static func saveData(_ record: Data, toContainer container: NSPersistentContainer, saveErrors: Bool) throws {
+    static func saveData(_ record: Data?, toContainer container: NSPersistentContainer, saveErrors: Bool) throws {
+        
+        guard let record = record else {
+            print("record is nil")
+            return
+            
+        }
+        
         let newRawData = RawDataEntity(context: container.viewContext)
         newRawData.record = record
 

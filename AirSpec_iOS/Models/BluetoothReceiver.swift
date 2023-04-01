@@ -653,7 +653,10 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 while !rawDataQueue.isEmpty {
                     if let data = rawDataQueue.popFirst() {
                         do{
+                           
                             try RawDataViewModel.addRawData(record: data)
+                            
+                            
                             sem.signal()
                             sem.wait()
                         }catch{
