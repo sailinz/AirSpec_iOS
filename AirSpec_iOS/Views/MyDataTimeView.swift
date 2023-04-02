@@ -47,19 +47,7 @@ struct MyDataTimeView: View {
 
     var body: some View {
         VStack(alignment: .leading){
-            VStack{
-                HStack{
-                    Image(systemName: "info.circle")
-                    Text("About \(sensorSettingList[flags.firstIndex(where: { $0 }) ?? 0].name.replacingOccurrences(of: "\n", with: " "))")
-                        .font(.system(size: 22) .weight(.heavy))
-                }
-                Text(sensorSettingList[flags.firstIndex(where: { $0 }) ?? 0].meaning)
-                    .font(.system(.caption2) .weight(.light))
-//                    .fixedSize(horizontal: false, vertical: false)
-            }
-            .padding(.horizontal)
-            
-            Spacer()
+
             ZStack{
                 HStack(alignment: .center){
                     Spacer()
@@ -108,6 +96,25 @@ struct MyDataTimeView: View {
 
                 }
             }.padding()
+            
+            Spacer()
+            
+            VStack{
+                if flags.contains { $0 }{
+                    HStack{
+                        Image(systemName: "info.circle")
+                        Text("About \(sensorSettingList[flags.firstIndex(where: { $0 }) ?? 0].name.replacingOccurrences(of: "\n", with: " "))")
+                            .font(.system(size: 22) .weight(.heavy))
+                    }
+                    Text(sensorSettingList[flags.firstIndex(where: { $0 }) ?? 0].meaning)
+                        .font(.system(.caption2) .weight(.light))
+    //                    .fixedSize(horizontal: false, vertical: false)
+                }
+                
+            }
+            .padding(.horizontal)
+            
+            
         }
     }
     

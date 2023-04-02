@@ -59,7 +59,7 @@ struct HomeView: View {
     let acousticsBgImageAssets = ["Asset 10"]
     
     let scaleFactor = 0.9
-    let fontSize:CGFloat = 12
+    let fontSize:CGFloat = 16
     let bgScaleFactor = 2.9
 
     

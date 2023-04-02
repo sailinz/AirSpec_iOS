@@ -107,9 +107,10 @@ struct WatchSurveyQuestionView: View {
                                 
                                 /// something hardcoded - but the logic should be done properly!!!!
                                 if nextQuestion == 1{ /// the question about change
-                                    if currentAnswers.contains(2) && currentAnswersDisplay.contains(2) { /// visual comfort
+                                    if currentAnswersDisplay.contains(2){ /// visual comfort
                                         currentAnswer = 2
-
+                                    }else{
+                                        currentAnswer = 1 /// any other answers that does not include visual comfort
                                     }
                                 }
                                 

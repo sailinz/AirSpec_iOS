@@ -10,7 +10,7 @@ func date(year: Int, month: Int, day: Int = 1, hour: Int = 0, minutes: Int = 0, 
 
 enum Constants {
     static let previewChartHeight: CGFloat = 50
-    static let detailChartHeight: CGFloat = 150
+    static let detailChartHeight: CGFloat = 200
 }
 
 /// Data for the sales by location and weekday charts.

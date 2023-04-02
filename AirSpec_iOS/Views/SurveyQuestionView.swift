@@ -131,15 +131,16 @@ struct SurveyQuestionView: View {
                                 print("Error saving survey data: \(error.localizedDescription)")
                             }
                             
-                            /// something hardcoded - but the logic should be done properly!!!!
+                            
+                            /// as long as user thought about visual comfort, just ask the eye fatigue question
                             if nextQuestion == 1{ /// the question about change
-                                if currentAnswers.contains(2) && currentAnswersDisplay.contains(2) { /// visual comfort
+                                if currentAnswersDisplay.contains(2){ /// visual comfort
                                     currentAnswer = 2
-                                    
+                                }else{
+                                    currentAnswer = 1 /// any other answers that does not include visual comfort
                                 }
                             }
-                            
-                            
+
                             
                             
                             self.currentQuestion = currentQuestionItem.currentQuestion
