@@ -212,6 +212,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         peripheral.delegate = self
         
         centralManager.connect(peripheral)
+        centralManager.connect(peripheral)
     }
     
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
@@ -655,8 +656,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                         do{
                            
                             try RawDataViewModel.addRawData(record: data)
-                            
-                            
+                            usleep(10000) // add 1/100s         delay
                             sem.signal()
                             sem.wait()
                         }catch{
@@ -667,6 +667,29 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             }
         }
     }
+    
+//    func uploadDataFromQueueToServer(){
+//        DispatchQueue.global().async { [self] in
+//            rawDataSync.sync {
+//                print("dequeing")
+//                let sem = DispatchSemaphore(value: 0)
+//                while !rawDataQueue.isEmpty {
+//                    if let data = rawDataQueue.popFirst() {
+//                        do{
+//                           
+//                            try RawDataViewModel.addRawData(record: data)
+//                            
+//                            
+//                            sem.signal()
+//                            sem.wait()
+//                        }catch{
+//                            print("cannot add dequed packet to raw data db \(error.localizedDescription)")
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
     
     
     func uploadToServer() {
@@ -925,7 +948,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                             isBlueGreenSurveyDone = false
                             randomNextNotificationGap = Int.random(in: 30...40)
                             notificationTimer = DispatchSource.makeTimerSource()
-                            notificationTimer?.schedule(deadline: .now() + .seconds(greenHoldTime), repeating: .never)
+                            notificationTimer?.schedule(deadline: .now() + .seconds(greenHoldTime + 70), repeating: .never)
                             notificationTimer?.setEventHandler {
                                 LocalNotification.setLocalNotification(title: "Did you miss the survey?",
                                                                        subtitle: "",

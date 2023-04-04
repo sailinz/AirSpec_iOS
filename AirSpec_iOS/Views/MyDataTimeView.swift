@@ -83,8 +83,10 @@ struct MyDataTimeView: View {
                 
                 
             }
+            .padding()
+            
             chartEnv
-                .padding(.horizontal)
+                .padding()
             
 
             LazyVGrid(columns: columns, spacing: 8){
@@ -107,12 +109,12 @@ struct MyDataTimeView: View {
                             .font(.system(size: 22) .weight(.heavy))
                     }
                     Text(sensorSettingList[flags.firstIndex(where: { $0 }) ?? 0].meaning)
-                        .font(.system(.caption2) .weight(.light))
+                        .font(.system(.body) .weight(.light))
     //                    .fixedSize(horizontal: false, vertical: false)
                 }
                 
             }
-            .padding(.horizontal)
+            .padding()
             
             
         }
@@ -149,8 +151,7 @@ struct MyDataTimeView: View {
     }
 
     private var chartEnv: some View {
-    
-        Chart(data, id: \.minutes) {
+        return Chart(data, id: \.minutes) {
             BarMark(
                 x: .value("Date", $0.minutes),
                 y: .value("values", $0.values),
@@ -164,7 +165,7 @@ struct MyDataTimeView: View {
         .chartXAxis {
             if isTodayData {
                 if data.count > 20{
-                    AxisMarks(values: .stride(by: .hour, count: 1)) { value in
+                    AxisMarks(values: .stride(by: .hour, count: 2)) { value in
                         if let date = value.as(Date.self) {
                             let hour = Calendar.current.component(.hour, from: date)
                             switch hour {
@@ -254,6 +255,7 @@ struct ToggleItem: View {
     var checkToggleText:String
     var tag: Int
     var label: String = ""
+    
 
     var body: some View {
         let isOn = Binding (get: { self.storage[self.tag] },
@@ -274,6 +276,7 @@ struct ToggleItem: View {
     }
 
     func startQueries(i:Int) {
+        let maxPoints = 48
         
         do {
             let (longTermData, onComplete) = try LongTermDataViewModel.fetchData()
@@ -291,11 +294,13 @@ struct ToggleItem: View {
             if(self.isTodayData){
                 let calendar = Calendar.current
                 let selectedSensorData = longTermData.filter { $0.1 == sensorSettingList[i].name && calendar.isDate($0.0, equalTo: Date(), toGranularity: .day)}
-                let convertedSensorData = selectedSensorData.compactMap { tuple -> (Date, Double)? in
+                var convertedSensorData = selectedSensorData.compactMap { tuple -> (Date, Double)? in
                     
                     let date = tuple.0
                     let dateString = "\(date)"
                     let valuesString = "\(tuple.2)"
+                    
+                    
                     return convertToData(dateString: dateString, valuesString: valuesString)
                 }
 
@@ -311,6 +316,19 @@ struct ToggleItem: View {
                         
                     
                 } else {
+                    
+                    
+                        
+                    // Downsample the data to the maximum number of points
+                    if convertedSensorData.count > maxPoints {
+                        let strideStep = Int(convertedSensorData.count / maxPoints)
+                        var downsampledData = [(minutes: Date, values: Double)]()
+                        for i in stride(from: 0, to: convertedSensorData.count, by: strideStep) {
+                            downsampledData.append(convertedSensorData[i])
+                        }
+                        convertedSensorData = downsampledData
+                    }
+                    
                     if(i != UserDefaults.standard.integer(forKey: "longTermDataSensor")){
                         print("queried data because of changed sensor")
                         var _ = true
@@ -340,7 +358,7 @@ struct ToggleItem: View {
                 }
             }else{
                 let selectedSensorData = longTermData.filter { $0.1 == sensorSettingList[i].name}
-                let convertedSensorData = selectedSensorData.compactMap { tuple -> (Date, Double)? in
+                var convertedSensorData = selectedSensorData.compactMap { tuple -> (Date, Double)? in
                     
                     let date = tuple.0
                     let dateString = "\(date)"
@@ -356,6 +374,17 @@ struct ToggleItem: View {
                         }
                     }
                 } else {
+                    
+                    // Downsample the data to the maximum number of points
+                    if convertedSensorData.count > maxPoints {
+                        let strideStep = Int(convertedSensorData.count / maxPoints)
+                        var downsampledData = [(minutes: Date, values: Double)]()
+                        for i in stride(from: 0, to: convertedSensorData.count, by: strideStep) {
+                            downsampledData.append(convertedSensorData[i])
+                        }
+                        convertedSensorData = downsampledData
+                    }
+                    
                     if(i != UserDefaults.standard.integer(forKey: "longTermDataSensor")){
                         print("queried data because of changed sensor")
                         var _ = true
@@ -364,6 +393,8 @@ struct ToggleItem: View {
                             self.data = convertedSensorData
                         }
                     }
+                    
+                    
                     
                     
                     if UserDefaults.standard.bool(forKey: "isTodayDataToggled"){
