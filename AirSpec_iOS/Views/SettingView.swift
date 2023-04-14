@@ -113,46 +113,46 @@ struct SettingView: View {
                             }
                             
                             
-//                            HStack() {
-//                                Image(systemName: "externaldrive")
-//                                    .frame(width: 30, height: 20)
-//                                Text("DFU")
-//                                    .font(.system(.subheadline))
-//                                Button(action:receiver.dfu) {
-//                                    Text("DFU enable")
-//                                        .font(.system(.subheadline) .weight(.semibold))
-//                                        .foregroundColor(.white)
-//                                }
-//                                .padding(.all,5)
-//                                .background(.gray.opacity(0.5))
-//                                .clipShape(Capsule())
-//
-//                            }
-//
-//                            HStack() {
-//                                Image(systemName: "lightbulb.led.wide.fill")
-//                                    .frame(width: 30, height: 20)
-//                                Text("Test light")
-//                                    .font(.system(.subheadline))
-//                                Spacer()
-//
-//
-//                                Button(action:
-//                                        {
-//                                    receiver.blueGreenLight(isEnable: true)
-//                                    receiver.isBlueGreenSurveyDone = false
-//                                }
-//
-//                                ) {
-//                                    Text("Test")
-//                                        .font(.system(.subheadline) .weight(.semibold))
-//                                        .foregroundColor(.white)
-//                                }
-//                                .padding(.all,5)
-//                                .background(.pink.opacity(0.5))
-//                                .clipShape(Capsule())
-//
-//                            }
+                            HStack() {
+                                Image(systemName: "externaldrive")
+                                    .frame(width: 30, height: 20)
+                                Text("DFU")
+                                    .font(.system(.subheadline))
+                                Button(action:receiver.dfu) {
+                                    Text("DFU enable")
+                                        .font(.system(.subheadline) .weight(.semibold))
+                                        .foregroundColor(.white)
+                                }
+                                .padding(.all,5)
+                                .background(.gray.opacity(0.5))
+                                .clipShape(Capsule())
+
+                            }
+
+                            HStack() {
+                                Image(systemName: "lightbulb.led.wide.fill")
+                                    .frame(width: 30, height: 20)
+                                Text("Test light")
+                                    .font(.system(.subheadline))
+                                Spacer()
+
+
+                                Button(action:
+                                        {
+                                    receiver.blueGreenLight(isEnable: true)
+                                    receiver.isBlueGreenSurveyDone = false
+                                }
+
+                                ) {
+                                    Text("Test")
+                                        .font(.system(.subheadline) .weight(.semibold))
+                                        .foregroundColor(.white)
+                                }
+                                .padding(.all,5)
+                                .background(.pink.opacity(0.5))
+                                .clipShape(Capsule())
+
+                            }
 
                             
                             

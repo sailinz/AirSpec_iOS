@@ -73,6 +73,7 @@ public class Airspec {
                 onComplete(nil)
                 break
             default:
+                print("other http errors")
                 onComplete(AirspecError.status(httpResponse.statusCode))
             }
         }

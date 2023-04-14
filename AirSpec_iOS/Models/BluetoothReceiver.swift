@@ -614,8 +614,10 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             case .some(.imuPacket(_)):
                 break
             case .some(.micPacket(_)):
+//                print(packet)
                 break
             case .some(.micLevelPacket(_)):
+//                print(packet)
                 if let sensorPayload = packet.micLevelPacket.payload.last{
     //                for sensorPayload in packet.micLevelPacket.payload {
                     if(sensorPayload.soundSplDb != nil){
@@ -630,6 +632,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 }
 
             case .some(.blinkPacket(_)):
+//                print(packet)
                 break
             case .some(.surveyPacket(_)):
                 break
@@ -715,96 +718,6 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                         
                         var err: Error?
                         
-//                        for packet in data{
-//                            switch packet.payload{
-//                            case .some(.sgpPacket(_)):
-//                                    break
-//                                case .some(.bmePacket(_)):
-////                                if ( Int(packet.bmePacket.packetIndex) - prevBMEIndex) > 1 {
-////                                        print("missing packets from coredata (BME: prev \(prevBMEIndex), current \(packet.bmePacket.packetIndex)")
-////                                    }
-////                                    print(packet.bmePacket.packetIndex)
-////                                    print(packet)
-////                                    prevBMEIndex = Int(packet.bmePacket.packetIndex)
-//                                    
-//                                    let timestamps = Set(packet.bmePacket.payload.map {
-//                                        let date = Date(timeIntervalSince1970: Double($0.timestampUnix) / 1000)
-//                                        return "\(date)"
-//                                    })
-//                                    let repetitions = packet.bmePacket.payload.count - timestamps.count
-//                                    print("bme: packet id (from coredata) \(packet.bmePacket.packetIndex), \(repetitions) repetitions; unique: \(timestamps)")
-//                                
-//                                case .some(.luxPacket(_)):
-//                                    let timestamps = Set(packet.luxPacket.payload.map {
-//                                        let date = Date(timeIntervalSince1970: Double($0.timestampUnix) / 1000)
-//                                        return "\(date)"
-//                                    })
-//                                    let repetitions = packet.luxPacket.payload.count - timestamps.count
-//                                    print("Lux: packet id (from coredata) \(packet.luxPacket.packetIndex), \(repetitions) repetitions; unique: \(timestamps)")
-//
-////                                    if let prevluxPacketID = self.luxPacketIDCoredata{
-//////                                        if (Int(packet.luxPacket.packetIndex) - prevluxPacketID) > 1{
-//////                                            print("missing packets from coredata (Lux: prev \(prevluxPacketID), current \(packet.luxPacket.packetIndex), \(repetitions) repetitions; unique: \(timestamps)")
-//////                                        }
-////                                        self.luxPacketIDCoredata = Int(packet.luxPacket.packetIndex)
-////                                    }else{
-////                                        self.luxPacketIDCoredata = Int(packet.luxPacket.packetIndex)
-////                                    }
-//
-//                                    
-//                                
-//                                
-//                                    break
-//                                case .some(.blinkPacket(_)):
-//                                    print("blink: packet id (from coredata) \(packet.blinkPacket.packetIndex), \(Date(timeIntervalSince1970: Double(packet.blinkPacket.timestampUnix) / 1000)) timestamp")
-//                                    
-//                                case .some(.shtPacket(_)):
-//                                    let timestamps = Set(packet.shtPacket.payload.map {
-//                                        let date = Date(timeIntervalSince1970: Double($0.timestampUnix) / 1000)
-//                                        return "\(date)"
-//                                    })
-//                                    let repetitions = packet.shtPacket.payload.count - timestamps.count
-//                                    print("sht: packet id (from coredata) \(packet.shtPacket.packetIndex), \(repetitions) repetitions; unique: \(timestamps)")
-////                                    break
-//                                case .some(.specPacket(_)):
-//                                    let timestamps = Set(packet.specPacket.payload.map {
-//                                        let date = Date(timeIntervalSince1970: Double($0.timestampUnix) / 1000)
-//                                        return "\(date)"
-//                                    })
-//                                    let repetitions = packet.specPacket.payload.count - timestamps.count
-//                                    print("spec: packet id (from coredata) \(packet.specPacket.packetIndex), \(repetitions) repetitions; unique: \(timestamps)")
-////                                    break
-//                                case .some(.thermPacket(_)):
-//                                    let timestamps = Set(packet.thermPacket.payload.map {
-//                                        let date = Date(timeIntervalSince1970: Double($0.timestampUnix) / 1000)
-//                                        return "\(date)"
-//                                    })
-//                                    let repetitions = packet.thermPacket.payload.count - timestamps.count
-//                                    print("therm: packet id (from coredata) \(packet.thermPacket.packetIndex), \(repetitions) repetitions; unique: \(timestamps)")
-////                                    break
-//                                case .some(.imuPacket(_)):
-////                                    print("sending imu")
-////                                    print(packet)
-//                                    break
-//                                case .some(.micPacket(_)):
-//                                    print("mic: packet id (from coredata) \(packet.micPacket.packetIndex), \(Date(timeIntervalSince1970: Double(packet.micPacket.timestampUnix) / 1000)) timestamp")
-//                                case .some(.micLevelPacket(_)):
-//                                    let timestamps = Set(packet.micLevelPacket.payload.map {
-//                                        let date = Date(timeIntervalSince1970: Double($0.timestampUnix) / 1000)
-//                                        return "\(date)"
-//                                    })
-//                                    let repetitions = packet.micLevelPacket.payload.count - timestamps.count
-//                                    print("micLevel: packet id (from coredata) \(packet.micLevelPacket.packetIndex), \(repetitions) repetitions; unique: \(timestamps)")
-//                                    break
-//                                case .some(.surveyPacket(_)):
-//                                    break
-//                                case .some(.metaDataPacket(_)):
-//                                    break
-//                                case .none:
-//                                    break
-//                            }
-//                        }
-                        
                         try Airspec.send_packets(packets: data, auth_token: AUTH_TOKEN) { error in
                             err = error
                             
@@ -815,6 +728,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                         
 //                        try onComplete()
                         if let err = err {
+                            print("error upload to server")
+                            try onComplete()
                             throw err
                         } else {
                             try onComplete()
@@ -1048,9 +963,9 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                         
                         if !isAllSensorsWorking{
                             try RawDataViewModel.addMetaDataToRawData(payload: "Not all sensors are working", timestampUnix: Date(), type: 7)
-                            LocalNotification.setLocalNotification(title: "Check glasses sensors",
+                            LocalNotification.setLocalNotification(title: "Not all sensors are working",
                                                                    subtitle: "Restart the glasses",
-                                                                   body: "Check if sensors are updating values within 30 secs. If not, restart the glasses",
+                                                                   body: "Restart the glasses as likely some sensors values are invalid in the past 5 minutes.",
                                                                    when: 1) /// now
                         }
 
