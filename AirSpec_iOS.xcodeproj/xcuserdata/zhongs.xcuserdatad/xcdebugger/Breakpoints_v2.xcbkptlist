@@ -110,8 +110,8 @@
             filePath = "AirSpec_iOS/Views/ViewModels/RawDataViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "210"
-            endingLineNumber = "210"
+            startingLineNumber = "245"
+            endingLineNumber = "245"
             landmarkName = "addMetaDataLogToRawData(payload:timestampUnix:type:)"
             landmarkType = "7">
          </BreakpointContent>

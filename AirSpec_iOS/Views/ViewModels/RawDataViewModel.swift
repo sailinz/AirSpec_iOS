@@ -9,9 +9,24 @@ import Foundation
 import CoreData
 import os.log
 
-class RawDataViewModel {
-    static let container: NSPersistentContainer = NSPersistentContainer(name: "RawDataContainer")
-    static let log_container: NSPersistentContainer = NSPersistentContainer(name: "logs")
+protocol DatabaseContainer {
+    var persistentContainer: NSPersistentContainer { get }
+    func fetchData(_ n: Int) throws -> ([SensorPacket], () throws -> Void)
+    func addRawData(record: Data) throws
+    func addMetaDataToRawData(payload: String, timestampUnix: Date, type: Int32)
+    func addMetaDataLogToRawData(payload: String, timestampUnix: Date, type: Int32)
+    func addSurveyDataToRawData(qIndex: Int32, qChoice: String, qGroupIndex: UInt32, timestampUnix: Date)
+}
+
+protocol RawDataViewModelProtocol{
+    static func init_container()
+    static func shouldDisableHighFrequency() throws -> Bool
+    static func count() throws -> Int
+}
+
+class RawDataViewModel : RawDataViewModelProtocol  {
+//    static let container: NSPersistentContainer = NSPersistentContainer(name: "RawDataContainer")
+//    static let log_container: NSPersistentContainer = NSPersistentContainer(name: "logs")
     static let MAX_UNSENT_COUNT = 40960 ///1 hour
     static let DELETE_CHUNK = MAX_UNSENT_COUNT / 10
     static let MAX_HIGH_FREQUENCY_PROP = 0.5
@@ -23,6 +38,26 @@ class RawDataViewModel {
         subsystem: AirSpec_iOSApp.name,
         category: String(describing: RawDataViewModel.self)
     )
+    
+    static var container: NSPersistentContainer = {
+        let container = NSPersistentContainer(name: "RawDataContainer")
+        container.loadPersistentStores { (_, error) in
+            if let error = error {
+                logger.info("RawDataContainer initialization issue")
+            }
+        }
+        return container
+    }()
+    
+    static var log_container: NSPersistentContainer = {
+        let log_container = NSPersistentContainer(name: "logs")
+        log_container.loadPersistentStores { (_, error) in
+            if let error = error {
+                logger.info("log_container initialization issue")
+            }
+        }
+        return log_container
+    }()
 
     static func init_container() {
         q.sync {
@@ -33,14 +68,14 @@ class RawDataViewModel {
             // load core data
             var err: Error?
             
-            for cont in [container, log_container] {
-                cont.loadPersistentStores{(description, error) in
-                    if let error = error {
-                        err = error
-                        RawDataViewModel.addMetaDataLogToRawData(payload: "raw data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
-                    }
-                }
-            }
+//            for cont in [container, log_container] {
+//                cont.loadPersistentStores{(description, error) in
+//                    if let error = error {
+//                        err = error
+//                        RawDataViewModel.addMetaDataLogToRawData(payload: "raw data view model error \(String(describing: err))", timestampUnix: Date(), type: 2)
+//                    }
+//                }
+//            }
             
             if let error = err {
                 print("initializing container: \(error)")
