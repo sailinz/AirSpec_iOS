@@ -612,6 +612,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 }
                 
             case .some(.imuPacket(_)):
+//                print("imu")
                 break
             case .some(.micPacket(_)):
 //                print(packet)
@@ -664,6 +665,10 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                             sem.wait()
                         }catch{
                             print("cannot add dequed packet to raw data db \(error.localizedDescription)")
+                            /// drop these data as it may have bad records
+                            rawDataQueue.popFirst()
+                            break
+                            
                         }
                     }
                 }
