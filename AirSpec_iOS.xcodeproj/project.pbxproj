@@ -107,6 +107,9 @@
 		03BC963E2956668B00AD89BE /* InterpolationMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC963C2956668B00AD89BE /* InterpolationMethod.swift */; };
 		03BC96402956669800AD89BE /* ChartStrideBy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC963F2956669800AD89BE /* ChartStrideBy.swift */; };
 		03BC96412956669800AD89BE /* ChartStrideBy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC963F2956669800AD89BE /* ChartStrideBy.swift */; };
+		03D3A9B72A0D67530052EFAE /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 03D3A9B62A0D67530052EFAE /* Realm */; };
+		03D3A9B92A0D67530052EFAE /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 03D3A9B82A0D67530052EFAE /* RealmSwift */; };
+		03D3A9BC2A0D6D1E0052EFAE /* RawSensorData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D3A9BB2A0D6D1E0052EFAE /* RawSensorData.swift */; };
 		03D53E82298D5E4E0008B74D /* SwiftProtobuf in Frameworks */ = {isa = PBXBuildFile; productRef = 03D53E81298D5E4E0008B74D /* SwiftProtobuf */; };
 		03D53E84298D5E4E0008B74D /* SwiftProtobufPluginLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 03D53E83298D5E4E0008B74D /* SwiftProtobufPluginLibrary */; };
 		03D53E8A298D5E8F0008B74D /* airspec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D53E86298D5E8F0008B74D /* airspec.swift */; };
@@ -280,6 +283,7 @@
 		03BC96152956507000AD89BE /* testChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = testChart.swift; sourceTree = "<group>"; };
 		03BC963C2956668B00AD89BE /* InterpolationMethod.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InterpolationMethod.swift; sourceTree = "<group>"; };
 		03BC963F2956669800AD89BE /* ChartStrideBy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartStrideBy.swift; sourceTree = "<group>"; };
+		03D3A9BB2A0D6D1E0052EFAE /* RawSensorData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawSensorData.swift; sourceTree = "<group>"; };
 		03D53E86298D5E8F0008B74D /* airspec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = airspec.swift; sourceTree = "<group>"; };
 		03D53E88298D5E8F0008B74D /* svc.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = svc.pb.swift; sourceTree = "<group>"; };
 		03D53E89298D5E8F0008B74D /* message.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = message.pb.swift; sourceTree = "<group>"; };
@@ -331,6 +335,7 @@
 			files = (
 				03D53E84298D5E4E0008B74D /* SwiftProtobufPluginLibrary in Frameworks */,
 				03931B9A2943B9930093515D /* NIOFoundationCompat in Frameworks */,
+				03D3A9B92A0D67530052EFAE /* RealmSwift in Frameworks */,
 				03931B9C2943B9930093515D /* NIOPosix in Frameworks */,
 				038AA93329580AAC0086EC1B /* ArgumentParser in Frameworks */,
 				03D53E82298D5E4E0008B74D /* SwiftProtobuf in Frameworks */,
@@ -340,6 +345,7 @@
 				038AA9302958058C0086EC1B /* InfluxDBSwiftApis in Frameworks */,
 				0380B8E9299C733500D070FF /* CoreData.framework in Frameworks */,
 				03D53E9D29904C5E0008B74D /* WatchConnectivity.framework in Frameworks */,
+				03D3A9B72A0D67530052EFAE /* Realm in Frameworks */,
 				0380B91A299FE31700D070FF /* BackgroundTasks.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -472,6 +478,7 @@
 		038C4DB5292AF8E700699753 /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				03D3A9BA2A0D6C050052EFAE /* Realm */,
 				03D53EA7299093A40008B74D /* DoesNotWork */,
 				03BC9618295662CC00AD89BE /* SampleDataForCharts */,
 				038C4DBE292AFD9D00699753 /* GlassesData.swift */,
@@ -529,6 +536,14 @@
 				0380B908299D791F00D070FF /* Point.swift */,
 			);
 			path = SampleDataForCharts;
+			sourceTree = "<group>";
+		};
+		03D3A9BA2A0D6C050052EFAE /* Realm */ = {
+			isa = PBXGroup;
+			children = (
+				03D3A9BB2A0D6D1E0052EFAE /* RawSensorData.swift */,
+			);
+			path = Realm;
 			sourceTree = "<group>";
 		};
 		03D53E85298D5E8F0008B74D /* airspec */ = {
@@ -715,6 +730,8 @@
 				038AA93229580AAC0086EC1B /* ArgumentParser */,
 				03D53E81298D5E4E0008B74D /* SwiftProtobuf */,
 				03D53E83298D5E4E0008B74D /* SwiftProtobufPluginLibrary */,
+				03D3A9B62A0D67530052EFAE /* Realm */,
+				03D3A9B82A0D67530052EFAE /* RealmSwift */,
 			);
 			productName = AirSpec_iOS;
 			productReference = 03F21BBB292AE85D001D4D8E /* AirSpec_iOS.app */;
@@ -870,6 +887,7 @@
 				038AA921295802B50086EC1B /* XCRemoteSwiftPackageReference "influxdb-client-swift" */,
 				038AA93129580AAC0086EC1B /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
 				03D53E80298D5E4E0008B74D /* XCRemoteSwiftPackageReference "swift-protobuf" */,
+				03D3A9B52A0D67530052EFAE /* XCRemoteSwiftPackageReference "realm-swift" */,
 			);
 			productRefGroup = 03F21BBC292AE85D001D4D8E /* Products */;
 			projectDirPath = "";
@@ -975,6 +993,7 @@
 				0380B911299EBEB400D070FF /* TempDataViewModel.swift in Sources */,
 				038AA944295932A60086EC1B /* AcousticsView.swift in Sources */,
 				03D53E8E29900BEC0008B74D /* SessionDelegator.swift in Sources */,
+				03D3A9BC2A0D6D1E0052EFAE /* RawSensorData.swift in Sources */,
 				034D16E9294D22A0005BE966 /* SensorIconConstants.swift in Sources */,
 				038AA942295930040086EC1B /* ThermalView.swift in Sources */,
 				03AF9927297BA71A00C465C5 /* BlurView.swift in Sources */,
@@ -1740,6 +1759,14 @@
 				minimumVersion = 2.0.0;
 			};
 		};
+		03D3A9B52A0D67530052EFAE /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-swift.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		03D53E80298D5E4E0008B74D /* XCRemoteSwiftPackageReference "swift-protobuf" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-protobuf.git";
@@ -1810,6 +1837,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 03931B962943B9930093515D /* XCRemoteSwiftPackageReference "swift-nio" */;
 			productName = NIOPosix;
+		};
+		03D3A9B62A0D67530052EFAE /* Realm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03D3A9B52A0D67530052EFAE /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = Realm;
+		};
+		03D3A9B82A0D67530052EFAE /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03D3A9B52A0D67530052EFAE /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
 		};
 		03D53E81298D5E4E0008B74D /* SwiftProtobuf */ = {
 			isa = XCSwiftPackageProductDependency;

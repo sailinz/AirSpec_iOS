@@ -164,7 +164,7 @@ struct MyDataTimeView: View {
         }
         .chartXAxis {
             if isTodayData {
-                if data.count > 40{
+                if data.count > 60{
                     AxisMarks(values: .stride(by: .hour, count: 2)) { value in
                         if let date = value.as(Date.self) {
                             let hour = Calendar.current.component(.hour, from: date)
@@ -184,7 +184,7 @@ struct MyDataTimeView: View {
                     AxisMarks(values: .automatic)
                 }
             }else{
-                if data.count > 40{
+                if data.count > 100{
                     ///https://developer.apple.com/documentation/charts/customizing-axes-in-swift-charts?language=_2
                     AxisMarks(values: .stride(by: .hour, count: 6)) { value in
                         if let date = value.as(Date.self) {

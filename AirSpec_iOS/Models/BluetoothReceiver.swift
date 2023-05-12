@@ -9,6 +9,7 @@ import os.log
 import CoreData
 import CoreLocation
 import DequeModule
+import RealmSwift
 
 enum BluetoothReceiverError: Error {
     case failedToConnect
@@ -121,6 +122,9 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     var rawDataQueue: Deque<Data> = []
     
     let rawDataSync = DispatchQueue(label: "raw_data_queue")
+    
+    /// alternative realm database only for raw sensor data
+    var realm: Realm = try! Realm()
     
     override init() {
         super.init()
@@ -659,7 +663,12 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     if let data = rawDataQueue.popFirst() {
                         do{
                            
-                            try RawDataViewModel.addRawData(record: data)
+//                            try RawDataViewModel.addRawData(record: data)
+                            let rawSensorData = RawSensorData()
+                            rawSensorData.binaryRecord = data
+                            try! realm.write {
+                                realm.add(rawSensorData)
+                            }
                             usleep(10000) // add 1/100s         delay
                             sem.signal()
                             sem.wait()
@@ -699,6 +708,78 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //        }
 //    }
     
+    static func realmFetchData(_ n: Int = 10, realm: Realm) throws -> ([SensorPacket], () throws -> Void) {
+        if n == 0 {
+            return ([], {})
+        }
+
+        let results = realm.objects(RawSensorData.self).filter("ANY binaryRecord != nil")
+        let limitedResults = Array(results.prefix(n))
+
+        var ret: [SensorPacket] = []
+        var err: Error?
+        var ids: [ObjectId] = []
+
+        realm.beginWrite()
+
+        limitedResults.forEach { ent in
+            ids.append(ent._id)
+            if let binaryRecord = ent.binaryRecord {
+                do {
+                    let sensorPacket = try SensorPacket(serializedData: binaryRecord)
+                    ret.append(sensorPacket)
+                } catch {
+                    var metaData = appMetaDataPacket()
+                    metaData.payload = "nil in coredata"
+                    metaData.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
+                    metaData.type = UInt32(2)
+
+                    let sensorPacket = SensorPacket.with {
+                        $0.header = SensorPacketHeader.with {
+                            $0.epoch = UInt64(NSDate().timeIntervalSince1970 * 1000)
+                        }
+                        $0.metaDataPacket = metaData
+                    }
+
+                    ret.append(sensorPacket)
+                }
+            }
+        }
+
+        do {
+            try realm.commitWrite()
+        } catch {
+            err = error
+            print("raw data view model error \(String(describing: err))")
+        }
+
+        if let e = err {
+            throw e
+        }
+
+        return (ret, {
+            if ids.isEmpty {
+                return
+            }
+
+            do {
+                realm.beginWrite()
+
+                let objectsToDelete = realm.objects(RawSensorData.self).filter("_id IN %@", ids)
+                realm.delete(objectsToDelete)
+
+                try realm.commitWrite()
+            } catch {
+                err = error
+                print("raw data view model error \(String(describing: err))")
+            }
+
+            if let e = err {
+                throw e
+            }
+        })
+    }
+
     
     func uploadToServer() {
         print("try to upload to server")
@@ -710,6 +791,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 
                 while true {
                     do {
+                        /// still upload raw data which comes from meta data
                         let (data, onComplete) = try RawDataViewModel.fetchData()
                         if data.isEmpty {
                             
@@ -717,7 +799,6 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                             print("\(Date.now) sent all packets")
                             RawDataViewModel.addMetaDataToRawData(payload: "Sent all packets", timestampUnix: Date(), type: 7)
                             
-//                            self.isUploadToServer = false
                             return
                         }
                         
@@ -725,13 +806,35 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                         
                         try Airspec.send_packets(packets: data, auth_token: AUTH_TOKEN) { error in
                             err = error
-                            
                             sem.signal()
                         }
                         
+                        
+                        /// send the realm data as well
+                        let (realmData, realmOnComplete) = try BluetoothReceiver.realmFetchData(50, realm: realm)
+                        if realmData.isEmpty {
+                            
+                            try realmOnComplete()
+                            print("\(Date.now) sent all packets")
+                            RawDataViewModel.addMetaDataToRawData(payload: "Sent all packets", timestampUnix: Date(), type: 7)
+                            
+                            return
+                        }
+                        
+                        var realmErr: Error?
+                        
+                        try Airspec.send_packets(packets: realmData, auth_token: AUTH_TOKEN) { error in
+                            realmErr = error
+                            sem.signal()
+                        }
+                        
+                        
+                        
+                        /// realm data upload finished
+                        
+                        
                         sem.wait()
                         
-//                        try onComplete()
                         if let err = err {
                             print("error upload to server")
                             try onComplete()
@@ -739,6 +842,10 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                         } else {
                             try onComplete()
                         }
+                        
+                        
+                        
+                        
                     } catch {
                         print("cannot upload the data to the server: \(error)")
                         //                        RawDataViewModel.addMetaDataToRawData(payload: "cannot upload the data to the server: \(error)", timestampUnix: Date(), type: 2)
