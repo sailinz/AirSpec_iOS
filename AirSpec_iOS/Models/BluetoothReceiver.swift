@@ -124,7 +124,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     let rawDataSync = DispatchQueue(label: "raw_data_queue")
     
     /// alternative realm database only for raw sensor data
-    var realm: Realm = try! Realm()
+//    var realm: Realm = try! Realm()
     
     override init() {
         super.init()
@@ -656,6 +656,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     
     func addDatafromQueueToRawDataDB(){
         DispatchQueue.global().async { [self] in
+            let realm = try! Realm()
             rawDataSync.sync {
                 print("dequeing")
                 let sem = DispatchSemaphore(value: 0)
@@ -708,12 +709,12 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //        }
 //    }
     
-    static func realmFetchData(_ n: Int = 10, realm: Realm) throws -> ([SensorPacket], () throws -> Void) {
+    func realmFetchData(_ n: Int = 10, realm: Realm) throws -> ([SensorPacket], () throws -> Void) {
         if n == 0 {
             return ([], {})
         }
 
-        let results = realm.objects(RawSensorData.self).filter("ANY binaryRecord != nil")
+        let results = realm.objects(RawSensorData.self).filter("binaryRecord != nil")
         let limitedResults = Array(results.prefix(n))
 
         var ret: [SensorPacket] = []
@@ -783,9 +784,69 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
     
     func uploadToServer() {
         print("try to upload to server")
+        
+        /// When using Realm on a background thread, create a serial queue. Realm Database does not support using realms in concurrent queues, such as the global() queue. https://www.mongodb.com/docs/realm/sdk/swift/crud/threading/
+        
+        
+        
+        // Pass the reference to a background thread
+        DispatchQueue(label: "background", autoreleaseFrequency: .workItem).async {
+            let sem = DispatchSemaphore(value: 0)
+            let realm = try! Realm()
+            
+            while true {
+                do {
+                    /// send the realm data as well
+                    let (realmData, realmOnComplete) = try self.realmFetchData(50, realm: realm)
+                    if realmData.isEmpty {
+                        
+                        try realmOnComplete()
+                        print("\(Date.now) sent all packets")
+                        RawDataViewModel.addMetaDataToRawData(payload: "Sent all packets", timestampUnix: Date(), type: 7)
+                        
+                        return
+                    }
+                    
+                    var realmErr: Error?
+                    
+                    try Airspec.send_packets(packets: realmData, auth_token: AUTH_TOKEN) { error in
+                        realmErr = error
+                        sem.signal()
+                    }
+                    
+                    
+                    sem.wait()
+                    
+                    
+                    
+                    if let err = realmErr {
+                        print("error upload to server")
+                        try realmOnComplete()
+                        throw err
+                    } else {
+                        try realmOnComplete()
+                    }
+                    
+                    
+                    
+                    
+                } catch {
+                    print("cannot upload the data to the server: \(error)")
+                    //                        RawDataViewModel.addMetaDataToRawData(payload: "cannot upload the data to the server: \(error)", timestampUnix: Date(), type: 2)
+                    break
+                }
+                
+                /// realm data upload finished
+            }
+        }
+
+        
+        
+        
         DispatchQueue.global().async { [self] in
             DispatchQueue.global().sync {
                 // https://stackoverflow.com/questions/42772907/what-does-main-sync-in-global-async-mean
+                
                 
                 let sem = DispatchSemaphore(value: 0)
                 
@@ -808,29 +869,6 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                             err = error
                             sem.signal()
                         }
-                        
-                        
-                        /// send the realm data as well
-                        let (realmData, realmOnComplete) = try BluetoothReceiver.realmFetchData(50, realm: realm)
-                        if realmData.isEmpty {
-                            
-                            try realmOnComplete()
-                            print("\(Date.now) sent all packets")
-                            RawDataViewModel.addMetaDataToRawData(payload: "Sent all packets", timestampUnix: Date(), type: 7)
-                            
-                            return
-                        }
-                        
-                        var realmErr: Error?
-                        
-                        try Airspec.send_packets(packets: realmData, auth_token: AUTH_TOKEN) { error in
-                            realmErr = error
-                            sem.signal()
-                        }
-                        
-                        
-                        
-                        /// realm data upload finished
                         
                         
                         sem.wait()
