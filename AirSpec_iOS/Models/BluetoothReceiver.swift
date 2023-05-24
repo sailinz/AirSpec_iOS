@@ -767,7 +767,17 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 realm.beginWrite()
 
                 let objectsToDelete = realm.objects(RawSensorData.self).filter("_id IN %@", ids)
-                realm.delete(objectsToDelete)
+//                realm.delete(objectsToDelete)
+                
+                // Iterate over the objects to validate and delete them
+                for object in objectsToDelete {
+                    if object.isInvalidated {
+                        
+                    }else{
+                        // Delete the object from the Realm database
+                        realm.delete(object)
+                    }
+                }
 
                 try realm.commitWrite()
             } catch {
