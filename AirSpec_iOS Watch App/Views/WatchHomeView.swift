@@ -15,6 +15,7 @@ import WatchKit
 
 struct WatchHomeView: View {
     @Environment(\.scenePhase) var scenePhase
+    let AUTH_TOKEN = "4129a31152b56fccfb8b39cab3637706aa5e5f4ded601c45313cd4f7170fc702"
 
 //    let skinTempDataName = ["thermopile_nose_bridge","thermopile_nose_tip","thermopile_temple_back","thermopile_temple_front","thermopile_temple_middle"]
 //    @State private var skinTempData = Array(repeating: -1.0, count: 5)
@@ -61,6 +62,11 @@ struct WatchHomeView: View {
             showSurvey = true
             isComfyVote = true
             print("appeared")
+        }
+        .onChange(of: scenePhase) { newPhase in
+            if newPhase == .active {
+                self.uploadToServer()
+            }
         }
         
     }
@@ -110,6 +116,44 @@ struct WatchHomeView: View {
 //        return CGFloat.random(in: (0+randomRange)...(15+randomRange))
         return CGFloat.random(in: 0...geometry.size.height)
 
+    }
+    
+    func uploadToServer() {
+        DispatchQueue.global().async {
+            DispatchQueue.main.sync {
+                // https://stackoverflow.com/questions/42772907/what-does-main-sync-in-global-async-mean
+                
+                let sem = DispatchSemaphore(value: 0)
+                while true {
+                    do {
+                        let (data, onComplete) = try RawDataViewModel.fetchData()
+                        if data.isEmpty {
+                            print("sent all packets")
+                            try onComplete()
+                            return
+                        }
+                        
+                        var err: Error?
+                        
+                        try Airspec.send_packets(packets: data, auth_token: AUTH_TOKEN) { error in
+                            err = error
+                            sem.signal()
+                        }
+                        
+                        sem.wait()
+
+                        if let err = err {
+                            throw err
+                        } else {
+                            try onComplete()
+                        }
+                    } catch {
+                        print("cannot upload the data to the server: \(error)")
+                    }
+                }
+                
+            }
+        }
     }
     
 }

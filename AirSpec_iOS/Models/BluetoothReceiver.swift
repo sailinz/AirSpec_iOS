@@ -1121,13 +1121,13 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //                            }
                         }
                         
-                        if !isAllSensorsWorking{
-                            try RawDataViewModel.addMetaDataToRawData(payload: "Not all sensors are working", timestampUnix: Date(), type: 7)
-                            LocalNotification.setLocalNotification(title: "Not all sensors are working",
-                                                                   subtitle: "Restart the glasses if you see this notification many times",
-                                                                   body: "Restart the glasses as likely some sensors values are invalid in the past 5 minutes.",
-                                                                   when: 1) /// now
-                        }
+//                        if !isAllSensorsWorking{
+//                            try RawDataViewModel.addMetaDataToRawData(payload: "Not all sensors are working", timestampUnix: Date(), type: 7)
+//                            LocalNotification.setLocalNotification(title: "Not all sensors are working",
+//                                                                   subtitle: "Restart the glasses if you see this notification many times",
+//                                                                   body: "Restart the glasses as likely some sensors values are invalid in the past 5 minutes.",
+//                                                                   when: 1) /// now
+//                        }
 
                         try RawDataViewModel.addMetaDataToRawData(payload: "Long term data length: \(LongTermDataViewModel.count()); means: \(means))", timestampUnix: Date(), type: 7)
                         

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct WatchSurveyQuestionView: View {
-    let AUTH_TOKEN = "4129a31152b56fccfb8b39cab3637706aa5e5f4ded601c45313cd4f7170fc702"
+    
     @State var stopButton: Bool = false
     @State var backButton: Bool = false
     @State var questionTitle = ""
@@ -56,7 +56,7 @@ struct WatchSurveyQuestionView: View {
                                     /// end of the survey
                                     if(currentQuestionItem.nextQuestion[0] == 999){
                                         print("survey record index: \(UserDefaults.standard.integer(forKey: "survey_record_index"))")
-                                        self.uploadToServer()
+//                                        self.uploadToServer()
                                         showSurvey = false
                                     }
                                     
@@ -147,44 +147,6 @@ struct WatchSurveyQuestionView: View {
         
     }
     
-    
-    func uploadToServer() {
-        DispatchQueue.global().async {
-            DispatchQueue.main.sync {
-                // https://stackoverflow.com/questions/42772907/what-does-main-sync-in-global-async-mean
-                
-                let sem = DispatchSemaphore(value: 0)
-                while true {
-                    do {
-                        let (data, onComplete) = try RawDataViewModel.fetchData()
-                        if data.isEmpty {
-                            print("sent all packets")
-                            try onComplete()
-                            return
-                        }
-                        
-                        var err: Error?
-                        
-                        try Airspec.send_packets(packets: data, auth_token: AUTH_TOKEN) { error in
-                            err = error
-                            sem.signal()
-                        }
-                        
-                        sem.wait()
-
-                        if let err = err {
-                            throw err
-                        } else {
-                            try onComplete()
-                        }
-                    } catch {
-                        print("cannot upload the data to the server: \(error)")
-                    }
-                }
-                
-            }
-        }
-    }
     
     
 }
