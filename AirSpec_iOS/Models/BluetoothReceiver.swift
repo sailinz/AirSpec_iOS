@@ -1121,7 +1121,6 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                             }
                         }
                         
-<<<<<<< HEAD
 //                        if !isAllSensorsWorking{
 //                            try RawDataViewModel.addMetaDataToRawData(payload: "Not all sensors are working", timestampUnix: Date(), type: 7)
 //                            LocalNotification.setLocalNotification(title: "Not all sensors are working",
@@ -1129,7 +1128,6 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //                                                                   body: "Restart the glasses as likely some sensors values are invalid in the past 5 minutes.",
 //                                                                   when: 1) /// now
 //                        }
-=======
                         if !isAllSensorsWorking{
                             try RawDataViewModel.addMetaDataToRawData(payload: "Not all sensors are working", timestampUnix: Date(), type: 7)
                             LocalNotification.setLocalNotification(title: "Not all sensors are working",
@@ -1137,7 +1135,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                                                                    body: "Restart the glasses as likely some sensors values are invalid in the past 5 minutes.",
                                                                    when: 1) /// now
                         }
->>>>>>> parent of 3ab807b (update thread)
+
 
                         try RawDataViewModel.addMetaDataToRawData(payload: "Long term data length: \(LongTermDataViewModel.count()); means: \(means))", timestampUnix: Date(), type: 7)
                         
