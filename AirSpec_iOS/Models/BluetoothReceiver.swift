@@ -605,8 +605,8 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     if(Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - cogLoadOffset) * cogLoadMultiFactor) > 0){
                         
                         cogIntensity = Int(((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2 - cogLoadOffset) * cogLoadMultiFactor  + 3)
-//                        print("cogload baseline: \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
-//                        print("cogload est: \(cogIntensity)")
+                        print("cogload baseline: \((thermTempleFront + thermTempleMiddle + thermTempleRear)/3 - (thermNoseTip + thermNoseBridge)/2)")
+                        print("cogload est: \(cogIntensity)")
                         dataToWatch.updateValue(sensorValue: Double(cogIntensity), sensorName: "cogLoadData")
                     }else{
                         cogIntensity = 3
@@ -772,7 +772,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                 // Iterate over the objects to validate and delete them
                 for object in objectsToDelete {
                     if object.isInvalidated {
-                        print(object)
+                        
                     }else{
                         // Delete the object from the Realm database
                         realm.delete(object)
@@ -800,55 +800,55 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
         
         
         // Pass the reference to a background thread
-//        DispatchQueue(label: "background", autoreleaseFrequency: .workItem).async {
-        let sem = DispatchSemaphore(value: 0)
-        let realm = try! Realm()
-        
-        while true {
-            do {
-                /// send the realm data as well
-                let (realmData, realmOnComplete) = try self.realmFetchData(50, realm: realm)
-                if realmData.isEmpty {
-                    
-                    try realmOnComplete()
-                    print("\(Date.now) sent all packets")
-                    RawDataViewModel.addMetaDataToRawData(payload: "Sent all packets", timestampUnix: Date(), type: 7)
-                    
-                    return
-                }
-                
-                var realmErr: Error?
-                
-                try Airspec.send_packets(packets: realmData, auth_token: AUTH_TOKEN) { error in
-                    realmErr = error
-                    sem.signal()
-                }
-                
-                
-                sem.wait()
-                
-                
-                
-                if let err = realmErr {
-                    print("error upload to server")
-                    try realmOnComplete()
-                    throw err
-                } else {
-                    try realmOnComplete()
-                }
-                
-                
-                
-                
-            } catch {
-                print("cannot upload the data to the server: \(error)")
-                //                        RawDataViewModel.addMetaDataToRawData(payload: "cannot upload the data to the server: \(error)", timestampUnix: Date(), type: 2)
-                break
-            }
+        DispatchQueue(label: "background", autoreleaseFrequency: .workItem).async {
+            let sem = DispatchSemaphore(value: 0)
+            let realm = try! Realm()
             
-            /// realm data upload finished
+            while true {
+                do {
+                    /// send the realm data as well
+                    let (realmData, realmOnComplete) = try self.realmFetchData(50, realm: realm)
+                    if realmData.isEmpty {
+                        
+                        try realmOnComplete()
+                        print("\(Date.now) sent all packets")
+                        RawDataViewModel.addMetaDataToRawData(payload: "Sent all packets", timestampUnix: Date(), type: 7)
+                        
+                        return
+                    }
+                    
+                    var realmErr: Error?
+                    
+                    try Airspec.send_packets(packets: realmData, auth_token: AUTH_TOKEN) { error in
+                        realmErr = error
+                        sem.signal()
+                    }
+                    
+                    
+                    sem.wait()
+                    
+                    
+                    
+                    if let err = realmErr {
+                        print("error upload to server")
+                        try realmOnComplete()
+                        throw err
+                    } else {
+                        try realmOnComplete()
+                    }
+                    
+                    
+                    
+                    
+                } catch {
+                    print("cannot upload the data to the server: \(error)")
+                    //                        RawDataViewModel.addMetaDataToRawData(payload: "cannot upload the data to the server: \(error)", timestampUnix: Date(), type: 2)
+                    break
+                }
+                
+                /// realm data upload finished
+            }
         }
-//        }
 
         
         
@@ -1116,11 +1116,12 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                             let value = mean1
                             // Call your function here with the timestamp, sensor, and value
                             try LongTermDataViewModel.addLongTermData(timestamp: timestamp, sensor: sensor, value: value)
-//                            if value <= 0 {
-//                                isAllSensorsWorking = false
-//                            }
+                            if value <= 0 {
+                                isAllSensorsWorking = true
+                            }
                         }
                         
+<<<<<<< HEAD
 //                        if !isAllSensorsWorking{
 //                            try RawDataViewModel.addMetaDataToRawData(payload: "Not all sensors are working", timestampUnix: Date(), type: 7)
 //                            LocalNotification.setLocalNotification(title: "Not all sensors are working",
@@ -1128,6 +1129,15 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //                                                                   body: "Restart the glasses as likely some sensors values are invalid in the past 5 minutes.",
 //                                                                   when: 1) /// now
 //                        }
+=======
+                        if !isAllSensorsWorking{
+                            try RawDataViewModel.addMetaDataToRawData(payload: "Not all sensors are working", timestampUnix: Date(), type: 7)
+                            LocalNotification.setLocalNotification(title: "Not all sensors are working",
+                                                                   subtitle: "Restart the glasses",
+                                                                   body: "Restart the glasses as likely some sensors values are invalid in the past 5 minutes.",
+                                                                   when: 1) /// now
+                        }
+>>>>>>> parent of 3ab807b (update thread)
 
                         try RawDataViewModel.addMetaDataToRawData(payload: "Long term data length: \(LongTermDataViewModel.count()); means: \(means))", timestampUnix: Date(), type: 7)
                         
