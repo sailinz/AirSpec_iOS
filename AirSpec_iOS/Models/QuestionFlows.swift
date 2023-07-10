@@ -304,8 +304,8 @@ let questionFlows = [
                currentQuestion: 10,
                title: "Thank you.",
                identifier: "end",
-               options: ["Submit"],
-               icons: ["up"],
+               options: ["Submit survey"],
+               icons: ["submit"],
                nextQuestion: [999],
                multiChoice: false
         
@@ -426,7 +426,7 @@ let questionFlows = [
                   "Less than 10 min",
                   "10-15 min",
                   "16-20 min",
-                  "21-25 min",
+                  "20-25 min",
                   "26-30 min"
               ],
               icons: [
