@@ -17,18 +17,19 @@ struct ContentView: View {
     
     @State private var feedbackButton = false
     @Environment(\.scenePhase) var scenePhase
-    private var timer: DispatchSourceTimer? = DispatchSource.makeTimerSource()
+    var timer: DispatchSourceTimer? = DispatchSource.makeTimerSource()
 //    let updateFrequence = 60 * 1 /// seconds
     
+    @Binding var flags : [Bool]
     var body: some View {
         ZStack(alignment: .top){
             TabView{
-                HomeView().environmentObject(delegate.bluetoothReceiver)
+                HomeView(flags: flags).environmentObject(delegate.bluetoothReceiver)
                     .tabItem{
                         Label("Home", systemImage: "heart.circle.fill")
                     }
                 
-                MyDataView()
+                MyDataView(flags: $flags)
                     .tabItem{
                         Label("My data", systemImage: "person.crop.circle")
                     }
@@ -191,7 +192,14 @@ struct ContentView: View {
 }
 
 struct ContentView_Previews: PreviewProvider {
+    struct ContentViewWrapper: View {
+            @State var flags : [Bool] = Array(repeating: false, count: 12)
+
+            var body: some View {
+                ContentView(flags: $flags)
+            }
+        }
     static var previews: some View {
-        ContentView()
+        ContentViewWrapper()
     }
 }

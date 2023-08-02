@@ -14,6 +14,7 @@ import WatchConnectivity
 struct AirSpec_iOSApp: App {
     static let name: String = "AirSpec Bluetooth"
     @UIApplicationDelegateAdaptor private var appDelegate: AppDelegate
+    @State var flags : [Bool] = Array(repeating: false, count: 12)
     
     init() {
         RawDataViewModel.init_container()
@@ -26,7 +27,7 @@ struct AirSpec_iOSApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(flags: $flags)
         }
     }    
 }

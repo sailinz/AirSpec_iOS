@@ -273,7 +273,7 @@ struct SelfLoggingView: View {
             .padding(5)
         }
         .background(
-            Color.white.opacity(0.35)
+            Color.clear
         )
         
         .onAppear{

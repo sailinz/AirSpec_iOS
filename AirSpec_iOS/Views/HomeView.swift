@@ -16,7 +16,7 @@ let screenWidth = UIScreen.main.bounds.width
 
 struct HomeView: View {
     @Environment(\.scenePhase) var scenePhase
-    @State private var isActive = false
+    @State var isActive = false
     private let columns = [
         GridItem(.flexible()),
         GridItem(.flexible()),
@@ -68,6 +68,8 @@ struct HomeView: View {
     @State var isClickedVisual: Bool = false
     @State var isClickedNoise: Bool = false
     
+    @State private var isShowingDataView = false
+    @State var flags = Array(repeating: false, count: 12)
     var body: some View {
 
         NavigationView{
@@ -109,13 +111,18 @@ struct HomeView: View {
                                 LazyVGrid(columns: columns, spacing: 3) {
                                     ForEach(0..<SensorIconConstants.sensorThermal.count){i in
                                         ZStack{
-                                            Image(thermalBgImageAssets[i])
-                                                .renderingMode(.template)
-                                                .foregroundColor(SensorIconConstants.customColor)
-                                                .opacity(0.7)
-                                                .shadow(color: .pink, radius: 2)
-                                                .scaleEffect(bgScaleFactor)
-                                            
+                                            VStack{
+                                                NavigationLink(destination: MyDataView(flags: $flags), isActive:$isShowingDataView) { EmptyView() }
+                                                Button(action: {
+                                                                                                    flags = flags.enumerated().map {$0.0 == i}
+                                                                                                    self.isShowingDataView = true}){
+                                                                                                    Image(thermalBgImageAssets[i])
+                                                                                                        .renderingMode(.template)
+                                                                                                        .foregroundColor(SensorIconConstants.customColor)
+                                                                                                        .opacity(0.7)
+                                                                                                        .shadow(color: .pink, radius: 2)
+                                                                                                    .scaleEffect(bgScaleFactor)}
+                                            }
                                             VStack{
                                                 OpenCircularGauge(
                                                     current: receiver.thermalData[i],
@@ -159,13 +166,18 @@ struct HomeView: View {
                                 LazyVGrid(columns: columns, spacing: 3) {
                                     ForEach(0..<SensorIconConstants.sensorAirQuality.count){i in
                                         ZStack{
-                                            Image(airQualityBgImageAssets[i])
-                                                .renderingMode(.template)
-                                                .foregroundColor(SensorIconConstants.customColor)
-                                                .opacity(0.7)
-                                                .shadow(color: .pink, radius: 2)
-                                                .scaleEffect(bgScaleFactor)
-                                            
+                                            VStack{
+                                                    NavigationLink(destination: MyDataView(flags: $flags), isActive:$isShowingDataView) { EmptyView() }
+                                                    Button(action:{
+                                                                                                flags = flags.enumerated().map{$0.0 == i+2}
+                                                                                                self.isShowingDataView = true}){
+                                                                                                Image(airQualityBgImageAssets[i])
+                                                                                                    .renderingMode(.template)
+                                                                                                    .foregroundColor(SensorIconConstants.customColor)
+                                                                                                    .opacity(0.7)
+                                                                                                    .shadow(color: .pink, radius: 2)
+                                                                                                .scaleEffect(bgScaleFactor)}
+                                                                                        }
                                             if(SensorIconConstants.sensorAirQuality[i].name.contains("nose")){
                                                 Image(systemName: "nose.fill")
                                                     
@@ -219,12 +231,19 @@ struct HomeView: View {
                                 LazyVGrid(columns: columns, spacing: 1) {
                                     ForEach(0..<SensorIconConstants.sensorVisual.count){i in
                                         ZStack{
-                                            Image(visualBgImageAssets[i])
-                                                .renderingMode(.template)
-                                                .foregroundColor(SensorIconConstants.customColor)
-                                                .opacity(0.7)
-                                                .shadow(color: .pink, radius: 2)
-                                                .scaleEffect(bgScaleFactor)
+                                            VStack{
+                                                    NavigationLink(destination: MyDataView(flags: $flags), isActive:$isShowingDataView) { EmptyView() }
+                                                    Button(action:{
+                                                                                                flags = flags.enumerated().map {$0.0 == i+8}
+                                                                                                self.isShowingDataView = true}){
+                                                                                                Image(visualBgImageAssets[i])
+                                                                                                    .renderingMode(.template)
+                                                                                                    .foregroundColor(SensorIconConstants.customColor)
+                                                                                                    .opacity(0.7)
+                                                                                                    .shadow(color: .pink, radius: 2)
+                                                                                                    .scaleEffect(bgScaleFactor)
+                                                                                            }
+                                                                                        }
                                             
                                             if(SensorIconConstants.sensorVisual[i].name.contains("eye")){
                                                 Image(systemName: "eye")
@@ -277,12 +296,20 @@ struct HomeView: View {
                                     ForEach(0..<SensorIconConstants.sensorAcoustics.count){i in
 //                                        let dummyValue = Double.random(in: 50.0 ..< 80.0)
                                         ZStack{
-                                            Image(acousticsBgImageAssets[i])
-                                                .renderingMode(.template)
-                                                .foregroundColor(SensorIconConstants.customColor)
-                                                .opacity(0.7)
-                                                .shadow(color: .pink, radius: 2)
-                                                .scaleEffect(bgScaleFactor)
+                                            VStack{
+                                                        NavigationLink(destination: MyDataView(flags: $flags), isActive:$isShowingDataView) { EmptyView() }
+
+                                                        Button(action:{
+                                                                                                flags = flags.enumerated().map { $0.0 == 11 }
+                                                                                                self.isShowingDataView = true}){
+                                                                                                    Image(acousticsBgImageAssets[i])
+                                                                                                        .renderingMode(.template)
+                                                                                                        .foregroundColor(SensorIconConstants.customColor)
+                                                                                                        .opacity(0.7)
+                                                                                                        .shadow(color: .pink, radius: 2)
+                                                                                                    .scaleEffect(bgScaleFactor)}
+
+                                                                                        }
                                             
                                             VStack{
                                                 OpenCircularGauge(
@@ -389,8 +416,16 @@ extension Color {
 }
 
 struct HomeView_Previews: PreviewProvider {
+    struct HomeViewWrapper: View {
+
+            @State var flags : [Bool] = Array(repeating: false, count: 12)
+
+            var body: some View {
+                HomeView(flags: flags)
+            }
+        }
     static var previews: some View {
-        HomeView()
+        HomeViewWrapper()
     }
 }
 

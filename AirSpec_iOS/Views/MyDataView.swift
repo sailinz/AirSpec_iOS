@@ -24,6 +24,7 @@ import SwiftUI
 struct MyDataView: View {
 
     @State private var showMyDataTimeView = true
+    @Binding var flags: [Bool]
     
     var body: some View {
         ZStack{
@@ -31,7 +32,7 @@ struct MyDataView: View {
             NavigationView{
                 VStack{
                     ScrollView {
-                        MyDataTimeView()
+                        MyDataTimeView(flags: $flags)
                     }
                 }
                 .navigationTitle("My data")
@@ -45,7 +46,14 @@ struct MyDataView: View {
 }
 
 struct MyDataView_Previews: PreviewProvider {
+    struct MyDataViewWrapper: View {
+
+            @State var flags : [Bool] = Array(repeating: false, count: 12)
+            var body: some View {
+                MyDataView(flags: $flags)
+            }
+        }
     static var previews: some View {
-        MyDataView()
+        MyDataViewWrapper()
     }
 }

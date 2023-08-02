@@ -32,7 +32,8 @@ struct MyDataTimeView: View {
     @State var data: [(minutes: Date, values: Double)] = []
     @State private var selectedElement: temp?
 
-    @State var flags = Array(repeating: false, count: sensorSettingList.count)
+    //@State var flags = Array(repeating: false, count: sensorSettingList.count)
+    @Binding var flags: [Bool]
     @State var user_id: String = ""
     @State var isTodayData: Bool = true
     @State var isTodayDataToggled: Bool = false
@@ -475,7 +476,14 @@ struct CheckToggleStyle: ToggleStyle {
 
 
 struct MyDataTimeView_Previews: PreviewProvider {
+    struct MyDataTimeViewWrapper: View {
+
+            @State var flags : [Bool] = Array(repeating: false, count: 12)
+            var body: some View {
+                MyDataTimeView(flags: $flags)
+            }
+        }
     static var previews: some View {
-        MyDataTimeView()
+        MyDataTimeViewWrapper()
     }
 }

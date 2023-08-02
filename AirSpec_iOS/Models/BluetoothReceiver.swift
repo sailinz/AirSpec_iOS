@@ -670,7 +670,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                             try! realm.write {
                                 realm.add(rawSensorData)
                             }
-                            usleep(10000) // add 1/100s         delay
+                            usleep(1000) // add 1/1000s         delay
                             sem.signal()
                             sem.wait()
                         }catch{
