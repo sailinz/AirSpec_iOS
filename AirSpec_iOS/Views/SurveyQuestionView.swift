@@ -32,6 +32,7 @@ struct SurveyQuestionView: View {
     @State var nextQuestion = 11
     @State private var vStackHeight: CGFloat = 0
 //    @State var backPressed: Bool = false
+    @State var questionHistory: [Int] = []
     
     @Binding var showSurvey: Bool
     @Environment(\.colorScheme) var colorScheme
@@ -46,6 +47,22 @@ struct SurveyQuestionView: View {
             ScrollView(.vertical){
                 VStack {
                     var currentQuestionItem = questions.filter{ $0.currentQuestion == nextQuestion}.first ?? questions[0]
+                    //back button; only appears after the first question
+                    if (currentQuestionItem.currentQuestion != 11)
+                        {Button(action: {print("here")
+                            print(self.questionHistory)
+                            self.nextQuestion = self.questionHistory.removeLast()
+                            print(self.nextQuestion)
+                        }){
+                            Text("Back")
+                                .font(.system(.subheadline) .weight(.semibold))
+                                .foregroundColor(.white)
+                        }
+                        .padding(.all, 5)
+                        .background(.pink.opacity(0.9))
+                        .clipShape(Capsule())
+                        .padding(.trailing, 250)
+                    }
                     Text(currentQuestionItem.title)
                         .font(.title3)
                         .id("question")
@@ -81,6 +98,7 @@ struct SurveyQuestionView: View {
                                     showSurvey.toggle()
                                 }
                                 
+                                self.questionHistory.append(currentQuestionItem.currentQuestion)
                                 self.currentQuestion = currentQuestionItem.currentQuestion
                                 self.nextQuestion = currentQuestionItem.nextQuestion[currentAnswer]
                             }else{
@@ -142,7 +160,7 @@ struct SurveyQuestionView: View {
                             }
 
                             
-                            
+                            self.questionHistory.append(currentQuestionItem.currentQuestion)
                             self.currentQuestion = currentQuestionItem.currentQuestion
                             self.nextQuestion = currentQuestionItem.nextQuestion[currentAnswer]
                             self.currentAnswer = 999 /// reset
