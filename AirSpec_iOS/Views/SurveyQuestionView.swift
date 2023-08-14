@@ -33,6 +33,7 @@ struct SurveyQuestionView: View {
     @State private var vStackHeight: CGFloat = 0
 //    @State var backPressed: Bool = false
     @State var questionHistory: [Int] = []
+    @State var answerHistory = [Int32: String]()
     
     @Binding var showSurvey: Bool
     @Environment(\.colorScheme) var colorScheme
@@ -49,16 +50,17 @@ struct SurveyQuestionView: View {
                     var currentQuestionItem = questions.filter{ $0.currentQuestion == nextQuestion}.first ?? questions[0]
                     //back button; only appears after the first question
                     if (currentQuestionItem.currentQuestion != 11)
-                        {Button(action: {print("here")
-                            print(self.questionHistory)
+                        {Button(action: {
                             self.nextQuestion = self.questionHistory.removeLast()
-                            print(self.nextQuestion)
+                            self.answerHistory.removeValue(forKey: Int32(self.nextQuestion))
+                            self.currentAnswers = [] /// reset
+                            self.currentAnswersDisplay = [] //reset
                         }){
                             Text("Back")
                                 .font(.system(.subheadline) .weight(.semibold))
                                 .foregroundColor(.white)
                         }
-                        .padding(.all, 5)
+                        .padding(.all, 10)
                         .background(.pink.opacity(0.9))
                         .clipShape(Capsule())
                         .padding(.trailing, 250)
@@ -84,33 +86,52 @@ struct SurveyQuestionView: View {
                             // button action here
                             if(!currentQuestionItem.multiChoice){
                                 self.currentAnswer = index
-                                do{
+                                self.answerHistory[Int32(nextQuestion)] = "\(currentAnswer.description)"
+                                
+                                /*do{
+                                    self.answerHistory[Int32(nextQuestion)] = "\(currentAnswer.description)"
                                     /// save to coredata
                                     try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(nextQuestion), choice: "\(currentAnswer.description)")
                                     RawDataViewModel.addSurveyDataToRawData(qIndex: Int32(nextQuestion), qChoice: "\(currentAnswer.description)", qGroupIndex: UInt32(UserDefaults.standard.integer(forKey: "survey_record_index")), timestampUnix: Date())
                                 }catch{
                                     print("Error saving survey data: \(error.localizedDescription)")
-                                }
+                                }*/
                                 
                                 
                                 if(currentQuestionItem.nextQuestion[0] == 999){
                                     print("survey record index: \(UserDefaults.standard.integer(forKey: "survey_record_index"))")
                                     showSurvey.toggle()
+                                    for (q_index, q_choice) in answerHistory{
+                                        print(q_index, q_choice)
+                                        do{
+                                            /// save accumulated responses to coredata
+                                            try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(q_index), choice: q_choice)
+                                            RawDataViewModel.addSurveyDataToRawData(qIndex: Int32(q_index), qChoice: q_choice, qGroupIndex: UInt32(UserDefaults.standard.integer(forKey: "survey_record_index")), timestampUnix: Date())
+                                            usleep(1000000)
+                                            
+                                        }catch{
+                                            
+                                            //RawDataViewModel.addMetaDataToRawData(payload: "Error saving survey data: \(error.localizedDescription)", timestampUnix: Date(), type: 2)
+                                            print("Error saving survey data: \(error.localizedDescription)")
+                                        }
+                                        
+                                    }
                                 }
                                 
                                 self.questionHistory.append(currentQuestionItem.currentQuestion)
                                 self.currentQuestion = currentQuestionItem.currentQuestion
                                 self.nextQuestion = currentQuestionItem.nextQuestion[currentAnswer]
                             }else{
+                                //multiple choice
                                 self.currentAnswer = index /// make sure all the multiple answers as the same next question
-                                self.currentAnswers.append(index)
+                                //self.currentAnswers.append(index)
                                 
                                 if self.currentAnswersDisplay.contains(index){
                                     currentAnswersDisplay.removeAll { $0 == index }
                                 }else{
                                     self.currentAnswersDisplay.append(index)
                                 }
-                                
+                                self.currentAnswers = currentAnswersDisplay
                                 
                                 
                             }
@@ -140,14 +161,16 @@ struct SurveyQuestionView: View {
                     if(currentQuestionItem.multiChoice){
                         Button(action: {
                             // button action here
-                            do{
+                            self.answerHistory[Int32(nextQuestion)] = "\(currentAnswers.description)"
+                            /*do{
+                                self.answerHistory[Int32(nextQuestion)] = "\(currentAnswers.description)"
                                 /// save to coredata
                                 try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(nextQuestion), choice: "\(currentAnswers.description)")
                                 RawDataViewModel.addSurveyDataToRawData(qIndex: Int32(nextQuestion), qChoice: "\(currentAnswers.description)", qGroupIndex: UInt32(UserDefaults.standard.integer(forKey: "survey_record_index")), timestampUnix: Date())
                             }catch{
                                 RawDataViewModel.addMetaDataToRawData(payload: "Error saving survey data: \(error.localizedDescription)", timestampUnix: Date(), type: 2)
                                 print("Error saving survey data: \(error.localizedDescription)")
-                            }
+                            }*/
                             
                             
                             /// as long as user thought about visual comfort, just ask the eye fatigue question
