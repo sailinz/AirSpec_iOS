@@ -8,6 +8,9 @@
 import Foundation
 import CoreData
 import os.log
+import RealmSwift
+import DequeModule
+
 
 protocol DatabaseContainer {
     var persistentContainer: NSPersistentContainer { get }
@@ -270,6 +273,47 @@ class RawDataViewModel : RawDataViewModelProtocol  {
             print(surveyData)
         } catch {
             print("Fail to append survey data to raw data:  \(error.localizedDescription)")
+        }
+    }
+    
+    static func surveyDataToRealm(qIndex: Int32, qChoice: String, qGroupIndex: UInt32, timestampUnix: Date){
+        DispatchQueue.global().async { [self] in
+            let realm = try! Realm()
+            //surveyDataSync.sync {
+                let sem = DispatchSemaphore(value: 0)
+                    
+                    var surveyData = appSurveyDataPacket()
+                    surveyData.payload = [appSurveyDataPayload()]
+                    surveyData.payload[0].qIndex = qIndex
+                    surveyData.payload[0].qChoice = qChoice
+                    surveyData.payload[0].qGroupIndex = UInt32(UserDefaults.standard.integer(forKey: "survey_record_index"))
+                    surveyData.payload[0].timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
+
+                    let sensorPacket = SensorPacket.with {
+                        $0.header = SensorPacketHeader.with {
+                            $0.epoch = UInt64(NSDate().timeIntervalSince1970 * 1000)
+                        }
+
+                        $0.surveyPacket = surveyData
+                    }
+
+                    do {
+                        let surveyDataBinary = try sensorPacket.serializedData()
+                        let surveyDataRealm = SurveyDataRealm()
+                        surveyDataRealm.binaryRecord = surveyDataBinary
+                        try! realm.write {
+                            realm.add(surveyDataRealm)
+                        }
+                        print(surveyData)
+                    } catch {
+                        print("Fail to append survey data to raw data:  \(error.localizedDescription)")
+                    }
+                    
+                usleep(1000) // add 1/1000s         delay
+                sem.signal()
+                sem.wait()
+                
+            //}
         }
     }
     

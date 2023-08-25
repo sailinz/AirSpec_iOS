@@ -14,6 +14,8 @@
 import SwiftUI
 import Foundation
 import CoreLocation
+import DequeModule
+import RealmSwift
 
 struct SurveyQuestionView: View {
     // initialize variables
@@ -33,7 +35,10 @@ struct SurveyQuestionView: View {
     @State private var vStackHeight: CGFloat = 0
 //    @State var backPressed: Bool = false
     @State var questionHistory: [Int] = []
-    @State var answerHistory = [Int32: String]()
+    @State var answerHistory = [Int32: String]() //store the most recent answers to questions
+    
+    //var surveyDataQueue: Deque<Data> = []
+    //let surveyDataSync = DispatchQueue(label: "survey_data_queue")
     
     @Binding var showSurvey: Bool
     @Environment(\.colorScheme) var colorScheme
@@ -88,20 +93,24 @@ struct SurveyQuestionView: View {
                                 self.currentAnswer = index
                                 self.answerHistory[Int32(nextQuestion)] = "\(currentAnswer.description)"
                                 
-                                /*do{
-                                    self.answerHistory[Int32(nextQuestion)] = "\(currentAnswer.description)"
-                                    /// save to coredata
-                                    try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(nextQuestion), choice: "\(currentAnswer.description)")
-                                    RawDataViewModel.addSurveyDataToRawData(qIndex: Int32(nextQuestion), qChoice: "\(currentAnswer.description)", qGroupIndex: UInt32(UserDefaults.standard.integer(forKey: "survey_record_index")), timestampUnix: Date())
-                                }catch{
-                                    print("Error saving survey data: \(error.localizedDescription)")
-                                }*/
-                                
-                                
                                 if(currentQuestionItem.nextQuestion[0] == 999){
                                     print("survey record index: \(UserDefaults.standard.integer(forKey: "survey_record_index"))")
                                     showSurvey.toggle()
-                                    for (q_index, q_choice) in answerHistory{
+                                    
+                                            for (q_index, q_choice) in answerHistory{
+                                                print(q_index, q_choice)
+
+                                                do {
+                                                    RawDataViewModel.surveyDataToRealm(qIndex: Int32(q_index), qChoice: q_choice, qGroupIndex: UInt32(UserDefaults.standard.integer(forKey: "survey_record_index")), timestampUnix: Date())
+                                                } catch {
+                                                    print("Fail to append survey data to raw data:  \(error.localizedDescription)")
+                                                }
+                                                
+                                            }
+                                            
+                                    
+                                    //coredata version
+                                    /*for (q_index, q_choice) in answerHistory{
                                         print(q_index, q_choice)
                                         do{
                                             /// save accumulated responses to coredata
@@ -115,7 +124,7 @@ struct SurveyQuestionView: View {
                                             print("Error saving survey data: \(error.localizedDescription)")
                                         }
                                         
-                                    }
+                                    }*/
                                 }
                                 
                                 self.questionHistory.append(currentQuestionItem.currentQuestion)
@@ -162,15 +171,6 @@ struct SurveyQuestionView: View {
                         Button(action: {
                             // button action here
                             self.answerHistory[Int32(nextQuestion)] = "\(currentAnswers.description)"
-                            /*do{
-                                self.answerHistory[Int32(nextQuestion)] = "\(currentAnswers.description)"
-                                /// save to coredata
-                                try SurveyDataViewModel.addSurveyData(timestamp: Date(), question: Int16(nextQuestion), choice: "\(currentAnswers.description)")
-                                RawDataViewModel.addSurveyDataToRawData(qIndex: Int32(nextQuestion), qChoice: "\(currentAnswers.description)", qGroupIndex: UInt32(UserDefaults.standard.integer(forKey: "survey_record_index")), timestampUnix: Date())
-                            }catch{
-                                RawDataViewModel.addMetaDataToRawData(payload: "Error saving survey data: \(error.localizedDescription)", timestampUnix: Date(), type: 2)
-                                print("Error saving survey data: \(error.localizedDescription)")
-                            }*/
                             
                             
                             /// as long as user thought about visual comfort, just ask the eye fatigue question

@@ -709,7 +709,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
 //        }
 //    }
     
-    func realmFetchData(_ n: Int = 10, realm: Realm) throws -> ([SensorPacket], () throws -> Void) {
+    func realmFetchRawData(_ n: Int = 10, realm: Realm) throws -> ([SensorPacket], () throws -> Void) {
         if n == 0 {
             return ([], {})
         }
@@ -790,6 +790,87 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             }
         })
     }
+    func realmFetchSurveyData(_ n: Int = 10, realm: Realm) throws -> ([SensorPacket], () throws -> Void) {
+        if n == 0 {
+            return ([], {})
+        }
+
+        let results = realm.objects(SurveyDataRealm.self).filter("binaryRecord != nil")
+        let limitedResults = Array(results.prefix(n))
+
+        var ret: [SensorPacket] = []
+        var err: Error?
+        var ids: [ObjectId] = []
+
+        realm.beginWrite()
+
+        limitedResults.forEach { ent in
+            ids.append(ent._id)
+            if let binaryRecord = ent.binaryRecord {
+                do {
+                    let sensorPacket = try SensorPacket(serializedData: binaryRecord)
+                    ret.append(sensorPacket)
+                } catch {
+                    var metaData = appMetaDataPacket()
+                    metaData.payload = "nil in coredata"
+                    metaData.timestampUnix = UInt64(Date().timeIntervalSince1970) * 1000
+                    metaData.type = UInt32(2)
+
+                    let sensorPacket = SensorPacket.with {
+                        $0.header = SensorPacketHeader.with {
+                            $0.epoch = UInt64(NSDate().timeIntervalSince1970 * 1000)
+                        }
+                        $0.metaDataPacket = metaData
+                    }
+
+                    ret.append(sensorPacket)
+                }
+            }
+        }
+
+        do {
+            try realm.commitWrite()
+        } catch {
+            err = error
+            print("raw data view model error \(String(describing: err))")
+        }
+
+        if let e = err {
+            throw e
+        }
+
+        return (ret, {
+            if ids.isEmpty {
+                return
+            }
+
+            do {
+                realm.beginWrite()
+
+                let objectsToDelete = realm.objects(SurveyDataRealm.self).filter("_id IN %@", ids)
+//                realm.delete(objectsToDelete)
+                
+                // Iterate over the objects to validate and delete them
+                for object in objectsToDelete {
+                    if object.isInvalidated {
+                        
+                    }else{
+                        // Delete the object from the Realm database
+                        realm.delete(object)
+                    }
+                }
+
+                try realm.commitWrite()
+            } catch {
+                err = error
+                print("raw data view model error \(String(describing: err))")
+            }
+
+            if let e = err {
+                throw e
+            }
+        })
+    }
 
     
     func uploadToServer() {
@@ -807,8 +888,11 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
             while true {
                 do {
                     /// send the realm data as well
-                    let (realmData, realmOnComplete) = try self.realmFetchData(50, realm: realm)
-                    if realmData.isEmpty {
+                    let (realmRawData, realmRawOnComplete) = try self.realmFetchRawData(50, realm: realm)
+                    let (realmSurveyData, realmSurveyOnComplete) = try self.realmFetchSurveyData(50, realm: realm)
+                    
+                    for (realmData, realmOnComplete) in [(realmRawData, realmRawOnComplete), (realmSurveyData, realmSurveyOnComplete)]{
+                            if realmData.isEmpty {
                         
                         try realmOnComplete()
                         print("\(Date.now) sent all packets")
@@ -838,7 +922,7 @@ class BluetoothReceiver: NSObject, ObservableObject, CBCentralManagerDelegate, C
                     }
                     
                     
-                    
+                }
                     
                 } catch {
                     print("cannot upload the data to the server: \(error)")
